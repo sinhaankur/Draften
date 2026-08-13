@@ -10,6 +10,15 @@ of truth: brand in one, tokens in another, UI in Figma, diagrams in OmniGraffle,
 code in VS Code, versioning in Git, a component library bolted on the side.
 Draften makes them **views of one document model.**
 
+## Why it's free + open source
+
+Professional design tooling is gated behind subscriptions that many people —
+students, indie designers, folks in lower-income regions, anyone between jobs —
+simply can't afford. **Draften is open source and free**: a designer who can't pay
+for Figma/Sketch/OmniGraffle should still have a real, capable, no-subscription
+tool that opens the files everyone else sends them. That's the point — remove the
+paywall from serious design work, and let the community extend it via plugins.
+
 ## The through-line
 
 > Brand defines tokens. Tokens drive components. Components (atomic) compose into
@@ -57,8 +66,14 @@ model`), so **any design tool** can be supported — by us or the community.
 | **Figma** | REST API (token/OAuth) → JSON node tree → our model | High read; no local `.fig` |
 | **OmniGraffle** `.graffle` | gzip + plist (Rust side) → our model | Partial — proprietary |
 | **Adobe XD** `.xd` | Agi/ZIP → our model (importer plugin) | Partial |
+| **PDF** `.pdf` | vector + text extraction → our model (importer plugin) | Partial — pages become boards |
 | **draw.io / Visio / SVG** | XML/SVG → our model (importer plugins) | Varies |
 | **SVG / our JSON** | native | Full round-trip |
+
+**Explore + import, not just open:** an import can bring a file in as an editable
+document *or* let you browse/extract pieces of it (a PDF's pages, a Sketch's
+symbols) — the importer decides what it surfaces. PDF in particular is a common
+"here's the design" hand-off format, so importing + exporting PDF is first-class.
 
 ## Open & extensible
 

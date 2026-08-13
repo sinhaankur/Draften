@@ -7,6 +7,7 @@
  * one file makes the extension surface obvious.
  */
 
+import { PdfImporter } from "../import/pdf";
 import { SketchImporter } from "../import/sketch";
 import { importers } from "../import/importer";
 
@@ -18,8 +19,9 @@ export function registerBuiltins(): void {
 
   // ── importers (the "open any design tool" pipeline) ──
   importers.register(new SketchImporter());
-  // Figma (REST API) and OmniGraffle (Rust plist) importers register here once
-  // built; each is just another Importer against the same contract.
+  importers.register(new PdfImporter());
+  // Figma (REST API), OmniGraffle (Rust plist), XD, draw.io importers register
+  // here once built; each is just another Importer against the same contract.
 
   // ── AI providers register here too (Anthropic / OpenAI-compatible / Ollama) ──
   // aiProviders.register(new AnthropicProvider())  — added with the AI panel.
