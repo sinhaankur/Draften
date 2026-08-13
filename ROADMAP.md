@@ -27,8 +27,12 @@ every surface hangs off it.
 3. ⬜ **Design-system panel** — token editor (color/type/spacing), atomic library
    browser, drag component → instance on canvas.
 4. ⬜ **Code view** — Monaco; component ↔ React/TS binding (two views of one).
-5. ⬜ **AI provider** — Anthropic + OpenAI-compatible + Ollama; wire the ✦ AI
-   button to `generateComponentLibrary` / `generateDiagram`.
+5. 🟡 **AI (tiered, no subscription needed)** — ✅ deterministic design-system
+   generator (tokens + atomic components + code, no model, tested); ✅ provider
+   tiers (Apple Intelligence on-device / tiny WebLLM / deterministic) +
+   `pickBestAvailable()`; ✅ Apple Intelligence Rust bridge stub; ✅ text
+   spell-check + on-device proofreading. ⬜ wire the ✦ AI button to the actions;
+   ⬜ optional cloud (Claude) provider for users who add a key.
 6. ⬜ **Git-backed library** — versioning, diffs, shareable component/token package.
 7. ⬜ **More importers** — XD, draw.io, Visio, SVG (all plugins).
 8. ⬜ **Export** — SVG, PNG, our JSON; component code export.

@@ -84,12 +84,37 @@ fn app_version() -> String {
     env!("CARGO_PKG_VERSION").to_string()
 }
 
+/// Apple Intelligence bridge (stub).
+///
+/// On supported Apple silicon, this will call Apple's on-device Foundation Models
+/// (via a Swift sidecar / FFI) so Draften can generate a design system with the
+/// OS model — no cloud, no key. Until that's wired, it reports unavailability so
+/// the frontend's `pickBestAvailable()` falls back to the tiny WebLLM or the
+/// deterministic generator. Non-Apple platforms always get the error.
+#[tauri::command]
+fn ai_apple_generate(_prompt: String) -> Result<String, String> {
+    #[cfg(target_os = "macos")]
+    {
+        // TODO: bridge to Foundation Models (LanguageModelSession) via a Swift
+        // helper; return the completion text. Requires macOS 26+ / Apple silicon.
+        Err("Apple Intelligence bridge not yet wired; using fallback.".into())
+    }
+    #[cfg(not(target_os = "macos"))]
+    {
+        Err("Apple Intelligence is only available on supported Apple devices.".into())
+    }
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_fs::init())
-        .invoke_handler(tauri::generate_handler![decode_omnigraffle, app_version])
+        .invoke_handler(tauri::generate_handler![
+            decode_omnigraffle,
+            app_version,
+            ai_apple_generate
+        ])
         .run(tauri::generate_context!())
         .expect("error while running Draften");
 }

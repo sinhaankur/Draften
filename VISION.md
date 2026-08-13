@@ -46,10 +46,22 @@ paywall from serious design work, and let the community extend it via plugins.
 3. **Code view (VS Code-level)** — every component has real code (React/TS to
    start). Edit design or code; they're two views of one component. Monaco-based
    editor, extensible, dev-grade.
-4. **AI (Claude / any LLM, pluggable)** — generate a component library from a
-   prompt or a brand, scaffold atomic components, refactor, write the code view,
-   name/organise tokens, produce diagrams. Provider-agnostic ("Claude or any
-   LLM").
+   - **Text support** — canvas text nodes get spell-check (browser/OS-native,
+     free, offline) and optional on-device grammar/tone proofing via the same
+     tiered AI (Apple Intelligence / tiny LLM), never a required cloud call.
+4. **AI (tiered, no subscription needed)** — generating a design system is a
+   *structured* task, so it does NOT require a big cloud model. The stack tiers
+   up only as far as the device allows / the user opts in:
+   - **Deterministic** (no model) — derives a coherent token ramp + atomic
+     component set with real code from a brand brief. Always available, offline.
+   - **Apple Intelligence** — the OS on-device model where present (via the Tauri
+     bridge), for smarter naming/palette/ideas.
+   - **Tiny WebLLM** — a small in-browser model (WebGPU), no key, offline once
+     cached. "Even a tiny LLM works" for tokens + component ideas.
+   - **Cloud (optional)** — Claude / any LLM, only if the user adds a key.
+
+   All behind one `AiProvider` interface; `pickBestAvailable()` chooses. This is
+   the free/open ethos applied to AI: capable output without a paywall or a key.
 5. **Versioned library (Git)** — the component/token library is Git-backed:
    history, branches, diffs, reusable across projects. "Git library" = the design
    system as a versioned, shareable package.
