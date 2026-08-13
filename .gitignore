@@ -1,0 +1,23 @@
+# Node / Vite
+node_modules/
+dist/
+*.local
+.vite/
+
+# Tauri / Rust
+src-tauri/target/
+src-tauri/gen/
+
+# Editor / OS
+.DS_Store
+.idea/
+.vscode/
+*.swp
+
+# Env / secrets (AI provider keys never committed)
+.env
+.env.*
+!.env.example
+
+# pnpm
+.pnpm-store/

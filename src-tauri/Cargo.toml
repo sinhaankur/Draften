@@ -1,0 +1,29 @@
+[package]
+name = "draften"
+version = "0.1.0"
+description = "A unified design + diagramming canvas that opens Sketch, Figma, and OmniGraffle files."
+authors = ["Ankur Sinha"]
+edition = "2021"
+rust-version = "1.77"
+
+[lib]
+name = "draften_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = [] }
+tauri-plugin-dialog = "2"
+tauri-plugin-fs = "2"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+# OmniGraffle files are gzip'd plist — these decode them on the native side,
+# where it's fast and dependency-light (vs. shipping a plist parser to the web).
+flate2 = "1"
+plist = "1"
+
+[features]
+# by default Tauri runs with the custom protocol; this mirrors the template.
+custom-protocol = ["tauri/custom-protocol"]

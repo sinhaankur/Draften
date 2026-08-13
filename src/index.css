@@ -1,0 +1,25 @@
+:root {
+  --bg: #0b0d12;
+  --panel: #14171f;
+  --panel-2: #1a1e28;
+  --line: rgba(255, 255, 255, 0.08);
+  --text: #e6e9ef;
+  --muted: #8892a6;
+  --accent: #4c6fff;
+  font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  height: 100%;
+  background: var(--bg);
+  color: var(--text);
+  overflow: hidden;
+}
