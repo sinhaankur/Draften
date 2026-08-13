@@ -1,0 +1,954 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="_ds/modernist-7c4fb489-3dc0-4dc2-9757-550f2278af31/styles.css">
+  <script src="_ds/modernist-7c4fb489-3dc0-4dc2-9757-550f2278af31/_ds_bundle.js"></script>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap">
+  <style>
+    body { margin:0; background:var(--color-bg); }
+    a { color: var(--color-accent); }
+    a:hover { color: var(--color-accent-700); }
+  </style>
+</helmet>
+
+<div style="max-width:1560px;margin:0 auto;padding:0 48px 80px" data-screen-label="Draften UI Spec">
+
+  <header style="padding:40px 0 28px;display:flex;align-items:flex-end;justify-content:space-between;gap:32px;flex-wrap:wrap">
+    <div>
+      <div style="font-family:var(--font-heading);font-weight:800;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--color-accent);margin-bottom:10px">Frontend UI Specification</div>
+      <h1 style="margin:0;font-size:56px;letter-spacing:-.02em">Draften</h1>
+      <div style="font-size:13px;color:var(--color-neutral-700);margin-top:8px">by <strong>Ankur Sinha</strong> · MIT © 2026 Ankur Sinha · <a href="https://www.sinhaankur.com">sinhaankur.com</a></div>
+      <p style="margin:10px 0 0;max-width:660px;font-size:15px;color:var(--color-neutral-700)">One canvas for vector design, structured diagramming, decks and documents — free and open source. A design-system spine, real component code, tech-stack plugins, GitHub sync with branches and PRs, and a runner that opens your repo's product in a preview window, no localhost ritual. Light is the default theme, dark one flip away; deep violet is the one brand color.</p>
+    </div>
+    <div style="display:flex;flex-direction:column;align-items:flex-start;gap:8px">
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <span class="tag tag-accent">Light + Dark</span>
+        <span class="tag tag-outline">React + plain CSS</span>
+        <span class="tag tag-outline">Inter</span>
+        <span class="tag tag-outline">No paywall UI</span>
+      </div>
+      <div style="font-size:11.5px;color:var(--color-neutral-600);max-width:360px">Desktop ≥ 1440, keyboard-first. Mockups are reference renderings; the token block in 05 is copy-paste CSS.</div>
+    </div>
+  </header>
+
+  <!-- ══ 00 · Brand ══ -->
+  <section style="border-top:2px solid var(--color-divider);padding:44px 0 56px" data-screen-label="00 Brand">
+    <div style="font-family:var(--font-heading);font-weight:800;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--color-accent);margin-bottom:8px">00 · Brand</div>
+    <h2 style="margin:0 0 6px">The route-D</h2>
+    <p style="max-width:720px;font-size:13.5px;color:var(--color-neutral-700);margin-bottom:28px">The mark is the letter D drawn the way the product draws: its bowl is an auto-routed connector with rounded elbows, and a vector anchor diamond sits on the path like a selected point — drafting and diagramming in one letterform, authored by Ankur Sinha. It reduces to a plain stroked D at 16 px, sets in one color per ground, and needs no gradient.</p>
+    <div style="display:grid;grid-template-columns:1.2fr 1fr 1fr;gap:24px;align-items:stretch">
+      <div style="background:#0C0E12;border:1px solid var(--color-neutral-400);display:flex;align-items:center;justify-content:center;gap:22px;padding:44px 32px">
+        <svg width="72" height="72" viewBox="0 0 32 32" fill="none">
+          <path d="M9 5v22M9 5h8q8 0 8 8v6q0 8-8 8H9" stroke="#9F7DFF" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"></path>
+          <rect x="21.7" y="12.7" width="6.6" height="6.6" transform="rotate(45 25 16)" fill="#0C0E12" stroke="#9F7DFF" stroke-width="2"></rect>
+        </svg>
+        <div style="font-family:Inter,sans-serif;font-weight:700;font-size:44px;letter-spacing:-.035em;color:#E9EBF1">draften<span style="color:#9F7DFF">.</span></div>
+      </div>
+      <div style="background:#fff;border:1px solid var(--color-neutral-300);display:flex;align-items:center;justify-content:center;gap:18px;padding:32px">
+        <svg width="44" height="44" viewBox="0 0 32 32" fill="none">
+          <path d="M9 5v22M9 5h8q8 0 8 8v6q0 8-8 8H9" stroke="#5B34D6" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"></path>
+          <rect x="21.7" y="12.7" width="6.6" height="6.6" transform="rotate(45 25 16)" fill="#fff" stroke="#5B34D6" stroke-width="2"></rect>
+        </svg>
+        <div style="font-family:Inter,sans-serif;font-weight:700;font-size:30px;letter-spacing:-.035em;color:#171A21">draften<span style="color:#5B34D6">.</span></div>
+      </div>
+      <div style="border:1px solid var(--color-neutral-300);background:var(--color-neutral-100);display:flex;align-items:center;justify-content:center;gap:16px;padding:32px">
+        <div style="width:64px;height:64px;border-radius:14px;background:#7048E8;display:grid;place-items:center"><svg width="34" height="34" viewBox="0 0 32 32" fill="none"><path d="M9 5v22M9 5h8q8 0 8 8v6q0 8-8 8H9" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"></path><rect x="21.7" y="12.7" width="6.6" height="6.6" transform="rotate(45 25 16)" fill="#7048E8" stroke="#fff" stroke-width="2"></rect></svg></div>
+        <div style="width:32px;height:32px;border-radius:8px;background:#14161B;display:grid;place-items:center"><svg width="18" height="18" viewBox="0 0 32 32" fill="none"><path d="M9 5v22M9 5h8q8 0 8 8v6q0 8-8 8H9" stroke="#9F7DFF" stroke-width="3.2" fill="none" stroke-linecap="round" stroke-linejoin="round"></path></svg></div>
+        <div style="width:16px;height:16px;border-radius:4px;background:#7048E8;display:grid;place-items:center"><svg width="10" height="10" viewBox="0 0 32 32" fill="none"><path d="M9 5v22M9 5h8q8 0 8 8v6q0 8-8 8H9" stroke="#fff" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"></path></svg></div>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:24px;margin-top:24px">
+      <div style="font-size:12.5px;line-height:1.5;color:var(--color-neutral-800)"><strong style="font-family:var(--font-heading)">Wordmark.</strong> Lowercase Inter 700, −3.5% tracking, accent full stop — plain, confident, open-source friendly. Never letterspaced, never outlined.</div>
+      <div style="font-size:12.5px;line-height:1.5;color:var(--color-neutral-800)"><strong style="font-family:var(--font-heading)">Draften Violet #7048E8.</strong> The one brand color — deep violet, deliberately not another blue tool (light theme deepens it to #5B34D6). Everything else is ink and paper; the board-kind spectrum is functional color, not brand.</div>
+      <div style="font-size:12.5px;line-height:1.5;color:var(--color-neutral-800)"><strong style="font-family:var(--font-heading)">Motif.</strong> The dot grid and the handle-line. Marketing and empty states reuse canvas furniture — ports, elbows, anchors — never abstract swooshes.</div>
+      <div style="font-size:12.5px;line-height:1.5;color:var(--color-neutral-800)"><strong style="font-family:var(--font-heading)">Voice.</strong> Plain and generous: "Free forever. MIT." Buttons say what happens ("Commit &amp; push"), never marketing verbs. No nags, no locks, no trials.</div>
+    </div>
+  </section>
+
+  <!-- ══ 01 · Layout ══ -->
+  <section style="border-top:2px solid var(--color-divider);padding:44px 0 56px" data-screen-label="01 Layout">
+    <div style="font-family:var(--font-heading);font-weight:800;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--color-accent);margin-bottom:8px">01 · Layout</div>
+    <h2 style="margin:0 0 20px">Three panes, one canvas, no modes</h2>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px 32px;max-width:1300px;margin-bottom:36px">
+      <div style="font-size:13px;line-height:1.5;color:var(--color-neutral-800)"><strong style="font-family:var(--font-heading)">1 — One surface, one tool row.</strong> Design tools (frame, rect, ellipse, text) and diagram tools (shape, connector, sticky) share a single row. A board's <em>kind</em> seeds defaults — grid, starter objects — but never restricts tools: a journey map accepts frames; a wireframe accepts connectors.</div>
+      <div style="font-size:13px;line-height:1.5;color:var(--color-neutral-800)"><strong style="font-family:var(--font-heading)">2 — Left rail: Boards over Layers.</strong> Boards are a nestable tree (canvas management) mirrored by the top-bar breadcrumb; drag a row onto another to nest. Layers scope to the active board — frames, groups, shapes, connectors and stickies are peers; ⌘G groups, Tidy auto-arranges.</div>
+      <div style="font-size:13px;line-height:1.5;color:var(--color-neutral-800)"><strong style="font-family:var(--font-heading)">3 — Right rail: four tabs.</strong> System (the design-system spine: brand kit → tokens → atoms → … → pages, versioned), Inspect (context properties + per-object notes), Stack (connections &amp; plugins), ✦ Assistant. Selection badges Inspect; nothing auto-switches. The spine edits in place: a brand-kit swatch opens a token popover (contrast-checked, where-used), an atom or molecule opens as a master board — publishing is a versioned draft, never a silent swap.</div>
+      <div style="font-size:13px;line-height:1.5;color:var(--color-neutral-800)"><strong style="font-family:var(--font-heading)">4 — Code is a projection.</strong> Design · Split · Code, top right. Split docks a live editor beside the canvas; Code fills the stage with the board's components as files. Selection ↔ caret stay in sync both ways (moment C).</div>
+      <div style="font-size:13px;line-height:1.5;color:var(--color-neutral-800)"><strong style="font-family:var(--font-heading)">5 — Diagram chrome is contextual.</strong> Ports fade in on hover, connectors auto-route with rounded elbows, reroute handles appear only on selection. Nothing persists on canvas that isn't content.</div>
+      <div style="font-size:13px;line-height:1.5;color:var(--color-neutral-800)"><strong style="font-family:var(--font-heading)">6 — Stack is a panel, not a settings page.</strong> Git hosts (GitHub, GitLab, Bitbucket, self-hosted), PostgreSQL, REST APIs, a terminal session and the import pipeline (.fig, .sketch, .graffle, .xd, .drawio, .pdf…) are one plugin registry (moment D). A connected database lets Inspect bind layers to live columns.</div>
+      <div style="font-size:13px;line-height:1.5;color:var(--color-neutral-800)"><strong style="font-family:var(--font-heading)">7 — Sync is a chip.</strong> Branch + ahead/behind live in the top bar. One commit carries board JSON and component code together, to a private or public repo (moment E) — design and code never drift apart in history. Sharing that repo is multiuser: boards merge at object level, so parallel edits combine; a same-property collision opens a visual picker — raw git conflicts never surface.</div>
+      <div style="font-size:13px;line-height:1.5;color:var(--color-neutral-800)"><strong style="font-family:var(--font-heading)">8 — Notes travel with the work.</strong> Stickies are canvas objects; every object also takes an Inspect note, surfaced as a quiet ⓘ dot — review happens on the canvas, not in a side tool.</div>
+      <div style="font-size:13px;line-height:1.5;color:var(--color-neutral-800)"><strong style="font-family:var(--font-heading)">9 — Open source is ambient.</strong> MIT badge and GitHub link in the status bar, version tag by the wordmark. No locked features, so no billing chrome exists anywhere.</div>
+    </div>
+
+    <!-- hero mockup (dark) -->
+    <div style="display:flex;align-items:baseline;gap:10px;margin:0 0 10px"><span class="tag tag-accent">Default · Light</span><span style="font-size:12px;color:var(--color-neutral-600)">First-run theme — friendly in daylight, print-true; every value is a token, remembered per user.</span></div>
+    <div style="position:relative;width:100%;min-width:1100px;height:640px;background:#EDEFF4;border:1px solid var(--color-neutral-400);box-shadow:var(--shadow-lg);display:flex;flex-direction:column;font-family:Inter,system-ui,sans-serif;overflow:hidden" data-screen-label="Hero — editor light">
+      <div style="height:48px;flex:none;background:#FAFBFC;border-bottom:1px solid #E2E5EC;display:flex;align-items:center;padding:0 12px;gap:10px">
+        <div style="display:flex;align-items:center;gap:8px;flex:none">
+          <svg width="20" height="20" viewBox="0 0 32 32" fill="none"><path d="M9 5v22M9 5h8q8 0 8 8v6q0 8-8 8H9" stroke="#5B34D6" stroke-width="3.2" fill="none" stroke-linecap="round" stroke-linejoin="round"></path><rect x="22.2" y="13.2" width="5.6" height="5.6" transform="rotate(45 25 16)" fill="#FAFBFC" stroke="#5B34D6" stroke-width="2"></rect></svg>
+          <span style="font-size:13px;font-weight:700;letter-spacing:-.02em;color:#171A21">draften</span>
+          <span style="font-size:10px;font-weight:500;color:#8A93A6;border:1px solid #E2E5EC;border-radius:999px;padding:1px 7px">v0.4 · MIT</span>
+        </div>
+        <div style="width:1px;height:20px;background:#E2E5EC"></div>
+        <div style="font-size:12px;color:#8A93A6;white-space:nowrap">Acme App <span style="color:#C9CEDA">▸</span> Onboarding <span style="color:#C9CEDA">▸</span> <span style="color:#171A21;font-weight:500">Welcome flow</span></div>
+        <div style="display:flex;align-items:center;gap:2px;margin:0 auto">
+          <div style="width:32px;height:32px;border-radius:6px;background:#5B34D6;display:grid;place-items:center"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linejoin="round"><path d="m3 3 7.07 16.97 2.51-7.39 7.39-2.51L3 3z"></path></svg></div>
+          <div style="width:1px;height:18px;background:#E2E5EC;margin:0 4px"></div>
+          <div style="width:32px;height:32px;border-radius:6px;display:grid;place-items:center"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#4C5468" stroke-width="1.8"><line x1="22" y1="6" x2="2" y2="6"></line><line x1="22" y1="18" x2="2" y2="18"></line><line x1="6" y1="2" x2="6" y2="22"></line><line x1="18" y1="2" x2="18" y2="22"></line></svg></div>
+          <div style="width:32px;height:32px;border-radius:6px;display:grid;place-items:center"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#4C5468" stroke-width="1.8"><rect x="4" y="4" width="16" height="16" rx="1"></rect></svg></div>
+          <div style="width:32px;height:32px;border-radius:6px;display:grid;place-items:center"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#4C5468" stroke-width="1.8"><circle cx="12" cy="12" r="9"></circle></svg></div>
+          <div style="width:32px;height:32px;border-radius:6px;display:grid;place-items:center"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#4C5468" stroke-width="1.8" stroke-linecap="round"><polyline points="4 7 4 4 20 4 20 7"></polyline><line x1="9" y1="20" x2="15" y2="20"></line><line x1="12" y1="4" x2="12" y2="20"></line></svg></div>
+          <div style="width:1px;height:18px;background:#E2E5EC;margin:0 4px"></div>
+          <div style="width:32px;height:32px;border-radius:6px;display:grid;place-items:center"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#4C5468" stroke-width="1.8" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path></svg></div>
+          <div style="width:32px;height:32px;border-radius:6px;display:grid;place-items:center"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#4C5468" stroke-width="1.8"><circle cx="19" cy="5" r="2"></circle><circle cx="5" cy="19" r="2"></circle><path d="M5 17A12 12 0 0 1 17 5"></path></svg></div>
+          <div style="width:32px;height:32px;border-radius:6px;display:grid;place-items:center"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#4C5468" stroke-width="1.8" stroke-linejoin="round"><path d="M16 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h9l7-7V5a2 2 0 0 0-2-2Z"></path><path d="M15 21v-5a2 2 0 0 1 2-2h5"></path></svg></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;flex:none">
+          <div style="display:flex;background:#EDEFF4;border:1px solid #E2E5EC;border-radius:6px;padding:2px;font-size:11.5px;font-weight:500">
+            <span style="padding:4px 12px;border-radius:4px;background:#fff;color:#171A21;box-shadow:0 1px 2px rgba(23,26,33,.08)">Design</span>
+            <span style="padding:4px 12px;color:#8A93A6">Split</span>
+            <span style="padding:4px 12px;color:#8A93A6">Code</span>
+          </div>
+          <div style="height:28px;display:flex;align-items:center;gap:6px;padding:0 10px;border:1px solid #E2E5EC;border-radius:6px;font-size:11.5px;color:#4C5468"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#4C5468" stroke-width="1.8"><line x1="6" y1="3" x2="6" y2="15"></line><circle cx="18" cy="6" r="3"></circle><circle cx="6" cy="18" r="3"></circle><path d="M18 9a9 9 0 0 1-9 9"></path></svg>main <span style="color:#5228C7;font-weight:600">✓</span></div>
+          <div style="height:28px;display:flex;align-items:center;gap:6px;padding:0 12px;border-radius:6px;background:rgba(91,52,214,.10);border:1px solid rgba(91,52,214,.35);color:#5228C7;font-size:12px;font-weight:600">✦ AI</div>
+        </div>
+      </div>
+      <div style="flex:1;display:flex;min-height:0">
+        <div style="width:260px;flex:none;background:#FAFBFC;border-right:1px solid #E2E5EC;display:flex;flex-direction:column;font-size:12px">
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 12px 8px"><span style="font-size:10px;font-weight:600;letter-spacing:.08em;color:#8A93A6">BOARDS</span><span style="color:#8A93A6;font-size:14px;line-height:1">+</span></div>
+          <div style="padding:0 6px">
+            <div style="display:flex;align-items:center;gap:7px;height:28px;padding:0 8px;color:#4C5468"><span style="color:#8A93A6;font-size:9px">▾</span><span style="width:7px;height:7px;border-radius:999px;background:#5B34D6;flex:none"></span><span style="color:#171A21;font-weight:500">Acme App</span></div>
+            <div style="display:flex;align-items:center;gap:7px;height:28px;padding:0 8px 0 22px;color:#4C5468"><span style="color:#8A93A6;font-size:9px">▾</span><span style="width:7px;height:7px;border-radius:999px;background:#2E9E56;flex:none"></span><span>Onboarding</span></div>
+            <div style="display:flex;align-items:center;gap:7px;height:28px;padding:0 8px 0 38px;background:#EEE9FB;box-shadow:inset 2px 0 0 #5B34D6;color:#171A21;font-weight:500"><span style="width:7px;height:7px;border-radius:999px;background:#2E9E56;flex:none"></span><span>Welcome flow</span><span style="margin-left:auto;font-size:10px;color:#8A93A6">12</span></div>
+            <div style="display:flex;align-items:center;gap:7px;height:28px;padding:0 8px 0 38px;color:#4C5468"><span style="width:7px;height:7px;border-radius:999px;background:#B97F14;flex:none"></span><span>Journey map</span></div>
+            <div style="display:flex;align-items:center;gap:7px;height:28px;padding:0 8px 0 22px;color:#4C5468"><span style="width:7px;height:7px;border-radius:999px;background:#1D8F7E;flex:none"></span><span>Service architecture</span></div>
+            <div style="display:flex;align-items:center;gap:7px;height:28px;padding:0 8px 0 22px;color:#4C5468"><span style="width:7px;height:7px;border-radius:999px;background:#2B76B8;flex:none"></span><span>Ideas</span></div>
+          </div>
+          <div style="height:1px;background:#E2E5EC;margin:10px 12px"></div>
+          <div style="padding:2px 12px 8px"><span style="font-size:10px;font-weight:600;letter-spacing:.08em;color:#8A93A6">LAYERS</span></div>
+          <div style="padding:0 6px;overflow:hidden">
+            <div style="display:flex;align-items:center;gap:7px;height:26px;padding:0 8px;color:#4C5468"><span style="color:#8A93A6;font-size:9px">▾</span><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#8A93A6" stroke-width="1.8"><line x1="22" y1="6" x2="2" y2="6"></line><line x1="22" y1="18" x2="2" y2="18"></line><line x1="6" y1="2" x2="6" y2="22"></line><line x1="18" y1="2" x2="18" y2="22"></line></svg><span>Signup / mobile</span></div>
+            <div style="display:flex;align-items:center;gap:7px;height:26px;padding:0 8px 0 24px;color:#4C5468"><span style="font-size:10px;color:#8A93A6;font-weight:600">T</span><span>Create account</span></div>
+            <div style="display:flex;align-items:center;gap:7px;height:26px;padding:0 8px;background:#EEE9FB;box-shadow:inset 2px 0 0 #5B34D6;color:#171A21;font-weight:500"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#5228C7" stroke-width="1.8" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path></svg><span>Has account?</span><span style="margin-left:auto;font-size:9px;font-weight:600;color:#5228C7;background:rgba(91,52,214,.12);border-radius:999px;padding:1px 6px">ⓘ 1</span></div>
+            <div style="display:flex;align-items:center;gap:7px;height:26px;padding:0 8px 0 24px;color:#4C5468"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#8A93A6" stroke-width="1.8"><circle cx="19" cy="5" r="2"></circle><circle cx="5" cy="19" r="2"></circle><path d="M5 17A12 12 0 0 1 17 5"></path></svg><span>no → Create account</span></div>
+          </div>
+          <div style="margin-top:auto;padding:10px 12px;border-top:1px solid #E2E5EC;display:flex;align-items:center;gap:8px;font-size:10.5px;color:#8A93A6"><span style="width:6px;height:6px;border-radius:999px;background:#2E9E56"></span>All changes saved locally</div>
+        </div>
+        <div style="flex:1;position:relative;background:#EDEFF4;background-image:radial-gradient(circle,#D5D9E3 1px,transparent 1px);background-size:24px 24px;overflow:hidden;min-width:0">
+          <svg style="position:absolute;inset:0;width:100%;height:100%" fill="none">
+            <defs><marker id="arrL" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 1.5 8 5 0 8.5Z" fill="#9AA2B5"></path></marker><marker id="arrLa" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 1.5 8 5 0 8.5Z" fill="#5B34D6"></path></marker></defs>
+            <path d="M446 96 L502 96" stroke="#9AA2B5" stroke-width="1.5" marker-end="url(#arrL)"></path>
+            <path d="M592 120 L592 176" stroke="#9AA2B5" stroke-width="1.5" marker-end="url(#arrL)"></path>
+            <path d="M592 120 L592 140 Q592 148 584 148 L387 148 Q379 148 379 156 L379 176" stroke="#5B34D6" stroke-width="1.7" marker-end="url(#arrLa)"></path>
+          </svg>
+          <div style="position:absolute;left:56px;top:34px;font-size:10px;color:#8A93A6">Signup / mobile <span style="color:#B4BAC9">· 390 × 844</span></div>
+          <div style="position:absolute;left:56px;top:50px;width:200px;height:330px;background:#fff;border-radius:4px;box-shadow:0 0 0 1px #E2E5EC,0 8px 24px rgba(23,26,33,.10);padding:16px 14px">
+            <div style="font-size:12px;font-weight:700;color:#171A21">Create account</div>
+            <div style="font-size:9px;color:#7A8194;margin:4px 0 12px">Use your work email.</div>
+            <div style="height:24px;background:#F1F3F7;border-radius:3px;margin-bottom:8px"></div>
+            <div style="height:24px;background:#F1F3F7;border-radius:3px;margin-bottom:12px"></div>
+            <div style="height:26px;background:#5B34D6;border-radius:3px;display:grid;place-items:center;font-size:10px;font-weight:600;color:#fff">Continue</div>
+          </div>
+          <div style="position:absolute;left:290px;top:74px;width:156px;height:44px;background:#fff;border:1px solid #D8DCE6;border-radius:6px;display:flex;align-items:center;gap:8px;padding:0 12px;box-shadow:0 1px 2px rgba(23,26,33,.06)"><span style="width:6px;height:6px;border-radius:999px;background:#2E9E56"></span><span style="font-size:12px;color:#171A21">App opened</span></div>
+          <div style="position:absolute;left:502px;top:74px;width:180px;height:46px;background:#fff;border:1.5px solid #5B34D6;border-radius:6px;display:flex;align-items:center;gap:8px;padding:0 12px;box-shadow:0 0 0 3px rgba(91,52,214,.12)">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#5228C7" stroke-width="1.8" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path></svg>
+            <span style="font-size:12px;color:#171A21">Has account?</span>
+            <span style="position:absolute;left:50%;top:-3.5px;transform:translateX(-50%);width:7px;height:7px;background:#fff;border:1.5px solid #5B34D6;border-radius:999px"></span>
+            <span style="position:absolute;left:50%;bottom:-3.5px;transform:translateX(-50%);width:7px;height:7px;background:#fff;border:1.5px solid #5B34D6;border-radius:999px"></span>
+            <span style="position:absolute;top:50%;left:-3.5px;transform:translateY(-50%);width:7px;height:7px;background:#fff;border:1.5px solid #5B34D6;border-radius:999px"></span>
+            <span style="position:absolute;top:50%;right:-3.5px;transform:translateY(-50%);width:7px;height:7px;background:#fff;border:1.5px solid #5B34D6;border-radius:999px"></span>
+          </div>
+          <div style="position:absolute;left:517px;top:176px;width:150px;height:44px;background:#fff;border:1px solid #D8DCE6;border-radius:6px;display:flex;align-items:center;padding:0 12px;box-shadow:0 1px 2px rgba(23,26,33,.06)"><span style="font-size:12px;color:#171A21">Sign in</span></div>
+          <div style="position:absolute;left:290px;top:176px;width:174px;height:44px;background:#fff;border:1px solid #D8DCE6;border-radius:6px;display:flex;align-items:center;gap:8px;padding:0 12px;box-shadow:0 1px 2px rgba(23,26,33,.06)"><span style="font-size:12px;color:#171A21">Create account</span><span style="margin-left:auto;font-size:9px;color:#8A93A6;border:1px solid #E2E5EC;border-radius:3px;padding:1px 5px">frame ↗</span></div>
+          <div style="position:absolute;left:598px;top:130px;font-size:10px;font-weight:600;color:#5228C7;background:#EDEFF4;padding:1px 6px;border:1px solid rgba(91,52,214,.35);border-radius:3px">no</div>
+          <div style="position:absolute;left:500px;top:270px;width:140px;height:104px;background:#F6D96B;border-radius:2px;transform:rotate(-1.5deg);box-shadow:0 6px 14px rgba(23,26,33,.18);padding:11px;font-size:10.5px;line-height:1.45;color:#3B3410">Magic link instead of a password?<div style="position:absolute;left:11px;bottom:9px;font-size:9px;font-weight:600;color:#8A7A2E">mira</div></div>
+          <div style="position:absolute;left:16px;bottom:12px;height:28px;display:flex;align-items:center;gap:10px;padding:0 10px;background:#fff;border:1px solid #E2E5EC;border-radius:6px;font-size:11.5px;color:#4C5468;box-shadow:0 1px 2px rgba(23,26,33,.06)"><span style="color:#8A93A6">−</span><span style="font-weight:500;color:#171A21">82%</span><span style="color:#8A93A6">+</span></div>
+        </div>
+        <div style="width:300px;flex:none;background:#FAFBFC;border-left:1px solid #E2E5EC;display:flex;flex-direction:column;font-size:12px">
+          <div style="display:flex;flex:none;border-bottom:1px solid #E2E5EC;font-size:11.5px;font-weight:500">
+            <span style="padding:10px 0 9px;margin-left:14px;color:#171A21;box-shadow:inset 0 -2px 0 #5B34D6">System</span>
+            <span style="padding:10px 0 9px;margin-left:16px;color:#8A93A6">Inspect</span>
+            <span style="padding:10px 0 9px;margin-left:16px;color:#8A93A6">Stack</span>
+            <span style="padding:10px 14px 9px 16px;color:#8A93A6;margin-left:auto">✦</span>
+          </div>
+          <div style="padding:12px 14px 10px;display:flex;align-items:center;gap:8px">
+            <span style="font-size:13px;font-weight:600;color:#171A21">Acme DS</span>
+            <span style="font-size:10px;font-weight:500;color:#5228C7;background:rgba(91,52,214,.10);border-radius:999px;padding:2px 8px">v1.3 ▾</span>
+          </div>
+          <div style="padding:0 14px;overflow:hidden;flex:1">
+            <div style="padding:8px 0 6px;font-size:10px;font-weight:600;letter-spacing:.08em;color:#8A93A6">▾ BRAND KIT</div>
+            <div style="display:flex;align-items:center;gap:6px;padding:2px 0 6px"><span style="width:16px;height:16px;border-radius:3px;background:#5B34D6"></span><span style="width:16px;height:16px;border-radius:3px;background:#171A21"></span><span style="width:16px;height:16px;border-radius:3px;background:#fff;border:1px solid #E2E5EC"></span><span style="width:16px;height:16px;border-radius:3px;background:#1D8F7E"></span><span style="width:16px;height:16px;border-radius:3px;background:#B97F14"></span><span style="font-size:10.5px;color:#8A93A6;margin-left:4px">Inter · 4pt grid</span></div>
+            <div style="padding:10px 0 6px;font-size:10px;font-weight:600;letter-spacing:.08em;color:#8A93A6">▾ ATOMS <span style="float:right;font-weight:500">12</span></div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+              <div style="background:#fff;border:1px solid #E2E5EC;border-radius:6px;padding:10px 10px 8px;box-shadow:0 1px 2px rgba(23,26,33,.05)"><div style="height:36px;display:grid;place-items:center"><span style="background:#5B34D6;color:#fff;font-size:9px;font-weight:600;padding:4px 12px;border-radius:3px">Button</span></div><div style="font-size:10.5px;color:#4C5468;margin-top:6px">Button</div></div>
+              <div style="background:#fff;border:1px solid #E2E5EC;border-radius:6px;padding:10px 10px 8px;box-shadow:0 1px 2px rgba(23,26,33,.05)"><div style="height:36px;display:grid;place-items:center"><span style="width:82%;height:18px;background:#F1F3F7;border:1px solid #D8DCE6;border-radius:3px"></span></div><div style="font-size:10.5px;color:#4C5468;margin-top:6px">Input</div></div>
+            </div>
+            <div style="padding:10px 0 2px;font-size:10px;font-weight:600;letter-spacing:.08em;color:#8A93A6">▸ MOLECULES <span style="float:right;font-weight:500">8</span></div>
+            <div style="padding:8px 0 2px;font-size:10px;font-weight:600;letter-spacing:.08em;color:#8A93A6">▸ ORGANISMS <span style="float:right;font-weight:500">5</span></div>
+            <div style="padding:8px 0;font-size:10px;font-weight:600;letter-spacing:.08em;color:#8A93A6">▸ TEMPLATES · PAGES <span style="float:right;font-weight:500">7</span></div>
+          </div>
+          <div style="flex:none;padding:10px 14px;border-top:1px solid #E2E5EC"><span style="display:flex;align-items:center;height:30px;padding:0 10px;border:1px dashed #C9CEDA;border-radius:5px;font-size:11.5px;color:#4C5468">+ New component</span></div>
+        </div>
+      </div>
+      <div style="height:26px;flex:none;background:#FAFBFC;border-top:1px solid #E2E5EC;display:flex;align-items:center;gap:16px;padding:0 14px;font-size:10.5px;color:#8A93A6">
+        <span>MIT license</span><span style="color:#5228C7">GitHub ↗</span>
+        <span style="margin:0 auto">Drag from a port to connect · ⌥ drag duplicates</span>
+        <span>Snap on</span><span>Grid 24</span><span style="color:#4C5468">82%</span>
+      </div>
+    </div>
+  
+    <div style="display:flex;align-items:baseline;gap:10px;margin:40px 0 10px"><span class="tag tag-outline">Equal · Dark</span><span style="font-size:12px;color:var(--color-neutral-600)">One <span style="font-family:'JetBrains Mono',monospace;font-size:11px">data-theme="dark"</span> flip — for color-critical work and long sessions on an unlit surround.</span></div>
+    <div style="position:relative;width:100%;min-width:1100px;height:812px;background:#0C0E12;border:1px solid var(--color-neutral-400);box-shadow:var(--shadow-lg);display:flex;flex-direction:column;font-family:Inter,system-ui,sans-serif;overflow:hidden" data-screen-label="Hero — editor dark">
+      <div style="height:48px;flex:none;background:#14161B;border-bottom:1px solid #262A33;display:flex;align-items:center;padding:0 12px;gap:10px">
+        <div style="display:flex;align-items:center;gap:8px;flex:none">
+          <svg width="20" height="20" viewBox="0 0 32 32" fill="none"><path d="M9 5v22M9 5h8q8 0 8 8v6q0 8-8 8H9" stroke="#9F7DFF" stroke-width="3.2" fill="none" stroke-linecap="round" stroke-linejoin="round"></path><rect x="22.2" y="13.2" width="5.6" height="5.6" transform="rotate(45 25 16)" fill="#14161B" stroke="#9F7DFF" stroke-width="2"></rect></svg>
+          <span style="font-size:13px;font-weight:700;letter-spacing:-.02em;color:#E9EBF1">draften</span>
+          <span style="font-size:10px;font-weight:500;color:#6C7484;border:1px solid #262A33;border-radius:999px;padding:1px 7px">v0.4 · MIT</span>
+        </div>
+        <div style="width:1px;height:20px;background:#262A33"></div>
+        <div style="font-size:12px;color:#6C7484;white-space:nowrap">Acme App <span style="color:#3A4150">▸</span> Onboarding <span style="color:#3A4150">▸</span> <span style="color:#E9EBF1;font-weight:500">Welcome flow</span></div>
+        <div style="display:flex;align-items:center;gap:2px;margin:0 auto">
+          <div style="width:32px;height:32px;border-radius:6px;background:#7048E8;display:grid;place-items:center" title="Select — V"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linejoin="round"><path d="m3 3 7.07 16.97 2.51-7.39 7.39-2.51L3 3z"></path></svg></div>
+          <div style="width:1px;height:18px;background:#262A33;margin:0 4px"></div>
+          <div style="width:32px;height:32px;border-radius:6px;display:grid;place-items:center" title="Frame — F"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#A9B0C0" stroke-width="1.8"><line x1="22" y1="6" x2="2" y2="6"></line><line x1="22" y1="18" x2="2" y2="18"></line><line x1="6" y1="2" x2="6" y2="22"></line><line x1="18" y1="2" x2="18" y2="22"></line></svg></div>
+          <div style="width:32px;height:32px;border-radius:6px;display:grid;place-items:center" title="Rectangle — R"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#A9B0C0" stroke-width="1.8"><rect x="4" y="4" width="16" height="16" rx="1"></rect></svg></div>
+          <div style="width:32px;height:32px;border-radius:6px;display:grid;place-items:center" title="Ellipse — O"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#A9B0C0" stroke-width="1.8"><circle cx="12" cy="12" r="9"></circle></svg></div>
+          <div style="width:32px;height:32px;border-radius:6px;display:grid;place-items:center" title="Text — T"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#A9B0C0" stroke-width="1.8" stroke-linecap="round"><polyline points="4 7 4 4 20 4 20 7"></polyline><line x1="9" y1="20" x2="15" y2="20"></line><line x1="12" y1="4" x2="12" y2="20"></line></svg></div>
+          <div style="width:1px;height:18px;background:#262A33;margin:0 4px"></div>
+          <div style="width:32px;height:32px;border-radius:6px;display:grid;place-items:center" title="Shape — S"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#A9B0C0" stroke-width="1.8" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path></svg></div>
+          <div style="width:32px;height:32px;border-radius:6px;display:grid;place-items:center" title="Connector — C"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#A9B0C0" stroke-width="1.8"><circle cx="19" cy="5" r="2"></circle><circle cx="5" cy="19" r="2"></circle><path d="M5 17A12 12 0 0 1 17 5"></path></svg></div>
+          <div style="width:32px;height:32px;border-radius:6px;display:grid;place-items:center" title="Sticky — N"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#A9B0C0" stroke-width="1.8" stroke-linejoin="round"><path d="M16 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h9l7-7V5a2 2 0 0 0-2-2Z"></path><path d="M15 21v-5a2 2 0 0 1 2-2h5"></path></svg></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;flex:none">
+          <div style="display:flex;background:#0F1116;border:1px solid #262A33;border-radius:6px;padding:2px;font-size:11.5px;font-weight:500">
+            <span style="padding:4px 12px;border-radius:4px;background:#2A2F3A;color:#E9EBF1">Design</span>
+            <span style="padding:4px 12px;color:#6C7484">Split</span>
+            <span style="padding:4px 12px;color:#6C7484">Code</span>
+          </div>
+          <div style="height:28px;display:flex;align-items:center;gap:6px;padding:0 10px;border:1px solid #262A33;border-radius:6px;font-size:11.5px;color:#A9B0C0"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#A9B0C0" stroke-width="1.8"><line x1="6" y1="3" x2="6" y2="15"></line><circle cx="18" cy="6" r="3"></circle><circle cx="6" cy="18" r="3"></circle><path d="M18 9a9 9 0 0 1-9 9"></path></svg>main <span style="color:#B49CFF;font-weight:600">↑2</span></div>
+          <div style="height:28px;display:flex;align-items:center;gap:6px;padding:0 12px;border-radius:6px;background:rgba(112,72,232,.14);border:1px solid rgba(112,72,232,.4);color:#B49CFF;font-size:12px;font-weight:600">✦ AI</div>
+        </div>
+      </div>
+      <div style="flex:1;display:flex;min-height:0">
+        <div style="width:260px;flex:none;background:#101216;border-right:1px solid #262A33;display:flex;flex-direction:column;font-size:12px">
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 12px 8px"><span style="font-size:10px;font-weight:600;letter-spacing:.08em;color:#6C7484">BOARDS</span><span style="color:#6C7484;font-size:14px;line-height:1">+</span></div>
+          <div style="padding:0 6px">
+            <div style="display:flex;align-items:center;gap:7px;height:28px;padding:0 8px;color:#A9B0C0"><span style="color:#6C7484;font-size:9px">▾</span><span style="width:7px;height:7px;border-radius:999px;background:#7048E8;flex:none"></span><span style="color:#E9EBF1;font-weight:500">Acme App</span></div>
+            <div style="display:flex;align-items:center;gap:7px;height:28px;padding:0 8px 0 22px;color:#A9B0C0"><span style="color:#6C7484;font-size:9px">▾</span><span style="width:7px;height:7px;border-radius:999px;background:#4CC26E;flex:none"></span><span>Onboarding</span></div>
+            <div style="display:flex;align-items:center;gap:7px;height:28px;padding:0 8px 0 38px;background:#211B33;box-shadow:inset 2px 0 0 #7048E8;color:#E9EBF1;font-weight:500"><span style="width:7px;height:7px;border-radius:999px;background:#4CC26E;flex:none"></span><span>Welcome flow</span><span style="margin-left:auto;font-size:10px;color:#6C7484">12</span></div>
+            <div style="display:flex;align-items:center;gap:7px;height:28px;padding:0 8px 0 38px;color:#A9B0C0"><span style="width:7px;height:7px;border-radius:999px;background:#E3A73C;flex:none"></span><span>Journey map</span></div>
+            <div style="display:flex;align-items:center;gap:7px;height:28px;padding:0 8px 0 38px;color:#A9B0C0"><span style="width:7px;height:7px;border-radius:999px;background:#7048E8;flex:none"></span><span>Sign-up wireframes</span></div>
+            <div style="display:flex;align-items:center;gap:7px;height:28px;padding:0 8px 0 22px;color:#A9B0C0"><span style="width:7px;height:7px;border-radius:999px;background:#2FBFAA;flex:none"></span><span>Service architecture</span></div>
+            <div style="display:flex;align-items:center;gap:7px;height:28px;padding:0 8px 0 22px;color:#A9B0C0"><span style="width:7px;height:7px;border-radius:999px;background:#4CA0E8;flex:none"></span><span>Ideas</span></div>
+            <div style="display:flex;align-items:center;gap:7px;height:28px;padding:0 8px 0 22px;color:#A9B0C0"><span style="width:7px;height:7px;border-radius:999px;background:#D961B0;flex:none"></span><span>Pitch deck</span></div>
+            <div style="display:flex;align-items:center;gap:7px;height:28px;padding:0 8px 0 22px;color:#A9B0C0"><span style="width:7px;height:7px;border-radius:999px;background:#8A97A8;flex:none"></span><span>Product spec</span></div>
+          </div>
+          <div style="height:1px;background:#262A33;margin:10px 12px"></div>
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:2px 12px 8px"><span style="font-size:10px;font-weight:600;letter-spacing:.08em;color:#6C7484">LAYERS</span><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#6C7484" stroke-width="1.8"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg></div>
+          <div style="padding:0 6px;overflow:hidden">
+            <div style="display:flex;align-items:center;gap:7px;height:26px;padding:0 8px;color:#A9B0C0"><span style="color:#6C7484;font-size:9px">▾</span><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#6C7484" stroke-width="1.8"><line x1="22" y1="6" x2="2" y2="6"></line><line x1="22" y1="18" x2="2" y2="18"></line><line x1="6" y1="2" x2="6" y2="22"></line><line x1="18" y1="2" x2="18" y2="22"></line></svg><span>Signup / mobile</span></div>
+            <div style="display:flex;align-items:center;gap:7px;height:26px;padding:0 8px 0 24px;color:#A9B0C0"><span style="font-size:10px;color:#6C7484;font-weight:600">T</span><span>Create account</span></div>
+            <div style="display:flex;align-items:center;gap:7px;height:26px;padding:0 8px 0 24px;border-radius:5px;background:#171A20;color:#A9B0C0"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#6C7484" stroke-width="1.8"><rect x="4" y="4" width="16" height="16" rx="1"></rect></svg><span>Email field</span><span style="margin-left:auto;display:flex;gap:6px"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#6C7484" stroke-width="1.8"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"></path><circle cx="12" cy="12" r="3"></circle></svg><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#6C7484" stroke-width="1.8"><rect x="3" y="11" width="18" height="11" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg></span></div>
+            <div style="display:flex;align-items:center;gap:7px;height:26px;padding:0 8px 0 24px;color:#4C5464"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#4C5464" stroke-width="1.8"><rect x="4" y="4" width="16" height="16" rx="1"></rect></svg><span>Continue button</span><svg style="margin-left:auto" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#4C5464" stroke-width="1.8"><rect x="3" y="11" width="18" height="11" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg></div>
+            <div style="display:flex;align-items:center;gap:7px;height:26px;padding:0 8px;background:#211B33;box-shadow:inset 2px 0 0 #7048E8;color:#E9EBF1;font-weight:500"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#B49CFF" stroke-width="1.8" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path></svg><span>Has account?</span><span style="margin-left:auto;font-size:9px;font-weight:600;color:#B49CFF;background:rgba(112,72,232,.16);border-radius:999px;padding:1px 6px">ⓘ 1</span></div>
+            <div style="display:flex;align-items:center;gap:7px;height:26px;padding:0 8px 0 24px;color:#A9B0C0"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#6C7484" stroke-width="1.8"><circle cx="19" cy="5" r="2"></circle><circle cx="5" cy="19" r="2"></circle><path d="M5 17A12 12 0 0 1 17 5"></path></svg><span>no → Create account</span></div>
+            <div style="display:flex;align-items:center;gap:7px;height:26px;padding:0 8px;color:#A9B0C0"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#6C7484" stroke-width="1.8" stroke-linejoin="round"><path d="M16 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h9l7-7V5a2 2 0 0 0-2-2Z"></path></svg><span>Magic link?</span></div>
+          </div>
+          <div style="margin-top:auto;padding:10px 12px;border-top:1px solid #262A33;display:flex;align-items:center;gap:8px;font-size:10.5px;color:#6C7484"><span style="width:6px;height:6px;border-radius:999px;background:#3FBF7F"></span>All changes saved locally</div>
+        </div>
+        <div style="flex:1;position:relative;background:#0C0E12;background-image:radial-gradient(circle,#1B1F27 1px,transparent 1px);background-size:24px 24px;overflow:hidden;min-width:0">
+          <svg style="position:absolute;inset:0;width:100%;height:100%" fill="none">
+            <defs>
+              <marker id="arrD" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 1.5 8 5 0 8.5Z" fill="#57607A"></path></marker>
+              <marker id="arrDa" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 1.5 8 5 0 8.5Z" fill="#7048E8"></path></marker>
+            </defs>
+            <path d="M496 112 L552 112" stroke="#57607A" stroke-width="1.5" marker-end="url(#arrD)"></path>
+            <path d="M642 136 L642 192" stroke="#57607A" stroke-width="1.5" marker-end="url(#arrD)"></path>
+            <path d="M642 136 L642 156 Q642 164 634 164 L437 164 Q429 164 429 172 L429 192" stroke="#7048E8" stroke-width="1.7" marker-end="url(#arrDa)"></path>
+            <path d="M340 218 L296 218" stroke="#57607A" stroke-width="1.5" marker-end="url(#arrD)"></path>
+            <rect x="524.5" y="159.5" width="9" height="9" fill="#0C0E12" stroke="#7048E8" stroke-width="1.5"></rect>
+          </svg>
+          <div style="position:absolute;left:64px;top:40px;font-size:10px;color:#6C7484">Signup / mobile <span style="color:#4C5464">· 390 × 844</span></div>
+          <div style="position:absolute;left:64px;top:56px;width:216px;height:400px;background:#fff;border-radius:4px;box-shadow:0 0 0 1px #262A33,0 8px 28px rgba(0,0,0,.45);padding:18px 16px">
+            <div style="font-size:13px;font-weight:700;color:#171A21;letter-spacing:-.01em">Create account</div>
+            <div style="font-size:9px;color:#7A8194;margin:4px 0 14px">Use your work email.</div>
+            <div style="height:26px;background:#F1F3F7;border-radius:3px;display:flex;align-items:center;padding:0 9px;font-size:9px;color:#9AA1B2;margin-bottom:8px">Email</div>
+            <div style="height:26px;background:#F1F3F7;border-radius:3px;display:flex;align-items:center;padding:0 9px;font-size:9px;color:#9AA1B2;margin-bottom:12px">Password</div>
+            <div style="height:28px;background:#7048E8;border-radius:3px;display:grid;place-items:center;font-size:10px;font-weight:600;color:#fff">Continue</div>
+            <div style="font-size:9px;color:#5B34D6;margin-top:10px">Sign in instead</div>
+          </div>
+          <div style="position:absolute;left:340px;top:90px;width:156px;height:44px;background:#171B22;border:1px solid #2C3140;border-radius:6px;display:flex;align-items:center;gap:8px;padding:0 12px"><span style="width:6px;height:6px;border-radius:999px;background:#4CC26E"></span><span style="font-size:12px;color:#E9EBF1">App opened</span></div>
+          <div style="position:absolute;left:552px;top:90px;width:180px;height:46px;background:#171B22;border:1.5px solid #7048E8;border-radius:6px;display:flex;align-items:center;gap:8px;padding:0 12px;box-shadow:0 0 0 3px rgba(112,72,232,.15)">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#B49CFF" stroke-width="1.8" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path></svg>
+            <span style="font-size:12px;color:#E9EBF1">Has account?</span>
+            <span style="position:absolute;left:-4.5px;top:-4.5px;width:8px;height:8px;background:#fff;border:1.5px solid #7048E8;border-radius:1.5px"></span>
+            <span style="position:absolute;right:-4.5px;top:-4.5px;width:8px;height:8px;background:#fff;border:1.5px solid #7048E8;border-radius:1.5px"></span>
+            <span style="position:absolute;left:-4.5px;bottom:-4.5px;width:8px;height:8px;background:#fff;border:1.5px solid #7048E8;border-radius:1.5px"></span>
+            <span style="position:absolute;right:-4.5px;bottom:-4.5px;width:8px;height:8px;background:#fff;border:1.5px solid #7048E8;border-radius:1.5px"></span>
+            <span style="position:absolute;left:50%;top:-3.5px;transform:translateX(-50%);width:7px;height:7px;background:#0C0E12;border:1.5px solid #B49CFF;border-radius:999px"></span>
+            <span style="position:absolute;left:50%;bottom:-3.5px;transform:translateX(-50%);width:7px;height:7px;background:#0C0E12;border:1.5px solid #B49CFF;border-radius:999px"></span>
+            <span style="position:absolute;top:50%;left:-3.5px;transform:translateY(-50%);width:7px;height:7px;background:#0C0E12;border:1.5px solid #B49CFF;border-radius:999px"></span>
+            <span style="position:absolute;top:50%;right:-3.5px;transform:translateY(-50%);width:7px;height:7px;background:#0C0E12;border:1.5px solid #B49CFF;border-radius:999px"></span>
+            <span style="position:absolute;right:-8px;top:-24px;font-size:9px;font-weight:600;color:#B49CFF;background:rgba(112,72,232,.16);border:1px solid rgba(112,72,232,.35);border-radius:999px;padding:2px 7px">ⓘ mira: split into 2 steps?</span>
+          </div>
+          <div style="position:absolute;left:567px;top:192px;width:150px;height:44px;background:#171B22;border:1px solid #2C3140;border-radius:6px;display:flex;align-items:center;padding:0 12px"><span style="font-size:12px;color:#E9EBF1">Sign in</span></div>
+          <div style="position:absolute;left:340px;top:192px;width:174px;height:44px;background:#171B22;border:1px solid #2C3140;border-radius:6px;display:flex;align-items:center;gap:8px;padding:0 12px"><span style="font-size:12px;color:#E9EBF1">Create account</span><span style="margin-left:auto;font-size:9px;color:#6C7484;border:1px solid #2C3140;border-radius:3px;padding:1px 5px">frame ↗</span></div>
+          <div style="position:absolute;left:648px;top:146px;font-size:10px;font-weight:600;color:#B49CFF;background:#0C0E12;padding:1px 6px;border:1px solid rgba(112,72,232,.4);border-radius:3px">no</div>
+          <div style="position:absolute;left:652px;top:166px;font-size:10px;color:#6C7484;background:#0C0E12;padding:1px 5px">yes</div>
+          <div style="position:absolute;left:560px;top:296px;width:148px;height:114px;background:#F6D96B;border-radius:2px;transform:rotate(-1.5deg);box-shadow:0 6px 16px rgba(0,0,0,.35);padding:12px;font-size:11px;line-height:1.45;color:#3B3410">Magic link instead of a password?<div style="position:absolute;left:12px;bottom:10px;font-size:9px;font-weight:600;color:#8A7A2E">mira</div></div>
+          <div style="position:absolute;left:16px;bottom:12px;height:28px;display:flex;align-items:center;gap:10px;padding:0 10px;background:#14161B;border:1px solid #262A33;border-radius:6px;font-size:11.5px;color:#A9B0C0"><span style="color:#6C7484">−</span><span style="font-weight:500;color:#E9EBF1">82%</span><span style="color:#6C7484">+</span></div>
+        </div>
+        <div style="width:300px;flex:none;background:#101216;border-left:1px solid #262A33;display:flex;flex-direction:column;font-size:12px">
+          <div style="display:flex;flex:none;border-bottom:1px solid #262A33;font-size:11.5px;font-weight:500">
+            <span style="padding:10px 0 9px;margin-left:14px;color:#E9EBF1;box-shadow:inset 0 -2px 0 #7048E8">System</span>
+            <span style="padding:10px 0 9px;margin-left:16px;color:#6C7484">Inspect <span style="font-size:9px;color:#B49CFF">●</span></span>
+            <span style="padding:10px 0 9px;margin-left:16px;color:#6C7484">Stack</span>
+            <span style="padding:10px 14px 9px 16px;color:#6C7484;margin-left:auto">✦</span>
+          </div>
+          <div style="padding:12px 14px 10px;display:flex;align-items:center;gap:8px">
+            <span style="font-size:13px;font-weight:600;color:#E9EBF1">Acme DS</span>
+            <span style="font-size:10px;font-weight:500;color:#B49CFF;background:rgba(112,72,232,.14);border-radius:999px;padding:2px 8px">v1.3 ▾</span>
+            <svg style="margin-left:auto" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#6C7484" stroke-width="1.8"><circle cx="11" cy="11" r="7"></circle><path d="m20 20-3.5-3.5"></path></svg>
+          </div>
+          <div style="padding:0 14px;overflow:hidden;flex:1">
+            <div style="display:flex;align-items:center;gap:6px;padding:8px 0 6px;font-size:10px;font-weight:600;letter-spacing:.08em;color:#6C7484"><span style="font-size:8px">▾</span>BRAND KIT</div>
+            <div style="display:flex;align-items:center;gap:6px;padding:2px 0 6px">
+              <span style="width:16px;height:16px;border-radius:3px;background:#7048E8"></span><span style="width:16px;height:16px;border-radius:3px;background:#171A21;border:1px solid #262A33"></span><span style="width:16px;height:16px;border-radius:3px;background:#E9EBF1"></span><span style="width:16px;height:16px;border-radius:3px;background:#2FBFAA"></span><span style="width:16px;height:16px;border-radius:3px;background:#E3A73C"></span>
+              <span style="font-size:10.5px;color:#6C7484;margin-left:4px">Inter · 4pt grid</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:6px;padding:10px 0 6px;font-size:10px;font-weight:600;letter-spacing:.08em;color:#6C7484"><span style="font-size:8px">▾</span>TOKENS<span style="margin-left:auto;font-weight:500">51</span></div>
+            <div style="display:flex;align-items:center;gap:8px;height:24px;font-size:11px;color:#A9B0C0"><span style="width:12px;height:12px;border-radius:3px;background:#7048E8"></span><span style="font-family:'JetBrains Mono',monospace;font-size:10.5px">color.primary</span><span style="margin-left:auto;color:#6C7484;font-family:'JetBrains Mono',monospace;font-size:10px">#7048E8</span></div>
+            <div style="display:flex;align-items:center;gap:8px;height:24px;font-size:11px;color:#A9B0C0"><span style="width:12px;height:12px;border-radius:3px;border:1px solid #333947"></span><span style="font-family:'JetBrains Mono',monospace;font-size:10.5px">radius.control</span><span style="margin-left:auto;color:#6C7484;font-family:'JetBrains Mono',monospace;font-size:10px">4px</span></div>
+            <div style="display:flex;align-items:center;gap:6px;padding:10px 0 2px;font-size:10px;font-weight:600;letter-spacing:.08em;color:#6C7484"><span style="font-size:8px">▸</span>ICONS<span style="margin-left:auto;font-weight:500">1,540</span></div>
+            <div style="display:flex;align-items:center;gap:6px;padding:12px 0 8px;font-size:10px;font-weight:600;letter-spacing:.08em;color:#6C7484"><span style="font-size:8px">▾</span>ATOMS<span style="margin-left:auto;font-weight:500">12</span></div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+              <div style="background:#171A20;border:1px solid #262A33;border-radius:6px;padding:10px 10px 8px"><div style="height:36px;display:grid;place-items:center"><span style="background:#7048E8;color:#fff;font-size:9px;font-weight:600;padding:4px 12px;border-radius:3px">Button</span></div><div style="font-size:10.5px;color:#A9B0C0;margin-top:6px">Button</div></div>
+              <div style="background:#171A20;border:1px solid #262A33;border-radius:6px;padding:10px 10px 8px"><div style="height:36px;display:grid;place-items:center"><span style="width:82%;height:18px;background:#0F1116;border:1px solid #333947;border-radius:3px;display:flex;align-items:center;padding:0 6px;font-size:8px;color:#6C7484">Email…</span></div><div style="font-size:10.5px;color:#A9B0C0;margin-top:6px">Input</div></div>
+            </div>
+            <div style="font-size:10.5px;color:#6C7484;padding:6px 0 2px">10 more…</div>
+            <div style="display:flex;align-items:center;gap:6px;padding:10px 0 8px;font-size:10px;font-weight:600;letter-spacing:.08em;color:#6C7484"><span style="font-size:8px">▾</span>MOLECULES<span style="margin-left:auto;font-weight:500">8</span></div>
+            <div style="background:#171A20;border:1px solid #262A33;border-radius:6px;padding:10px"><div style="display:flex;flex-direction:column;gap:4px"><span style="font-size:8px;color:#6C7484">Work email</span><span style="width:100%;height:16px;background:#0F1116;border:1px solid #333947;border-radius:3px"></span></div><div style="font-size:10.5px;color:#A9B0C0;margin-top:7px">Form field</div></div>
+            <div style="display:flex;align-items:center;gap:6px;padding:10px 0 2px;font-size:10px;font-weight:600;letter-spacing:.08em;color:#6C7484"><span style="font-size:8px">▸</span>ORGANISMS<span style="margin-left:auto;font-weight:500">5</span></div>
+            <div style="display:flex;align-items:center;gap:6px;padding:8px 0 2px;font-size:10px;font-weight:600;letter-spacing:.08em;color:#6C7484"><span style="font-size:8px">▸</span>TEMPLATES<span style="margin-left:auto;font-weight:500">3</span></div>
+            <div style="display:flex;align-items:center;gap:6px;padding:8px 0;font-size:10px;font-weight:600;letter-spacing:.08em;color:#6C7484"><span style="font-size:8px">▸</span>PAGES<span style="margin-left:auto;font-weight:500">4</span></div>
+          </div>
+          <div style="flex:none;padding:10px 14px;border-top:1px solid #262A33"><span style="display:flex;align-items:center;height:30px;padding:0 10px;border:1px dashed #333947;border-radius:5px;font-size:11.5px;color:#A9B0C0">+ New component</span></div>
+        </div>
+      </div>
+      <div style="height:26px;flex:none;background:#101216;border-top:1px solid #262A33;display:flex;align-items:center;gap:16px;padding:0 14px;font-size:10.5px;color:#6C7484">
+        <span>MIT license</span><span style="color:#B49CFF">GitHub ↗</span>
+        <span style="margin:0 auto">Drag from a port to connect · ⌥ drag duplicates</span>
+        <span>Snap on</span><span>Grid 24</span><span style="color:#A9B0C0">82%</span>
+      </div>
+      <sc-if value="{{ showAnnotations }}" hint-placeholder-val="{{ true }}">
+        <div style="position:absolute;inset:0;pointer-events:none;font-family:var(--font-heading)">
+          <span style="position:absolute;left:47%;top:38px;width:20px;height:20px;background:var(--color-accent);color:#fff;font-size:11px;font-weight:800;display:grid;place-items:center;box-shadow:0 2px 8px rgba(0,0,0,.5)">1</span>
+          <span style="position:absolute;left:250px;top:110px;width:20px;height:20px;background:var(--color-accent);color:#fff;font-size:11px;font-weight:800;display:grid;place-items:center;box-shadow:0 2px 8px rgba(0,0,0,.5)">2</span>
+          <span style="position:absolute;left:250px;top:492px;width:20px;height:20px;background:var(--color-accent);color:#fff;font-size:11px;font-weight:800;display:grid;place-items:center;box-shadow:0 2px 8px rgba(0,0,0,.5)">3</span>
+          <span style="position:absolute;left:46%;top:56%;width:20px;height:20px;background:var(--color-accent);color:#fff;font-size:11px;font-weight:800;display:grid;place-items:center;box-shadow:0 2px 8px rgba(0,0,0,.5)">4</span>
+          <span style="position:absolute;right:290px;top:64px;width:20px;height:20px;background:var(--color-accent);color:#fff;font-size:11px;font-weight:800;display:grid;place-items:center;box-shadow:0 2px 8px rgba(0,0,0,.5)">5</span>
+          <span style="position:absolute;right:220px;top:32px;width:20px;height:20px;background:var(--color-accent);color:#fff;font-size:11px;font-weight:800;display:grid;place-items:center;box-shadow:0 2px 8px rgba(0,0,0,.5)">6</span>
+          <span style="position:absolute;right:108px;top:32px;width:20px;height:20px;background:var(--color-accent);color:#fff;font-size:11px;font-weight:800;display:grid;place-items:center;box-shadow:0 2px 8px rgba(0,0,0,.5)">7</span>
+          <span style="position:absolute;right:28px;top:32px;width:20px;height:20px;background:var(--color-accent);color:#fff;font-size:11px;font-weight:800;display:grid;place-items:center;box-shadow:0 2px 8px rgba(0,0,0,.5)">8</span>
+          <span style="position:absolute;left:210px;bottom:3px;width:20px;height:20px;background:var(--color-accent);color:#fff;font-size:11px;font-weight:800;display:grid;place-items:center;box-shadow:0 2px 8px rgba(0,0,0,.5)">9</span>
+        </div>
+      </sc-if>
+    </div>
+    <div style="display:flex;flex-wrap:wrap;gap:8px 24px;margin-top:14px;font-size:11.5px;color:var(--color-neutral-700)">
+      <span><strong style="color:var(--color-accent);font-family:var(--font-heading)">1</strong> Unified tool row</span>
+      <span><strong style="color:var(--color-accent);font-family:var(--font-heading)">2</strong> Board tree — nestable, kind dots</span>
+      <span><strong style="color:var(--color-accent);font-family:var(--font-heading)">3</strong> Layers — scoped to board, note badge</span>
+      <span><strong style="color:var(--color-accent);font-family:var(--font-heading)">4</strong> One canvas — frame + flow + sticky + note</span>
+      <span><strong style="color:var(--color-accent);font-family:var(--font-heading)">5</strong> Design System spine, versioned</span>
+      <span><strong style="color:var(--color-accent);font-family:var(--font-heading)">6</strong> Design · Split · Code</span>
+      <span><strong style="color:var(--color-accent);font-family:var(--font-heading)">7</strong> Git sync chip</span>
+      <span><strong style="color:var(--color-accent);font-family:var(--font-heading)">8</strong> ✦ Assistant</span>
+      <span><strong style="color:var(--color-accent);font-family:var(--font-heading)">9</strong> Status — MIT · GitHub · hints · zoom</span>
+    </div>
+
+    <!-- hero mockup (light) -->
+    </section>
+
+  <!-- ══ 02 · Wireframe ══ -->
+  <section style="border-top:2px solid var(--color-divider);padding:44px 0 56px" data-screen-label="02 Wireframe">
+    <div style="font-family:var(--font-heading);font-weight:800;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--color-accent);margin-bottom:8px">02 · Wireframe</div>
+    <h2 style="margin:0 0 20px">The editor at 1440</h2>
+    <pre style="margin:0;background:var(--color-neutral-900);color:#d7d3d3;font-family:'JetBrains Mono',ui-monospace,monospace;font-size:11.5px;line-height:1.5;padding:28px 32px;overflow-x:auto">┌────────────────────────────────────────────────────────────────────────────────────────────────────────┐
+│ ◇ draften  v0.4·MIT │ Acme App ▸ Onboarding ▸ Welcome flow                                              │
+│                     │      [Select][Frame][Rect][Ellipse][Text]│[Shape][Connector][Sticky]              │
+│                                                    [ Design | Split | Code ]  [⑂ main ↑2]  [ ✦ AI ]     │
+├──────────────┬─────────────────────────────────────────────────────────────────┬────────────────────────┤
+│ BOARDS    +  │ · · · · · · · · · · · · · · · · · · · · · · · · · · · · · · · · │ System│Inspect│Stack│✦  │
+│ ▾ ● Acme App │ ·  Signup/mobile · 390×844        ┌───────────┐                 │────────────────────────│
+│   ▾ ● Onboa… │ · ┌─────────────┐   ┌──────────┐  │Has account?◇──ⓘ note        │ Acme DS        v1.3 ▾  │
+│     ● Welco… │ · │  ▒▒▒▒▒▒▒    │   │App opened│──▶└─┬───────┬─┘                │ ▾ BRAND KIT            │
+│     ● Journ… │ · │  ▒▒▒▒▒▒▒    │   └──────────┘  yes│    no │                  │   ■ ■ ■ ■ ■  Inter·4pt │
+│     ● Sign-… │ · │  [Continue] │◀──────────────────┘       │                   │ ▾ TOKENS            51 │
+│   ● Service… │ · └─────────────┘   ┌──────────────┐◀───────┘                   │   ■ color.primary      │
+│   ● Ideas    │ ·                   │Create account│    ▁▁▁▁▁▁▁▁                │   □ radius.control     │
+│──────────────│ ·                   └──────────────┘   ▕ sticky ▏               │ ▾ ATOMS             12 │
+│ LAYERS    ⌕  │ ·                                      ▕ note   ▏               │   [Button]  [Input]    │
+│ ▾ ▣ Signup/… │ ·                                       ▔▔▔▔▔▔▔▔                │ ▾ MOLECULES          8 │
+│    T Create… │ ·                                                               │   [Form field]         │
+│    ▭ Email…  │ ·                                                               │ ▸ ORGANISMS          5 │
+│    ▭ Contin… │ ·  (ports on hover · connectors auto-route · ⓘ notes on hover)  │ ▸ TEMPLATES          3 │
+│  ◇ Has acco… │ ·                                                               │ ▸ PAGES              4 │
+│  ⌁ no → Cre… │ · [ − 82% + ]                                                   │────────────────────────│
+│  ▤ Magic li… │ · · · · · · · · · · · · · · · · · · · · · · · · · · · · · · · · │ + New component        │
+├──────────────┴─────────────────────────────────────────────────────────────────┴────────────────────────┤
+│ MIT license · GitHub ↗            Drag from a port to connect · ⌥ drag duplicates    Snap · Grid 24 · 82%│
+└──────────────────────────────────────────────────────────────────────────────────────────────────────────┘
+ Split view: canvas keeps left ~55%, code pane docks right of canvas (inside the same stage, right rail stays).
+ Code view: stage becomes file list + editor. Stack tab replaces nothing — it is a sibling of System/Inspect.</pre>
+  </section>
+
+  <!-- ══ 03 · Components ══ -->
+  <section style="border-top:2px solid var(--color-divider);padding:44px 0 56px" data-screen-label="03 Components">
+    <div style="font-family:var(--font-heading);font-weight:800;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--color-accent);margin-bottom:8px">03 · Component inventory</div>
+    <h2 style="margin:0 0 20px">States, rendered</h2>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:28px">
+      <div style="border:1px solid var(--color-neutral-300)">
+        <div style="padding:10px 14px;font-family:var(--font-heading);font-weight:800;font-size:12px;border-bottom:1px solid var(--color-neutral-300)">Tool button <span style="font-weight:400;color:var(--color-neutral-600);font-family:var(--font-body)"> · top bar</span></div>
+        <div style="background:#14161B;padding:18px;display:flex;gap:26px;align-items:flex-end;font-family:Inter,sans-serif">
+          <div style="display:flex;flex-direction:column;align-items:center;gap:8px"><div style="width:32px;height:32px;border-radius:6px;display:grid;place-items:center"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#A9B0C0" stroke-width="1.8"><rect x="4" y="4" width="16" height="16" rx="1"></rect></svg></div><span style="font-size:9.5px;color:#6C7484">default</span></div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:8px"><div style="width:32px;height:32px;border-radius:6px;background:#20242E;display:grid;place-items:center"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#E9EBF1" stroke-width="1.8"><rect x="4" y="4" width="16" height="16" rx="1"></rect></svg></div><span style="font-size:9.5px;color:#6C7484">hover</span></div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:8px"><div style="width:32px;height:32px;border-radius:6px;background:#2A2F3A;display:grid;place-items:center"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#E9EBF1" stroke-width="1.8"><rect x="4" y="4" width="16" height="16" rx="1"></rect></svg></div><span style="font-size:9.5px;color:#6C7484">pressed</span></div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:8px"><div style="width:32px;height:32px;border-radius:6px;background:#7048E8;display:grid;place-items:center"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8"><rect x="4" y="4" width="16" height="16" rx="1"></rect></svg></div><span style="font-size:9.5px;color:#6C7484">active tool</span></div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:8px"><div style="width:32px;height:32px;border-radius:6px;display:grid;place-items:center;opacity:.4"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#A9B0C0" stroke-width="1.8"><rect x="4" y="4" width="16" height="16" rx="1"></rect></svg></div><span style="font-size:9.5px;color:#6C7484">disabled</span></div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:8px"><div style="width:32px;height:32px;border-radius:6px;display:grid;place-items:center;outline:2px solid #7048E8;outline-offset:2px"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#A9B0C0" stroke-width="1.8"><rect x="4" y="4" width="16" height="16" rx="1"></rect></svg></div><span style="font-size:9.5px;color:#6C7484">focus-visible</span></div>
+        </div>
+      </div>
+      <div style="border:1px solid var(--color-neutral-300)">
+        <div style="padding:10px 14px;font-family:var(--font-heading);font-weight:800;font-size:12px;border-bottom:1px solid var(--color-neutral-300)">Git sync chip <span style="font-weight:400;color:var(--color-neutral-600);font-family:var(--font-body)"> · top bar</span></div>
+        <div style="background:#14161B;padding:18px;display:flex;gap:14px;align-items:flex-end;flex-wrap:wrap;font-family:Inter,sans-serif">
+          <div style="display:flex;flex-direction:column;align-items:center;gap:8px"><div style="height:28px;display:flex;align-items:center;gap:6px;padding:0 10px;border:1px solid #262A33;border-radius:6px;font-size:11.5px;color:#A9B0C0"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" style="flex:none"><line x1="6" y1="3" x2="6" y2="15"></line><circle cx="18" cy="6" r="3"></circle><circle cx="6" cy="18" r="3"></circle><path d="M18 9a9 9 0 0 1-9 9"></path></svg> main <span style="color:#3FBF7F">✓</span></div><span style="font-size:9.5px;color:#6C7484">in sync</span></div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:8px"><div style="height:28px;display:flex;align-items:center;gap:6px;padding:0 10px;border:1px solid #262A33;border-radius:6px;font-size:11.5px;color:#A9B0C0"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" style="flex:none"><line x1="6" y1="3" x2="6" y2="15"></line><circle cx="18" cy="6" r="3"></circle><circle cx="6" cy="18" r="3"></circle><path d="M18 9a9 9 0 0 1-9 9"></path></svg> main <span style="color:#B49CFF;font-weight:600">↑2</span></div><span style="font-size:9.5px;color:#6C7484">ahead</span></div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:8px"><div style="height:28px;display:flex;align-items:center;gap:6px;padding:0 10px;border:1px solid #262A33;border-radius:6px;font-size:11.5px;color:#A9B0C0"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" style="flex:none"><line x1="6" y1="3" x2="6" y2="15"></line><circle cx="18" cy="6" r="3"></circle><circle cx="6" cy="18" r="3"></circle><path d="M18 9a9 9 0 0 1-9 9"></path></svg> main <span style="color:#E3A73C;font-weight:600">↓1</span></div><span style="font-size:9.5px;color:#6C7484">behind</span></div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:8px"><div style="height:28px;display:flex;align-items:center;gap:6px;padding:0 10px;border:1px solid rgba(226,90,80,.5);border-radius:6px;font-size:11.5px;background:rgba(226,90,80,.08);color:#E25A50"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" style="flex:none"><line x1="6" y1="3" x2="6" y2="15"></line><circle cx="18" cy="6" r="3"></circle><circle cx="6" cy="18" r="3"></circle><path d="M18 9a9 9 0 0 1-9 9"></path></svg> review 1</div><span style="font-size:9.5px;color:#6C7484">collision · visual merge</span></div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:8px"><div style="height:28px;display:flex;align-items:center;gap:6px;padding:0 10px;border:1px dashed #333947;border-radius:6px;font-size:11.5px;color:#6C7484"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" style="flex:none"><line x1="6" y1="3" x2="6" y2="15"></line><circle cx="18" cy="6" r="3"></circle><circle cx="6" cy="18" r="3"></circle><path d="M18 9a9 9 0 0 1-9 9"></path></svg> offline</div><span style="font-size:9.5px;color:#6C7484">offline · queued</span></div>
+        </div>
+      </div>
+      <div style="border:1px solid var(--color-neutral-300)">
+        <div style="padding:10px 14px;font-family:var(--font-heading);font-weight:800;font-size:12px;border-bottom:1px solid var(--color-neutral-300)">Board row <span style="font-weight:400;color:var(--color-neutral-600);font-family:var(--font-body)"> · left rail</span></div>
+        <div style="background:#101216;padding:18px;display:flex;flex-direction:column;gap:6px;font-family:Inter,sans-serif;font-size:12px">
+          <div style="display:flex;align-items:center;gap:7px;height:28px;padding:0 10px;color:#A9B0C0;width:300px"><span style="width:7px;height:7px;border-radius:999px;background:#E3A73C"></span>Journey map<span style="margin-left:auto;font-size:9.5px;color:#6C7484">default</span></div>
+          <div style="display:flex;align-items:center;gap:7px;height:28px;padding:0 10px;border-radius:5px;background:#171A20;color:#E9EBF1;width:300px"><span style="width:7px;height:7px;border-radius:999px;background:#E3A73C"></span>Journey map<span style="margin-left:auto;font-size:9.5px;color:#6C7484">hover</span></div>
+          <div style="display:flex;align-items:center;gap:7px;height:28px;padding:0 10px;background:#211B33;box-shadow:inset 2px 0 0 #7048E8;color:#E9EBF1;font-weight:500;width:300px"><span style="width:7px;height:7px;border-radius:999px;background:#E3A73C"></span>Journey map<span style="margin-left:auto;font-size:9.5px;color:#6C7484">selected</span></div>
+          <div style="display:flex;align-items:center;gap:7px;height:28px;padding:0 10px;border:1.5px dashed #7048E8;border-radius:5px;color:#E9EBF1;width:300px"><span style="width:7px;height:7px;border-radius:999px;background:#E3A73C"></span>Journey map<span style="margin-left:auto;font-size:9.5px;color:#B49CFF">drop to nest</span></div>
+          <div style="display:flex;align-items:center;gap:7px;height:28px;padding:0 10px;border-radius:5px;background:#171A20;width:300px"><span style="width:7px;height:7px;border-radius:999px;background:#E3A73C"></span><span style="border:1px solid #7048E8;background:#0F1116;color:#E9EBF1;border-radius:3px;padding:1px 5px;font-size:11px">Journey map v2</span><span style="margin-left:auto;font-size:9.5px;color:#6C7484">renaming</span></div>
+        </div>
+      </div>
+      <div style="border:1px solid var(--color-neutral-300)">
+        <div style="padding:10px 14px;font-family:var(--font-heading);font-weight:800;font-size:12px;border-bottom:1px solid var(--color-neutral-300)">Library card <span style="font-weight:400;color:var(--color-neutral-600);font-family:var(--font-body)"> · System panel</span></div>
+        <div style="background:#101216;padding:18px;display:flex;gap:14px;align-items:flex-end;flex-wrap:wrap;font-family:Inter,sans-serif">
+          <div style="display:flex;flex-direction:column;align-items:center;gap:8px"><div style="width:118px;background:#171A20;border:1px solid #262A33;border-radius:6px;padding:10px 10px 8px"><div style="height:32px;display:grid;place-items:center"><span style="background:#7048E8;color:#fff;font-size:9px;font-weight:600;padding:4px 12px;border-radius:3px">Button</span></div><div style="font-size:10.5px;color:#A9B0C0;margin-top:6px">Button</div></div><span style="font-size:9.5px;color:#6C7484">default</span></div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:8px"><div style="width:118px;background:#1B1F27;border:1px solid #333947;border-radius:6px;padding:10px 10px 8px;box-shadow:0 4px 16px rgba(0,0,0,.45)"><div style="height:32px;display:grid;place-items:center"><span style="background:#7048E8;color:#fff;font-size:9px;font-weight:600;padding:4px 12px;border-radius:3px">Button</span></div><div style="font-size:10.5px;color:#E9EBF1;margin-top:6px">Button <span style="float:right;color:#6C7484">⋯</span></div></div><span style="font-size:9.5px;color:#6C7484">hover · drag to place</span></div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:8px"><div style="width:118px;background:rgba(112,72,232,.07);border:1.5px dashed rgba(157,177,255,.6);border-radius:6px;padding:10px 10px 8px"><div style="height:32px;display:grid;place-items:center"><span style="background:#7048E8;color:#fff;font-size:9px;font-weight:600;padding:4px 12px;border-radius:3px;opacity:.85">Button</span></div><div style="font-size:10.5px;color:#B49CFF;margin-top:6px">Button <span style="float:right">✦</span></div></div><span style="font-size:9.5px;color:#6C7484">AI draft · unaccepted</span></div>
+        </div>
+      </div>
+    </div>
+    <table class="table" style="font-size:12.5px">
+      <thead><tr><th style="width:180px">Component</th><th style="width:150px">Zone</th><th>States</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td>ToolButton</td><td>Top bar</td><td>default · hover · pressed · active-tool · disabled · focus</td><td>Active tool is the shell's only solid accent; tooltip + shortcut after 600 ms.</td></tr>
+        <tr><td>ModeSegment</td><td>Top bar</td><td>design · split · code</td><td>Radio behavior; thumb slides 120 ms; ⌘\ cycles.</td></tr>
+        <tr><td>SyncChip</td><td>Top bar</td><td>in-sync · ahead · behind · collision · offline</td><td>Click opens commit sheet (moment E); branch switcher and Create PR live here; offline queues commits locally. Boards merge at object level — a collision opens a visual picker, never git markers.</td></tr>
+        <tr><td>AIButton ✦</td><td>Top bar</td><td>default · hover · panel-open</td><td>Never pulses or animates idle. Opens the ✦ rail tab.</td></tr>
+        <tr><td>Breadcrumb</td><td>Top bar</td><td>default · hover · menu-open</td><td>Each crumb is a board; double-click renames in place.</td></tr>
+        <tr><td>BoardRow</td><td>Boards</td><td>default · hover · selected · drop-target · renaming</td><td>Kind dot (design/diagram/journey/mindmap/flow/deck/doc); drag onto a row to nest.</td></tr>
+        <tr><td>LayerRow</td><td>Layers</td><td>default · hover · selected · locked · hidden</td><td>Eye/lock reveal on hover; ⓘ badge when a note exists.</td></tr>
+        <tr><td>GroupRow</td><td>Layers / canvas</td><td>collapsed · expanded · selected</td><td>⌘G groups a selection; groups stay transparent to auto-routing; double-click enters, Esc exits. Tidy auto-arranges into grids and trees.</td></tr>
+        <tr><td>PanelTab</td><td>Right rail</td><td>default · hover · active · badged</td><td>System · Inspect · Stack · ✦; 2 px accent underline; dot badge on Inspect when selection has notes.</td></tr>
+        <tr><td>SectionHeader</td><td>Right rail</td><td>expanded · collapsed</td><td>Caret + count; state persists per panel.</td></tr>
+        <tr><td>LibraryCard</td><td>System</td><td>default · hover · selected · dragging · AI-draft</td><td>Live mini-render; drag instantiates a linked instance on canvas.</td></tr>
+        <tr><td>IconLibrary</td><td>System</td><td>browse · search · dragging</td><td>Bundled open sets (Lucide, Phosphor, Tabler), searchable; drag places an SVG-true instance and writes the import in code.</td></tr>
+        <tr><td>TokenEditor</td><td>System</td><td>popover · draft · published</td><td>Click any brand-kit swatch or token row: value, live contrast check against its usual grounds, where-used list; saves as a draft until published (Prevent, then forgive).</td></tr>
+        <tr><td>MasterBoard</td><td>System / canvas</td><td>editing · dirty · published</td><td>Double-click an atom, molecule or organism to open its master as a board; instances across all boards update live; breadcrumb exits. Same states editor for hover/focus/disabled.</td></tr>
+        <tr><td>PresentPlayer</td><td>Stage</td><td>playing · hotspots · ended</td><td>⌘⏎ from any board; arrows or clicks walk the flow, exception branches included; share link plays in any browser (moment H).</td></tr>
+        <tr><td>VersionPicker</td><td>System</td><td>default · open · diffing</td><td>Semver tags with dates; pick two to diff token/component changes.</td></tr>
+        <tr><td>PropertyRow</td><td>Inspect</td><td>default · focus · mixed · token-linked · disabled</td><td>Mixed selection shows "—"; linked values show token chip, not raw hex.</td></tr>
+        <tr><td>NoteField + NoteDot</td><td>Inspect / canvas</td><td>empty · filled · hover-peek · open</td><td>Per-object note; ⓘ dot on canvas hover; notes export with the board (moment F).</td></tr>
+        <tr><td>Node (shape)</td><td>Canvas</td><td>default · hover-ports · selected · connecting</td><td>Four ports fade in 120 ms; 16 px hit area on a 7 px dot.</td></tr>
+        <tr><td>Connector</td><td>Canvas</td><td>default · hover · selected · rerouting</td><td>Auto-routed rounded elbows; midpoint handle drags a manual waypoint; label editable. Exception branches render dashed amber and stay playable in Present (moment H).</td></tr>
+        <tr><td>StickyNote</td><td>Canvas</td><td>default · selected · editing</td><td>Author tag; four paper tints; never rotates more than ±2°.</td></tr>
+        <tr><td>FrameChrome</td><td>Canvas</td><td>label · hover · selected</td><td>Name + size above frame; double-click label to rename.</td></tr>
+        <tr><td>ZoomPill</td><td>Canvas</td><td>default · open</td><td>−/+, fit, 100%; scroll-wheel zoom centers on cursor.</td></tr>
+        <tr><td>ConnectionCard</td><td>Stack</td><td>connected · syncing · error · disconnected</td><td>Git hosts (GitHub, GitLab, Bitbucket…), Supabase/Postgres, Vercel/Netlify deploys, REST, terminals, importers — one card pattern (moment D); 1-click OAuth for popular services.</td></tr>
+        <tr><td>TerminalPane</td><td>Stack</td><td>attached · running · exited</td><td>⌃` bottom drawer over the canvas — tabbed, resizable, detachable; pinned to the project dir; runs the dev server the preview window attaches to.</td></tr>
+        <tr><td>CommitSheet</td><td>Overlay</td><td>default · pushing · done · error</td><td>Message, file list, private/public badge; ⌘⏎ commits (moment E).</td></tr>
+        <tr><td>ImportReport</td><td>Overlay</td><td>clean · warnings · errors</td><td>Per-page fidelity, grouped substitutions, "show on canvas" (moment B).</td></tr>
+        <tr><td>HeatLayer + InsightBadge</td><td>Canvas / Stack</td><td>off · heat · funnels · surveys</td><td>Overlays live click heatmaps, scroll depth and drop-off on the frames that shipped; badges flag rage-clicks and cold CTAs on the owning layer. Opt-in, self-hosted Insights plugin.</td></tr>
+        <tr><td>RunPanel</td><td>Stack</td><td>detected · installing · running · failed</td><td>Repo framework auto-detected; ▶ Run boots an embedded runtime; the product opens in a resizable in-app or detached preview window — no localhost setup.</td></tr>
+        <tr><td>SystemSwitcher</td><td>System</td><td>default · multiple · switching</td><td>Attach several design systems; one is the project default. Open starters bundled: Draften Base, Material 3, Radix.</td></tr>
+        <tr><td>RichTooltip</td><td>Overlay</td><td>hidden · brief · expanded</td><td>600 ms hover: name + shortcut + one line of what it does; ⌥ expands with an example. Every control explains itself.</td></tr>
+        <tr><td>ProposalCard + AcceptBar</td><td>Canvas / AI</td><td>proposed · accepted · discarded</td><td>Dashed ghost until accepted; A/D walk proposals (moment A).</td></tr>
+        <tr><td>ExportSheet</td><td>Overlay</td><td>default · rendering · done</td><td>PDF/PNG/SVG/React; hotspots, TOC and changelog toggles (moment F).</td></tr>
+        <tr><td>HotspotOverlay</td><td>Canvas / export</td><td>hidden · authoring · previewing</td><td>Derived from connectors + frame links; becomes PDF link annotations.</td></tr>
+        <tr><td>Toast / Tooltip / Dialog</td><td>Overlay</td><td>info · ok · warn — default</td><td>Toast bottom-center 4 s; tooltip 600 ms; dialogs focus-trapped, ESC closes.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- ══ 04 · Signature moments ══ -->
+  <section style="border-top:2px solid var(--color-divider);padding:44px 0 56px" data-screen-label="04 Moments">
+    <div style="font-family:var(--font-heading);font-weight:800;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--color-accent);margin-bottom:8px">04 · Signature moments</div>
+    <h2 style="margin:0 0 20px">Six moments that define the feel</h2>
+
+    <!-- A: AI proposals -->
+    <div style="border:1px solid var(--color-neutral-300);margin-bottom:20px">
+      <div style="padding:12px 16px;display:flex;gap:12px;align-items:baseline;border-bottom:1px solid var(--color-neutral-300)"><span style="font-family:var(--font-heading);font-weight:800;font-size:13px">A — ✦ proposals land as ghosts</span><span style="font-size:12px;color:var(--color-neutral-600)">Nothing enters the library until you say so. Dashed = not yet real. Accept all ⏎ · walk with A / D · Discard ⎋.</span></div>
+      <div style="position:relative;min-width:1100px;height:360px;background:#0C0E12;background-image:radial-gradient(circle,#1B1F27 1px,transparent 1px);background-size:24px 24px;display:flex;font-family:Inter,sans-serif;overflow:hidden">
+        <div style="flex:1;position:relative">
+          <div style="position:absolute;left:36px;top:34px;display:flex;gap:16px">
+            <div style="width:150px;background:rgba(112,72,232,.06);border:1.5px dashed rgba(157,177,255,.55);border-radius:6px;padding:12px"><div style="height:44px;display:grid;place-items:center"><span style="background:#7048E8;color:#fff;font-size:10px;font-weight:600;padding:6px 16px;border-radius:4px;opacity:.9">Button</span></div><div style="font-size:11px;color:#B49CFF;margin-top:8px;display:flex;justify-content:space-between">Button<span>✦</span></div></div>
+            <div style="width:150px;background:rgba(112,72,232,.06);border:1.5px dashed rgba(157,177,255,.55);border-radius:6px;padding:12px"><div style="height:44px;display:grid;place-items:center"><span style="width:90%;height:22px;background:#0F1116;border:1px solid #333947;border-radius:4px;display:flex;align-items:center;padding:0 8px;font-size:9px;color:#6C7484">Email…</span></div><div style="font-size:11px;color:#B49CFF;margin-top:8px;display:flex;justify-content:space-between">Input<span>✦</span></div></div>
+            <div style="width:150px;background:rgba(112,72,232,.06);border:1.5px dashed rgba(157,177,255,.55);border-radius:6px;padding:12px"><div style="height:44px;display:grid;place-items:center"><span style="font-size:9px;color:#B49CFF;background:rgba(112,72,232,.16);border-radius:999px;padding:3px 10px">Badge</span></div><div style="font-size:11px;color:#B49CFF;margin-top:8px;display:flex;justify-content:space-between">Badge<span>✦</span></div></div>
+            <div style="width:150px;background:rgba(112,72,232,.06);border:1.5px dashed rgba(157,177,255,.55);border-radius:6px;padding:12px"><div style="height:44px;padding:6px"><div style="width:100%;height:8px;background:#20242E;border-radius:2px;margin-bottom:5px"></div><div style="width:70%;height:8px;background:#20242E;border-radius:2px"></div></div><div style="font-size:11px;color:#B49CFF;margin-top:8px;display:flex;justify-content:space-between">Card<span>✦</span></div></div>
+          </div>
+          <div style="position:absolute;left:36px;top:196px;width:648px;background:rgba(112,72,232,.06);border:1.5px dashed rgba(157,177,255,.55);border-radius:6px;padding:12px"><div style="height:28px;display:flex;align-items:center;gap:10px;background:#0F1116;border:1px solid #333947;border-radius:4px;padding:0 10px"><span style="width:10px;height:10px;border-radius:2px;background:#7048E8"></span><span style="font-size:9px;color:#A9B0C0">Home</span><span style="font-size:9px;color:#6C7484">Boards</span><span style="font-size:9px;color:#6C7484">Library</span><span style="margin-left:auto;width:44px;height:14px;background:#7048E8;border-radius:3px"></span></div><div style="font-size:11px;color:#B49CFF;margin-top:8px;display:flex;justify-content:space-between">Nav bar<span>✦</span></div></div>
+          <div style="position:absolute;left:50%;bottom:20px;transform:translateX(-50%);display:flex;align-items:center;gap:14px;background:#20242E;border:1px solid #333947;border-radius:8px;padding:10px 16px;box-shadow:0 12px 40px rgba(0,0,0,.55)">
+            <span style="font-size:12px;color:#E9EBF1"><span style="color:#B49CFF">✦</span> 12 components proposed</span>
+            <span style="height:28px;display:flex;align-items:center;padding:0 14px;background:#7048E8;border-radius:5px;font-size:11.5px;font-weight:600;color:#fff">Accept all ⏎</span>
+            <span style="height:28px;display:flex;align-items:center;padding:0 12px;border:1px solid #333947;border-radius:5px;font-size:11.5px;color:#A9B0C0">Review A/D</span>
+            <span style="font-size:11.5px;color:#6C7484">Discard ⎋</span>
+          </div>
+        </div>
+        <div style="width:280px;flex:none;background:#101216;border-left:1px solid #262A33;padding:14px;display:flex;flex-direction:column;gap:10px">
+          <div style="font-size:11.5px;font-weight:600;color:#E9EBF1">✦ Assistant <span style="float:right;font-weight:400;color:#6C7484;font-size:10.5px">Claude API ▾</span></div>
+          <div style="background:#171A20;border:1px solid #262A33;border-radius:6px;padding:10px;font-size:11.5px;color:#A9B0C0;line-height:1.5">Generate a component library from the moodboard on <span style="color:#B49CFF">Ideas</span> — match Acme DS tokens.</div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap">
+            <span style="font-size:10px;color:#A9B0C0;border:1px solid #262A33;border-radius:999px;padding:3px 9px">Make this a diagram</span>
+            <span style="font-size:10px;color:#A9B0C0;border:1px solid #262A33;border-radius:999px;padding:3px 9px">Write this component's code</span>
+          </div>
+          <div style="margin-top:auto;font-size:10px;color:#6C7484;line-height:1.5">Provider-agnostic: any API key or a local model. Keys never leave this machine.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- C: design<->code -->
+    <div style="border:1px solid var(--color-neutral-300);margin-bottom:20px">
+      <div style="padding:12px 16px;display:flex;gap:12px;align-items:baseline;border-bottom:1px solid var(--color-neutral-300)"><span style="font-family:var(--font-heading);font-weight:800;font-size:13px">C — Design ↔ Code, one artifact</span><span style="font-size:12px;color:var(--color-neutral-600)">Split docks the editor in 240 ms. Canvas selection highlights the JSX line; a caret edit repaints the canvas on a 150 ms debounce. The badge tells the truth: ● in sync, ◐ applying.</span></div>
+      <div style="display:flex;height:380px;background:#0C0E12;font-family:Inter,sans-serif;overflow:hidden">
+        <div style="flex:1.1;position:relative;background-image:radial-gradient(circle,#1B1F27 1px,transparent 1px);background-size:24px 24px;border-right:1px solid #262A33">
+          <div style="position:absolute;left:40px;top:40px;font-size:10px;color:#6C7484">Button / primary</div>
+          <div style="position:absolute;left:40px;top:60px;padding:24px 28px;background:#14161B;border:1.5px solid #7048E8;border-radius:6px;box-shadow:0 0 0 3px rgba(112,72,232,.15)">
+            <span style="display:inline-flex;align-items:center;height:36px;padding:0 20px;background:#7048E8;border-radius:5px;font-size:13px;font-weight:600;color:#fff">Continue</span>
+            <span style="position:absolute;left:-4.5px;top:-4.5px;width:8px;height:8px;background:#fff;border:1.5px solid #7048E8;border-radius:1.5px"></span>
+            <span style="position:absolute;right:-4.5px;top:-4.5px;width:8px;height:8px;background:#fff;border:1.5px solid #7048E8;border-radius:1.5px"></span>
+            <span style="position:absolute;left:-4.5px;bottom:-4.5px;width:8px;height:8px;background:#fff;border:1.5px solid #7048E8;border-radius:1.5px"></span>
+            <span style="position:absolute;right:-4.5px;bottom:-4.5px;width:8px;height:8px;background:#fff;border:1.5px solid #7048E8;border-radius:1.5px"></span>
+          </div>
+          <div style="position:absolute;left:40px;top:190px;display:flex;gap:10px;align-items:center;font-size:10.5px;color:#6C7484"><span style="width:22px;height:2px;background:#7048E8"></span>selection ↔ caret stay linked both ways</div>
+        </div>
+        <div style="flex:1;display:flex;flex-direction:column;background:#101216">
+          <div style="height:36px;flex:none;display:flex;align-items:center;gap:10px;padding:0 14px;border-bottom:1px solid #262A33">
+            <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#E9EBF1">Button.tsx</span>
+            <span style="font-size:10px;color:#3FBF7F">● In sync</span>
+            <span style="margin-left:auto;font-size:10px;color:#6C7484">TypeScript · React 19 · ⌘S writes to repo</span>
+          </div>
+          <div style="flex:1;padding:12px 0;font-family:'JetBrains Mono',monospace;font-size:11px;line-height:1.75;color:#A9B0C0;overflow:hidden">
+            <div style="display:flex"><span style="width:38px;text-align:right;padding-right:12px;color:#3A4150">1</span><span><span style="color:#7DA6FF">import</span> { tokens } <span style="color:#7DA6FF">from</span> <span style="color:#8CC98F">"../tokens"</span>;</span></div>
+            <div style="display:flex"><span style="width:38px;text-align:right;padding-right:12px;color:#3A4150">2</span><span></span></div>
+            <div style="display:flex"><span style="width:38px;text-align:right;padding-right:12px;color:#3A4150">3</span><span><span style="color:#7DA6FF">type</span> <span style="color:#3FBFA0">Props</span> = { kind?: <span style="color:#8CC98F">"primary"</span> | <span style="color:#8CC98F">"ghost"</span>;</span></div>
+            <div style="display:flex"><span style="width:38px;text-align:right;padding-right:12px;color:#3A4150">4</span><span>&nbsp;&nbsp;children: <span style="color:#3FBFA0">React.ReactNode</span> };</span></div>
+            <div style="display:flex"><span style="width:38px;text-align:right;padding-right:12px;color:#3A4150">5</span><span></span></div>
+            <div style="display:flex"><span style="width:38px;text-align:right;padding-right:12px;color:#3A4150">6</span><span><span style="color:#7DA6FF">export function</span> <span style="color:#E8C07D">Button</span>({ kind = <span style="color:#8CC98F">"primary"</span>, children }: <span style="color:#3FBFA0">Props</span>) {</span></div>
+            <div style="display:flex;background:rgba(112,72,232,.12);box-shadow:inset 2px 0 0 #7048E8"><span style="width:38px;text-align:right;padding-right:12px;color:#B49CFF">7</span><span>&nbsp;&nbsp;<span style="color:#7DA6FF">return</span> &lt;<span style="color:#3FBFA0">button</span> <span style="color:#E8C07D">className</span>={<span style="color:#8CC98F">`btn btn-${kind}`</span>}&gt;{children}&lt;/<span style="color:#3FBFA0">button</span>&gt;;</span></div>
+            <div style="display:flex"><span style="width:38px;text-align:right;padding-right:12px;color:#3A4150">8</span><span>}</span></div>
+            <div style="display:flex"><span style="width:38px;text-align:right;padding-right:12px;color:#3A4150">9</span><span></span></div>
+            <div style="display:flex"><span style="width:38px;text-align:right;padding-right:12px;color:#3A4150">10</span><span><span style="color:#5A6478">/* styles ride tokens.css — edits here re-render the canvas */</span></span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="border:1px solid var(--color-neutral-300);margin-bottom:20px">
+      <div style="padding:12px 16px;display:flex;gap:12px;align-items:baseline;border-bottom:1px solid var(--color-neutral-300)"><span style="font-family:var(--font-heading);font-weight:800;font-size:13px">G — Journey view: a lens on the same canvas</span><span style="font-size:12px;color:var(--color-neutral-600)">A journey board lays out as stages with an emotion curve. Every cell is a normal object — a pain point links to the frame that fixes it — and the board still opens as a free canvas. Views are lenses, not silos.</span></div>
+      <div style="position:relative;height:330px;background:#EDEFF4;background-image:radial-gradient(circle,#D5D9E3 1px,transparent 1px);background-size:24px 24px;padding:18px 22px 16px;font-family:Inter,sans-serif;overflow:hidden">
+        <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:14px">
+          <div><div style="display:flex;align-items:center;gap:7px;background:#fff;border:1px solid #D8DCE6;border-radius:6px;padding:7px 10px;font-size:11px;font-weight:600;color:#171A21"><span style="width:16px;height:16px;border-radius:999px;background:rgba(91,52,214,.12);color:#5228C7;font-size:9px;display:grid;place-items:center;font-weight:700">1</span>Discover</div><div style="background:#fff;border:1px solid #D8DCE6;border-radius:6px;padding:9px 10px;font-size:10.5px;line-height:1.45;color:#4C5468;margin-top:10px;box-shadow:0 1px 2px rgba(23,26,33,.05)">Hears about Acme from a teammate</div></div>
+          <div><div style="display:flex;align-items:center;gap:7px;background:#fff;border:1px solid #D8DCE6;border-radius:6px;padding:7px 10px;font-size:11px;font-weight:600;color:#171A21"><span style="width:16px;height:16px;border-radius:999px;background:rgba(91,52,214,.12);color:#5228C7;font-size:9px;display:grid;place-items:center;font-weight:700">2</span>Onboard</div><div style="background:#fff;border:1px solid #D8DCE6;border-radius:6px;padding:9px 10px;font-size:10.5px;line-height:1.45;color:#4C5468;margin-top:10px;box-shadow:0 1px 2px rgba(23,26,33,.05)">Creates an account, lands on first board</div></div>
+          <div><div style="display:flex;align-items:center;gap:7px;background:#fff;border:1.5px solid #5B34D6;border-radius:6px;padding:7px 10px;font-size:11px;font-weight:600;color:#171A21;box-shadow:0 0 0 3px rgba(91,52,214,.12)"><span style="width:16px;height:16px;border-radius:999px;background:#5B34D6;color:#fff;font-size:9px;display:grid;place-items:center;font-weight:700">3</span>Core action</div><div style="background:#fff;border:1px solid #D8DCE6;border-radius:6px;padding:9px 10px;font-size:10.5px;line-height:1.45;color:#4C5468;margin-top:10px;box-shadow:0 1px 2px rgba(23,26,33,.05)">Builds the first real flow</div></div>
+          <div><div style="display:flex;align-items:center;gap:7px;background:#fff;border:1px solid #D8DCE6;border-radius:6px;padding:7px 10px;font-size:11px;font-weight:600;color:#171A21"><span style="width:16px;height:16px;border-radius:999px;background:rgba(91,52,214,.12);color:#5228C7;font-size:9px;display:grid;place-items:center;font-weight:700">4</span>Feedback</div><div style="background:#fff;border:1px solid #D8DCE6;border-radius:6px;padding:9px 10px;font-size:10.5px;line-height:1.45;color:#4C5468;margin-top:10px;box-shadow:0 1px 2px rgba(23,26,33,.05)">Shares a preview link with the team</div></div>
+          <div><div style="display:flex;align-items:center;gap:7px;background:#fff;border:1px solid #D8DCE6;border-radius:6px;padding:7px 10px;font-size:11px;font-weight:600;color:#171A21"><span style="width:16px;height:16px;border-radius:999px;background:rgba(91,52,214,.12);color:#5228C7;font-size:9px;display:grid;place-items:center;font-weight:700">5</span>Return</div><div style="background:#fff;border:1px solid #D8DCE6;border-radius:6px;padding:9px 10px;font-size:10.5px;line-height:1.45;color:#4C5468;margin-top:10px;box-shadow:0 1px 2px rgba(23,26,33,.05)">Comes back to iterate with the team</div></div>
+        </div>
+        <div style="position:absolute;left:22px;right:22px;top:146px;height:64px">
+          <div style="position:absolute;left:0;top:-16px;font-size:9px;font-weight:600;letter-spacing:.08em;color:#8A93A6">FEELING</div>
+          <svg width="100%" height="64" viewBox="0 0 100 40" preserveAspectRatio="none" style="display:block"><polyline points="10,22 30,14 50,30 70,12 90,7" fill="none" stroke="#5B34D6" stroke-width="1.4" vector-effect="non-scaling-stroke"></polyline></svg>
+          <span style="position:absolute;left:10%;top:32px;width:7px;height:7px;border-radius:999px;background:#5B34D6;transform:translate(-50%,-50%)"></span><span style="position:absolute;left:30%;top:19px;width:7px;height:7px;border-radius:999px;background:#5B34D6;transform:translate(-50%,-50%)"></span><span style="position:absolute;left:50%;top:45px;width:9px;height:9px;border-radius:999px;background:#fff;border:2px solid #5B34D6;transform:translate(-50%,-50%)"></span><span style="position:absolute;left:70%;top:16px;width:7px;height:7px;border-radius:999px;background:#5B34D6;transform:translate(-50%,-50%)"></span><span style="position:absolute;left:90%;top:8px;width:7px;height:7px;border-radius:999px;background:#5B34D6;transform:translate(-50%,-50%)"></span>
+        </div>
+        <div style="position:absolute;left:22px;right:22px;bottom:16px;display:grid;grid-template-columns:repeat(5,1fr);gap:14px;align-items:end">
+          <div></div><div></div>
+          <div style="display:flex;flex-direction:column;gap:8px"><div style="background:#F6D96B;border-radius:2px;transform:rotate(-1deg);box-shadow:0 4px 10px rgba(23,26,33,.14);padding:9px 10px;font-size:10px;line-height:1.4;color:#3B3410">"Empty canvas — where do I start?"</div><span style="align-self:flex-start;font-size:10px;font-weight:600;color:#5228C7;background:rgba(91,52,214,.10);border:1px solid rgba(91,52,214,.3);border-radius:999px;padding:3px 9px">fix ↗ Welcome flow frame</span></div>
+          <div></div>
+          <div style="background:#fff;border:1px dashed #C9CEDA;border-radius:6px;padding:8px 10px;font-size:10px;color:#8A93A6">+ opportunity</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="border:1px solid var(--color-neutral-300);margin-bottom:20px">
+      <div style="padding:12px 16px;display:flex;gap:12px;align-items:baseline;border-bottom:1px solid var(--color-neutral-300)"><span style="font-family:var(--font-heading);font-weight:800;font-size:13px">H — Present: play the flow, exceptions included</span><span style="font-size:12px;color:var(--color-neutral-600)">⌘⏎ enters Present: frames go full-bleed, connectors become click hotspots (hold ⌥ to reveal), arrows or clicks walk the flow — exception branches are first-class, drawn dashed amber and just as playable. A share link opens the same player in any browser, no account.</span></div>
+      <div style="position:relative;height:360px;background:#08090C;display:flex;align-items:center;justify-content:center;font-family:Inter,sans-serif;overflow:hidden">
+        <div style="position:absolute;left:16px;top:12px;font-size:11px;color:#6C7484">Welcome flow · Present</div>
+        <div style="position:relative;width:190px;height:280px;background:#fff;border-radius:6px;box-shadow:0 16px 48px rgba(0,0,0,.6);padding:16px 14px">
+          <div style="font-size:12px;font-weight:700;color:#171A21">Create account</div>
+          <div style="font-size:8px;color:#7A8194;margin:3px 0 10px">Use your work email.</div>
+          <div style="height:22px;background:#F1F3F7;border-radius:3px;margin-bottom:7px"></div>
+          <div style="height:22px;background:#F1F3F7;border-radius:3px;margin-bottom:10px"></div>
+          <div style="position:relative;height:24px;background:#5B34D6;border-radius:3px;display:grid;place-items:center;font-size:9px;font-weight:600;color:#fff">Continue<span style="position:absolute;inset:-3px;border:1.5px dashed #B49CFF;border-radius:5px"></span></div>
+          <div style="position:relative;font-size:8px;color:#5228C7;margin-top:9px;width:fit-content">Sign in instead<span style="position:absolute;inset:-4px -6px;border:1.5px dashed #B49CFF;border-radius:4px"></span></div>
+        </div>
+        <div style="position:absolute;left:50%;top:118px;transform:translateX(130px);display:flex;flex-direction:column;gap:8px;font-size:10px">
+          <span style="color:#B49CFF;background:rgba(112,72,232,.14);border:1px solid rgba(112,72,232,.4);border-radius:999px;padding:3px 9px">→ Verify email</span>
+          <span style="color:#E3A73C;background:rgba(227,167,60,.12);border:1px dashed rgba(227,167,60,.55);border-radius:999px;padding:3px 9px">↳ email already used · exception</span>
+        </div>
+        <div style="position:absolute;left:50%;bottom:14px;transform:translateX(-50%);display:flex;align-items:center;gap:14px;height:30px;padding:0 14px;background:#14161B;border:1px solid #262A33;border-radius:999px;font-size:11px;color:#A9B0C0"><span>◀</span><span style="color:#E9EBF1;font-weight:500">3 / 8</span><span>▶</span><span style="width:1px;height:14px;background:#262A33"></span><span>⌥ hotspots</span><span>esc exits</span><span style="color:#B49CFF">Share link</span></div>
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+      <!-- B: import report -->
+      <div style="border:1px solid var(--color-neutral-300)">
+        <div style="padding:12px 16px;border-bottom:1px solid var(--color-neutral-300)"><span style="font-family:var(--font-heading);font-weight:800;font-size:13px">B — Import tells you what changed</span><div style="font-size:12px;color:var(--color-neutral-600);margin-top:2px">.fig, .sketch, .graffle, .xd, .drawio, .vsdx, .svg, .pdf and images through one plugin pipeline. Nothing blocks: Open is primary, the report re-opens from a status chip.</div></div>
+        <div style="position:relative;height:400px;background:#0C0E12;display:grid;place-items:center;font-family:Inter,sans-serif;overflow:hidden">
+          <div style="position:absolute;inset:0;background:rgba(0,0,0,.45)"></div>
+          <div style="position:relative;width:520px;background:#20242E;border:1px solid #333947;border-radius:8px;box-shadow:0 12px 40px rgba(0,0,0,.55);overflow:hidden">
+            <div style="padding:14px 16px;border-bottom:1px solid #333947;display:flex;align-items:center;gap:10px"><span style="font-size:13px;font-weight:600;color:#E9EBF1">Import — onboarding.sketch</span><span style="font-size:10px;color:#B49CFF;background:rgba(112,72,232,.14);border-radius:999px;padding:2px 8px">94% fidelity</span><span style="margin-left:auto;color:#6C7484">✕</span></div>
+            <div style="display:flex">
+              <div style="width:170px;border-right:1px solid #333947;padding:10px">
+                <div style="display:flex;align-items:center;gap:8px;padding:6px 8px;background:#211B33;border-radius:5px"><span style="width:26px;height:34px;background:#fff;border-radius:2px"></span><div><div style="font-size:10.5px;color:#E9EBF1">Sign up</div><div style="font-size:9px;color:#3FBF7F">98%</div></div></div>
+                <div style="display:flex;align-items:center;gap:8px;padding:6px 8px"><span style="width:26px;height:34px;background:#fff;border-radius:2px;opacity:.8"></span><div><div style="font-size:10.5px;color:#A9B0C0">Paywall</div><div style="font-size:9px;color:#E3A73C">88%</div></div></div>
+                <div style="display:flex;align-items:center;gap:8px;padding:6px 8px"><span style="width:26px;height:34px;background:#fff;border-radius:2px;opacity:.8"></span><div><div style="font-size:10.5px;color:#A9B0C0">Settings</div><div style="font-size:9px;color:#3FBF7F">96%</div></div></div>
+              </div>
+              <div style="flex:1;padding:12px 14px;display:flex;flex-direction:column;gap:9px">
+                <div style="display:flex;gap:8px;font-size:11px;color:#A9B0C0;line-height:1.45"><span style="width:7px;height:7px;border-radius:999px;background:#E3A73C;flex:none;margin-top:4px"></span><span><strong style="color:#E9EBF1">2 fonts substituted</strong> — GT America → Inter (400, 600). Metrics preserved.</span></div>
+                <div style="display:flex;gap:8px;font-size:11px;color:#A9B0C0;line-height:1.45"><span style="width:7px;height:7px;border-radius:999px;background:#E3A73C;flex:none;margin-top:4px"></span><span><strong style="color:#E9EBF1">1 background blur approximated</strong> — flattened at 2×.</span></div>
+                <div style="display:flex;gap:8px;font-size:11px;color:#A9B0C0;line-height:1.45"><span style="width:7px;height:7px;border-radius:999px;background:#3FBF7F;flex:none;margin-top:4px"></span><span><strong style="color:#E9EBF1">14 symbols → components</strong>, 2 detached (overrides kept).</span></div>
+                <div style="margin-top:auto;display:flex;gap:8px;font-size:11px;color:#B49CFF"><span>Show 3 notes on canvas ↗</span></div>
+              </div>
+            </div>
+            <div style="padding:12px 16px;border-top:1px solid #333947;display:flex;gap:10px;justify-content:flex-end">
+              <span style="flex:none;height:30px;display:flex;align-items:center;padding:0 12px;border:1px solid #333947;border-radius:5px;font-size:11.5px;color:#A9B0C0;white-space:nowrap">Keep report</span>
+              <span style="flex:none;height:30px;display:flex;align-items:center;padding:0 16px;background:#7048E8;border-radius:5px;font-size:11.5px;font-weight:600;color:#fff;white-space:nowrap">Open board</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- D: stack panel -->
+      <div style="border:1px solid var(--color-neutral-300)">
+        <div style="padding:12px 16px;border-bottom:1px solid var(--color-neutral-300)"><span style="font-family:var(--font-heading);font-weight:800;font-size:13px">D — Stack &amp; terminal: connections are plugins</span><div style="font-size:12px;color:var(--color-neutral-600);margin-top:2px">One registry for git hosts (GitHub, GitLab, Bitbucket, Gitea…), databases (Supabase, Postgres, Neon), deploys (Vercel, Netlify), APIs, terminals and importers — 1-click OAuth for the popular ones. Credentials stay on this machine; everything is removable. ⌃` opens the terminal drawer.</div></div>
+        <div style="height:400px;background:#0C0E12;display:flex;font-family:Inter,sans-serif;overflow:hidden">
+          <div style="flex:1;min-width:0;background-image:radial-gradient(circle,#1B1F27 1px,transparent 1px);background-size:24px 24px;display:flex;flex-direction:column;justify-content:flex-end">
+            <div style="border-top:1px solid #262A33;background:#0F1116">
+              <div style="height:30px;display:flex;align-items:center;gap:8px;padding:0 12px;border-bottom:1px solid #262A33">
+                <span style="display:flex;align-items:center;gap:8px;height:22px;padding:0 10px;background:#171A20;border:1px solid #262A33;border-radius:4px;font-family:'JetBrains Mono',monospace;font-size:10px;color:#E9EBF1">zsh — acme-app <span style="color:#6C7484">×</span></span>
+                <span style="font-size:12px;color:#6C7484">+</span>
+                <span style="margin-left:auto;font-size:10px;color:#6C7484">⌃` toggle · drag to resize · detach ↗</span>
+              </div>
+              <div style="padding:10px 14px 12px;font-family:'JetBrains Mono',monospace;font-size:10.5px;line-height:1.8;color:#A9B0C0">
+                <div><span style="color:#8CC98F">$</span> pnpm dev</div>
+                <div><span style="color:#B49CFF">▲ Next.js 15.3</span> ready in 1.2 s — attached to the preview window</div>
+                <div><span style="color:#8CC98F">$</span> <span style="display:inline-block;width:7px;height:13px;background:#B49CFF;vertical-align:middle"></span></div>
+              </div>
+            </div>
+          </div>
+          <div style="width:340px;background:#101216;border-left:1px solid #262A33;display:flex;flex-direction:column;font-size:12px">
+            <div style="display:flex;flex:none;border-bottom:1px solid #262A33;font-size:11.5px;font-weight:500">
+              <span style="padding:10px 0 9px;margin-left:14px;color:#6C7484">System</span>
+              <span style="padding:10px 0 9px;margin-left:16px;color:#6C7484">Inspect</span>
+              <span style="padding:10px 0 9px;margin-left:16px;color:#E9EBF1;box-shadow:inset 0 -2px 0 #7048E8">Stack</span>
+              <span style="padding:10px 14px 9px 16px;color:#6C7484;margin-left:auto">✦</span>
+            </div>
+            <div style="padding:10px 14px;display:flex;flex-direction:column;gap:7px;overflow:hidden">
+              <div style="background:#171A20;border:1px solid #262A33;border-radius:6px;padding:11px 12px">
+                <div style="display:flex;align-items:center;gap:8px"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#E9EBF1" stroke-width="1.8"><line x1="6" y1="3" x2="6" y2="15"></line><circle cx="18" cy="6" r="3"></circle><circle cx="6" cy="18" r="3"></circle><path d="M18 9a9 9 0 0 1-9 9"></path></svg><span style="font-weight:600;color:#E9EBF1">GitHub</span><span style="font-size:9px;color:#A9B0C0;border:1px solid #333947;border-radius:999px;padding:1px 7px">Private</span><span style="margin-left:auto;width:7px;height:7px;border-radius:999px;background:#3FBF7F"></span></div>
+                <div style="font-size:10.5px;color:#6C7484;margin-top:5px;font-family:'JetBrains Mono',monospace">acme/draften-boards · main · 2 collaborators</div>
+                <div style="display:flex;gap:8px;margin-top:8px"><span style="font-size:10.5px;color:#B49CFF">Sync now</span><span style="font-size:10.5px;color:#6C7484">Make public…</span></div>
+              </div>
+              <div style="background:#171A20;border:1px solid #262A33;border-radius:6px;padding:11px 12px">
+                <div style="display:flex;align-items:center;gap:8px"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#E9EBF1" stroke-width="1.8"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M3 5v14a9 3 0 0 0 18 0V5"></path><path d="M3 12a9 3 0 0 0 18 0"></path></svg><span style="font-weight:600;color:#E9EBF1">Supabase</span><span style="margin-left:auto;width:7px;height:7px;border-radius:999px;background:#3FBF7F"></span></div>
+                <div style="font-size:10.5px;color:#6C7484;margin-top:5px">acme_staging · Postgres, Auth &amp; Storage · 12 tables</div>
+                <div style="display:flex;gap:8px;margin-top:8px"><span style="font-size:10.5px;color:#B49CFF">Bind data to selection…</span></div>
+              </div>
+              <div style="background:#171A20;border:1px solid #262A33;border-radius:6px;padding:11px 12px">
+                <div style="display:flex;align-items:center;gap:8px"><svg width="11" height="11" viewBox="0 0 24 24" fill="#E9EBF1"><path d="M12 4 22 20H2Z"></path></svg><span style="font-weight:600;color:#E9EBF1">Vercel</span><span style="font-size:9px;color:#A9B0C0;border:1px solid #333947;border-radius:999px;padding:1px 7px">Production</span><span style="margin-left:auto;width:7px;height:7px;border-radius:999px;background:#3FBF7F"></span></div>
+                <div style="font-size:10.5px;color:#6C7484;margin-top:5px">Ready · 2 m ago · a preview deploy per PR</div>
+                <div style="display:flex;gap:8px;margin-top:8px"><span style="font-size:10.5px;color:#B49CFF">Open deploy ↗</span><span style="font-size:10.5px;color:#6C7484">Logs…</span></div>
+              </div>
+              <div style="display:flex;align-items:center;gap:8px;font-size:10.5px;color:#6C7484"><span>Importers: .fig · .sketch · .graffle · .xd · .drawio · .pdf</span><span style="margin-left:auto;color:#B49CFF">+ Add connection</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- E: commit sheet -->
+      <div style="border:1px solid var(--color-neutral-300)">
+        <div style="padding:12px 16px;border-bottom:1px solid var(--color-neutral-300)"><span style="font-family:var(--font-heading);font-weight:800;font-size:13px">E — One commit, design + code</span><div style="font-size:12px;color:var(--color-neutral-600);margin-top:2px">Board JSON, component code and the auto-changelog travel in one push, to a private or public repo — and a shared repo is the multiuser model. Work on branches, open a PR from this sheet, review it as a visual board diff; object-level merge combines parallel edits, collisions resolve in a side-by-side picker, never conflict markers.</div></div>
+        <div style="position:relative;height:400px;background:#0C0E12;display:grid;place-items:center;font-family:Inter,sans-serif;overflow:hidden">
+          <div style="position:absolute;inset:0;background:rgba(0,0,0,.45)"></div>
+          <div style="position:relative;width:560px;background:#20242E;border:1px solid #333947;border-radius:8px;box-shadow:0 12px 40px rgba(0,0,0,.55)">
+            <div style="padding:14px 16px;border-bottom:1px solid #333947;display:flex;align-items:center;gap:10px"><span style="font-size:13px;font-weight:600;color:#E9EBF1">Commit to acme/draften-boards</span><span style="margin-left:auto;display:flex;background:#0F1116;border:1px solid #333947;border-radius:5px;padding:2px;font-size:10.5px"><span style="padding:3px 10px;border-radius:3px;background:#2A2F3A;color:#E9EBF1">Private</span><span style="padding:3px 10px;color:#6C7484">Public</span></span></div>
+            <div style="padding:14px 16px;display:flex;flex-direction:column;gap:10px">
+              <div style="height:32px;background:#0F1116;border:1px solid #7048E8;border-radius:5px;display:flex;align-items:center;padding:0 10px;font-size:11.5px;color:#E9EBF1">Onboarding flow + Button v4<span style="margin-left:2px;border-left:1px solid #E9EBF1;height:14px"></span></div>
+              <div style="font-family:'JetBrains Mono',monospace;font-size:10.5px;line-height:1.9;color:#A9B0C0">
+                <div><span style="color:#E3A73C">M</span> boards/onboarding/welcome-flow.board.json</div>
+                <div><span style="color:#E3A73C">M</span> src/ui/Button.tsx</div>
+                <div><span style="color:#E3A73C">M</span> tokens/tokens.css</div>
+                <div><span style="color:#3FBF7F">A</span> docs/CHANGELOG.md <span style="color:#6C7484">— generated</span></div>
+              </div>
+              <label style="display:flex;align-items:center;gap:8px;font-size:11px;color:#A9B0C0"><span style="width:13px;height:13px;background:#7048E8;border-radius:3px;display:grid;place-items:center;color:#fff;font-size:9px">✓</span>Add changelog entry with date + author</label>
+            </div>
+            <div style="padding:12px 16px;border-top:1px solid #333947;display:flex;gap:10px;justify-content:flex-end;align-items:center">
+              <span style="margin-right:auto;font-size:10.5px;color:#6C7484;white-space:nowrap"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" style="flex:none"><line x1="6" y1="3" x2="6" y2="15"></line><circle cx="18" cy="6" r="3"></circle><circle cx="6" cy="18" r="3"></circle><path d="M18 9a9 9 0 0 1-9 9"></path></svg> feat/onboarding-v2</span>
+              <span style="flex:none;height:30px;display:flex;align-items:center;padding:0 12px;border:1px solid #333947;border-radius:5px;font-size:11.5px;color:#A9B0C0;white-space:nowrap">Cancel</span>
+              <span style="flex:none;height:30px;display:flex;align-items:center;padding:0 12px;border:1px solid rgba(112,72,232,.45);border-radius:5px;font-size:11.5px;color:#B49CFF;white-space:nowrap">Commit &amp; open PR</span>
+              <span style="flex:none;height:30px;display:flex;align-items:center;gap:6px;padding:0 16px;background:#7048E8;border-radius:5px;font-size:11.5px;font-weight:600;color:#fff;white-space:nowrap">Commit &amp; push ⌘⏎</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- F: export -->
+      <div style="border:1px solid var(--color-neutral-300)">
+        <div style="padding:12px 16px;border-bottom:1px solid var(--color-neutral-300)"><span style="font-family:var(--font-heading);font-weight:800;font-size:13px">F — Export: clickable PDF, decks &amp; docs</span><div style="font-size:12px;color:var(--color-neutral-600);margin-top:2px">Flow connectors and frame links become real PDF link annotations (hotspots); the export script walks the board tree for a contents page and version history for dated changelog pages. Deck boards export editable .pptx, doc boards .docx and .md — a slide and a page are just boards.</div></div>
+        <div style="height:400px;background:#0C0E12;display:flex;font-family:Inter,sans-serif;overflow:hidden">
+          <div style="width:250px;flex:none;background:#101216;border-right:1px solid #262A33;padding:14px;display:flex;flex-direction:column;gap:11px">
+            <div style="font-size:12.5px;font-weight:600;color:#E9EBF1">Export — Onboarding</div>
+            <div style="display:flex;flex-wrap:wrap;background:#0F1116;border:1px solid #262A33;border-radius:5px;padding:2px;font-size:10px"><span style="padding:3px 7px;border-radius:3px;background:#2A2F3A;color:#E9EBF1">PDF</span><span style="padding:3px 7px;color:#6C7484">PNG</span><span style="padding:3px 7px;color:#6C7484">SVG</span><span style="padding:3px 7px;color:#6C7484">PPTX</span><span style="padding:3px 7px;color:#6C7484">DOCX</span><span style="padding:3px 7px;color:#6C7484">React</span></div>
+            <label style="display:flex;gap:8px;font-size:11px;color:#A9B0C0;align-items:center"><span style="width:13px;height:13px;background:#7048E8;border-radius:3px;display:grid;place-items:center;color:#fff;font-size:9px">✓</span>Clickable hotspots from flows</label>
+            <label style="display:flex;gap:8px;font-size:11px;color:#A9B0C0;align-items:center"><span style="width:13px;height:13px;background:#7048E8;border-radius:3px;display:grid;place-items:center;color:#fff;font-size:9px">✓</span>Table of contents (from board tree)</label>
+            <label style="display:flex;gap:8px;font-size:11px;color:#A9B0C0;align-items:center"><span style="width:13px;height:13px;background:#7048E8;border-radius:3px;display:grid;place-items:center;color:#fff;font-size:9px">✓</span>Changelog pages (dated versions)</label>
+            <label style="display:flex;gap:8px;font-size:11px;color:#6C7484;align-items:center"><span style="width:13px;height:13px;border:1px solid #333947;border-radius:3px"></span>Include object notes as comments</label>
+            <div style="margin-top:auto;font-size:10px;color:#6C7484;line-height:1.6">01 Cover · 02 Contents<br>03–08 Boards · 09 Changelog</div>
+            <span style="height:30px;display:flex;align-items:center;justify-content:center;background:#7048E8;border-radius:5px;font-size:11.5px;font-weight:600;color:#fff">Export PDF</span>
+          </div>
+          <div style="flex:1;display:flex;gap:14px;align-items:center;justify-content:center;padding:16px">
+            <div style="width:150px;height:200px;background:#fff;border-radius:3px;box-shadow:0 8px 24px rgba(0,0,0,.5);position:relative;padding:12px">
+              <div style="font-size:8px;font-weight:700;color:#171A21">Welcome flow</div>
+              <div style="position:absolute;left:12px;top:32px;width:52px;height:30px;border:1.5px dashed #5B34D6;border-radius:3px;background:rgba(91,52,214,.08)"></div>
+              <div style="position:absolute;left:12px;top:66px;font-size:7px;color:#5B34D6;font-weight:600">→ p.5 Sign in</div>
+              <div style="position:absolute;left:80px;top:44px;width:52px;height:30px;border:1.5px dashed #5B34D6;border-radius:3px;background:rgba(91,52,214,.08)"></div>
+              <div style="position:absolute;left:80px;top:78px;font-size:7px;color:#5B34D6;font-weight:600">→ p.6 Create</div>
+              <div style="position:absolute;left:12px;bottom:10px;font-size:7px;color:#9AA1B2">hotspots = link annotations</div>
+            </div>
+            <div style="width:150px;height:200px;background:#fff;border-radius:3px;box-shadow:0 8px 24px rgba(0,0,0,.5);padding:12px">
+              <div style="font-size:8px;font-weight:700;color:#171A21;margin-bottom:8px">Contents</div>
+              <div style="font-size:7px;color:#4C5468;line-height:2.1">1 · Onboarding ······· 3<br>1.1 Welcome flow ····· 4<br>1.2 Journey map ······ 6<br>2 · Architecture ····· 7<br>3 · Ideas ············ 8<br>A · Changelog ········ 9</div>
+            </div>
+            <div style="width:150px;height:200px;background:#fff;border-radius:3px;box-shadow:0 8px 24px rgba(0,0,0,.5);padding:12px">
+              <div style="font-size:8px;font-weight:700;color:#171A21;margin-bottom:8px">Changelog</div>
+              <div style="font-size:7px;color:#4C5468;line-height:1.9">
+                <div style="font-weight:700;color:#171A21">v1.3 — Aug 13 2026</div>
+                <div>Button v4 · flow rerouted · mira, jon</div>
+                <div style="font-weight:700;color:#171A21;margin-top:6px">v1.2 — Jul 30 2026</div>
+                <div>Journey map added · tokens 48→51</div>
+                <div style="font-weight:700;color:#171A21;margin-top:6px">v1.1 — Jul 12 2026</div>
+                <div>Imported onboarding.sketch (94%)</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ 05 · Tokens ══ -->
+  <section style="border-top:2px solid var(--color-divider);padding:44px 0 24px" data-screen-label="05 Tokens">
+    <div style="font-family:var(--font-heading);font-weight:800;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--color-accent);margin-bottom:8px">05 · Design tokens</div>
+    <h2 style="margin:0 0 8px">Two themes, one contract</h2>
+    <p style="max-width:760px;font-size:13.5px;color:var(--color-neutral-700);margin-bottom:24px">Light is <span style="font-family:'JetBrains Mono',monospace;font-size:12px">:root</span>; dark overrides under <span style="font-family:'JetBrains Mono',monospace;font-size:12px">[data-theme="dark"]</span> — components never branch on theme. The brand accent keeps its hue in both: #7048E8 fills hold white text at ≈ 5.6:1; for accent-colored <em>text</em> use --accent-text (#B49CFF dark / #5228C7 light, ≥ 4.5:1 on their panels). Body text runs ≥ 12 px Inter; canvas chrome may drop to 10.5 px only for read-only meta.</p>
+    <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:20px;margin-bottom:24px">
+      <div style="background:#14161B;border:1px solid var(--color-neutral-400);padding:20px;font-family:Inter,sans-serif">
+        
+;letter-spacing:.08em;color:#6C7484;margin-bottom:14px">DARK — [data-theme="dark"]</div>
+        <div style="display:flex;align-items:center;gap:10px;height:30px"><span style="width:26px;height:26px;border-radius:5px;background:#0C0E12;border:1px solid #262A33;flex:none"></span><span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#A9B0C0">--canvas</span><span style="margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:10.5px;color:#6C7484">#0C0E12</span></div>
+        <div style="display:flex;align-items:center;gap:10px;height:30px"><span style="width:26px;height:26px;border-radius:5px;background:#14161B;border:1px solid #262A33;flex:none"></span><span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#A9B0C0">--bg</span><span style="margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:10.5px;color:#6C7484">#14161B</span></div>
+        <div style="display:flex;align-items:center;gap:10px;height:30px"><span style="width:26px;height:26px;border-radius:5px;background:#1A1D24;border:1px solid #262A33;flex:none"></span><span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#A9B0C0">--raised</span><span style="margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:10.5px;color:#6C7484">#1A1D24</span></div>
+        <div style="display:flex;align-items:center;gap:10px;height:30px"><span style="width:26px;height:26px;border-radius:5px;background:#262A33;flex:none"></span><span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#A9B0C0">--border</span><span style="margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:10.5px;color:#6C7484">#262A33</span></div>
+        <div style="display:flex;align-items:center;gap:10px;height:30px"><span style="width:26px;height:26px;border-radius:5px;background:#E9EBF1;flex:none"></span><span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#A9B0C0">--text</span><span style="margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:10.5px;color:#6C7484">#E9EBF1</span></div>
+        <div style="display:flex;align-items:center;gap:10px;height:30px"><span style="width:26px;height:26px;border-radius:5px;background:#A9B0C0;flex:none"></span><span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#A9B0C0">--text-2</span><span style="margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:10.5px;color:#6C7484">#A9B0C0</span></div>
+        <div style="display:flex;align-items:center;gap:10px;height:30px"><span style="width:26px;height:26px;border-radius:5px;background:#7048E8;flex:none"></span><span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#A9B0C0">--accent</span><span style="margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:10.5px;color:#6C7484">#7048E8</span></div>
+        <div style="display:flex;align-items:center;gap:10px;height:30px"><span style="width:26px;height:26px;border-radius:5px;background:#B49CFF;flex:none"></span><span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#A9B0C0">--accent-text</span><span style="margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:10.5px;color:#6C7484">#B49CFF</span></div>
+        <div style="display:flex;align-items:center;gap:10px;height:34px;border-top:1px solid #262A33;margin-top:8px;padding-top:8px"><span style="font-size:10.5px;color:#6C7484">kinds</span><span style="width:10px;height:10px;border-radius:999px;background:#7048E8"></span><span style="width:10px;height:10px;border-radius:999px;background:#2FBFAA"></span><span style="width:10px;height:10px;border-radius:999px;background:#E3A73C"></span><span style="width:10px;height:10px;border-radius:999px;background:#4CA0E8"></span><span style="width:10px;height:10px;border-radius:999px;background:#4CC26E"></span><span style="margin-left:auto;font-size:10.5px;color:#6C7484">status</span><span style="width:10px;height:10px;border-radius:999px;background:#3FBF7F"></span><span style="width:10px;height:10px;border-radius:999px;background:#E3A73C"></span><span style="width:10px;height:10px;border-radius:999px;background:#E25A50"></span></div>
+      </div>
+      <div style="background:#FAFBFC;border:1px solid var(--color-neutral-300);padding:20px;font-family:Inter,sans-serif">
+        <div style="font-size:11px;font-weight:600;letter-spacing:.08em;color:#8A93A6;margin-bottom:14px">LIGHT — DEFAULT · :root</div>
+        <div style="display:flex;align-items:center;gap:10px;height:30px"><span style="width:26px;height:26px;border-radius:5px;background:#EDEFF4;border:1px solid #E2E5EC;flex:none"></span><span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#4C5468">--canvas</span><span style="margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:10.5px;color:#8A93A6">#EDEFF4</span></div>
+        <div style="display:flex;align-items:center;gap:10px;height:30px"><span style="width:26px;height:26px;border-radius:5px;background:#FAFBFC;border:1px solid #E2E5EC;flex:none"></span><span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#4C5468">--bg</span><span style="margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:10.5px;color:#8A93A6">#FAFBFC</span></div>
+        <div style="display:flex;align-items:center;gap:10px;height:30px"><span style="width:26px;height:26px;border-radius:5px;background:#FFFFFF;border:1px solid #E2E5EC;flex:none"></span><span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#4C5468">--raised</span><span style="margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:10.5px;color:#8A93A6">#FFFFFF</span></div>
+        <div style="display:flex;align-items:center;gap:10px;height:30px"><span style="width:26px;height:26px;border-radius:5px;background:#E2E5EC;flex:none"></span><span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#4C5468">--border</span><span style="margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:10.5px;color:#8A93A6">#E2E5EC</span></div>
+        <div style="display:flex;align-items:center;gap:10px;height:30px"><span style="width:26px;height:26px;border-radius:5px;background:#171A21;flex:none"></span><span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#4C5468">--text</span><span style="margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:10.5px;color:#8A93A6">#171A21</span></div>
+        <div style="display:flex;align-items:center;gap:10px;height:30px"><span style="width:26px;height:26px;border-radius:5px;background:#4C5468;flex:none"></span><span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#4C5468">--text-2</span><span style="margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:10.5px;color:#8A93A6">#4C5468</span></div>
+        <div style="display:flex;align-items:center;gap:10px;height:30px"><span style="width:26px;height:26px;border-radius:5px;background:#5B34D6;flex:none"></span><span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#4C5468">--accent</span><span style="margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:10.5px;color:#8A93A6">#5B34D6</span></div>
+        <div style="display:flex;align-items:center;gap:10px;height:30px"><span style="width:26px;height:26px;border-radius:5px;background:#5228C7;flex:none"></span><span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#4C5468">--accent-text</span><span style="margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:10.5px;color:#8A93A6">#5228C7</span></div>
+        <div style="display:flex;align-items:center;gap:10px;height:34px;border-top:1px solid #E2E5EC;margin-top:8px;padding-top:8px"><span style="font-size:10.5px;color:#8A93A6">kinds</span><span style="width:10px;height:10px;border-radius:999px;background:#5B34D6"></span><span style="width:10px;height:10px;border-radius:999px;background:#1D8F7E"></span><span style="width:10px;height:10px;border-radius:999px;background:#B97F14"></span><span style="width:10px;height:10px;border-radius:999px;background:#2B76B8"></span><span style="width:10px;height:10px;border-radius:999px;background:#2E9E56"></span><span style="margin-left:auto;font-size:10.5px;color:#8A93A6">status</span><span style="width:10px;height:10px;border-radius:999px;background:#2E9E56"></span><span style="width:10px;height:10px;border-radius:999px;background:#B97F14"></span><span style="width:10px;height:10px;border-radius:999px;background:#D0453B"></span></div>
+      </div>
+    </div>
+    <pre style="margin:0;background:var(--color-neutral-900);color:#d7d3d3;font-family:'JetBrains Mono',ui-monospace,monospace;font-size:11.5px;line-height:1.6;padding:28px 32px;overflow-x:auto">/* Draften UI tokens — light-first. Dark is an override, never a rewrite. */
+[data-theme="dark"] {
+  color-scheme: dark;
+  /* surfaces */
+  --canvas:#0C0E12; --bg:#14161B; --raised:#1A1D24; --overlay:#20242E;
+  /* lines */
+  --border:#262A33; --border-strong:#333947;
+  /* ink */
+  --text:#E9EBF1; --text-2:#A9B0C0; --text-3:#6C7484;
+  /* accent — Draften Violet, deep hue ~265 */
+  --accent:#7048E8; --accent-hover:#7E5AF0; --accent-down:#5C38D0;
+  --accent-text:#B49CFF;                 /* accent-colored text on dark, AA */
+  --accent-soft:rgba(112,72,232,.14);    /* tints, selected rows */
+  --selection:rgba(112,72,232,.32);      /* marquee, canvas selection */
+  /* board kinds */
+  --kind-design:#7048E8; --kind-diagram:#2FBFAA; --kind-journey:#E3A73C;
+  --kind-mindmap:#4CA0E8; --kind-flow:#4CC26E;
+  --kind-deck:#D961B0; --kind-doc:#8A97A8;
+  /* status */
+  --ok:#3FBF7F; --warn:#E3A73C; --danger:#E25A50;
+  /* type */
+  --font-ui:"Inter",system-ui,sans-serif;
+  --font-code:"JetBrains Mono",ui-monospace,"SF Mono",Menlo,monospace;
+  --fs-2xs:10px; --fs-xs:11px; --fs-sm:12px; --fs-md:13px; --fs-lg:15px; --fs-xl:18px;
+  --lh-ui:1.35; --lh-code:1.75;
+  /* spacing — 4 px base */
+  --s1:2px; --s2:4px; --s3:8px; --s4:12px; --s5:16px; --s6:20px; --s7:24px; --s8:32px;
+  /* radii */
+  --r-ctl:4px; --r-card:6px; --r-panel:8px; --r-pill:999px;
+  /* elevation */
+  --shadow-1:0 1px 2px rgba(0,0,0,.4);
+  --shadow-2:0 4px 16px rgba(0,0,0,.45);
+  --shadow-3:0 12px 40px rgba(0,0,0,.55);
+  /* motion — instrument-grade: fast, one curve */
+  --t-fast:120ms cubic-bezier(.2,0,0,1);   /* hovers, ports, segment thumb */
+  --t-med:200ms cubic-bezier(.2,0,0,1);    /* panels, ghost→solid accept */
+  --t-slow:240ms cubic-bezier(.2,0,0,1);   /* split-view dock */
+  /* layout */
+  --topbar-h:48px; --status-h:26px; --rail-left:260px; --rail-right:300px;
+}
+:root {
+  color-scheme: light;
+  --canvas:#EDEFF4; --bg:#FAFBFC; --raised:#FFFFFF; --overlay:#FFFFFF;
+  --border:#E2E5EC; --border-strong:#C9CEDA;
+  --text:#171A21; --text-2:#4C5468; --text-3:#8A93A6;
+  --accent:#5B34D6; --accent-hover:#4C2BC2; --accent-down:#4023A8;
+  --accent-text:#5228C7; --accent-soft:rgba(91,52,214,.10);
+  --selection:rgba(91,52,214,.25);
+  --kind-design:#5B34D6; --kind-diagram:#1D8F7E; --kind-journey:#B97F14;
+  --kind-mindmap:#2B76B8; --kind-flow:#2E9E56;
+  --kind-deck:#B8478F; --kind-doc:#66788C;
+  --ok:#2E9E56; --warn:#B97F14; --danger:#D0453B;
+  --shadow-1:0 1px 2px rgba(23,26,33,.08);
+  --shadow-2:0 4px 16px rgba(23,26,33,.10);
+  --shadow-3:0 12px 40px rgba(23,26,33,.16);
+}</pre>
+    <div style="display:flex;gap:24px;flex-wrap:wrap;margin-top:16px;font-size:12px;color:var(--color-neutral-700)">
+      <span><strong style="font-family:var(--font-heading)">Contrast:</strong> text/bg 13.9:1 · text-2/bg 7.1:1 · white on accent 5.6:1 · accent-text on bg ≥ 4.5:1 (both themes)</span>
+      <span><strong style="font-family:var(--font-heading)">Type:</strong> Inter variable (UI) + JetBrains Mono (code) — self-hosted, OFL-licensed, stable metrics; system-ui fallback keeps first paint honest.</span>
+      <span><strong style="font-family:var(--font-heading)">Default light:</strong> familiar and print-true out of the box; dark stays one flip away for color-critical night work. The choice is remembered per user.</span>
+    </div>
+  </section>
+
+  <!-- ══ 06 · Gap analysis ══ -->
+  <section style="border-top:2px solid var(--color-divider);padding:44px 0 40px" data-screen-label="06 Gap analysis">
+    <div style="font-family:var(--font-heading);font-weight:800;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--color-accent);margin-bottom:8px">06 · Gap analysis</div>
+    <h2 style="margin:0 0 8px">Closing the efficiency gap</h2>
+    <p style="max-width:780px;font-size:13.5px;color:var(--color-neutral-700);margin-bottom:24px">What each benchmark actually contributes: VS Code — keyboard command surface, real language tooling, an extension economy. Sketch — vector craft, math-everywhere inputs, native speed. Figma — collaboration, auto layout, effortless sharing. Draften's edge is that code is already the source of truth — every gap below should be closed <em>through</em> that, not beside it.</p>
+    <table class="table" style="font-size:12.5px">
+      <thead><tr><th style="width:60px">Prio</th><th style="width:250px">Gap</th><th style="width:170px">Benchmark</th><th>How Draften closes it</th></tr></thead>
+      <tbody>
+        <tr><td><span class="tag tag-accent">P0</span></td><td>Command palette</td><td>VS Code ⌘⇧P / Figma ⌘/</td><td>⌘K searches every command, tool, board, component and token from one field; fuzzy match, recent-first, executes without the pointer. The single biggest speed multiplier.</td></tr>
+        <tr><td><span class="tag tag-accent">P0</span></td><td>Real language service in Code view</td><td>VS Code</td><td>TypeScript language server in a worker: autocomplete, hover types, inline diagnostics, rename-across-board, format-on-save. Syntax highlighting alone is not "VS Code-grade."</td></tr>
+        <tr><td><span class="tag tag-accent">P0</span></td><td>Canvas performance budget</td><td>Figma / Sketch native</td><td>GPU renderer (WebGL/WebGPU), 60 fps pan-zoom at 5k objects, &lt; 50 ms interaction budget, virtualized Boards/Layers lists, connector auto-routing in a worker, &lt; 1.5 s cold open restoring exact viewport.</td></tr>
+        <tr><td><span class="tag tag-accent">P0</span></td><td>Auto layout that <em>is</em> flexbox</td><td>Figma Auto Layout</td><td>Stack, wrap, gap and constraints that serialize 1:1 to the component's flex/grid code. No translation layer to drift — Draften's structural advantage over Figma's dev-mode export.</td></tr>
+        <tr><td><span class="tag tag-accent">P0</span></td><td>Keyboard completeness</td><td>All three</td><td>Every command bound and rebindable; ship Figma, Sketch and VS Code keymap presets so switchers keep their muscle memory on day one.</td></tr>
+        <tr><td><span class="tag tag-accent">P0</span></td><td>Conflict-free multiuser on a shared repo</td><td>Figma multiplayer</td><td>Share the repo — any git host — and you share the canvas: boards are CRDT documents, so parallel edits merge at object level. <strong>Real-time is feasible, staged:</strong> v1 is async-first (pull → merge → push, offline-safe); v2 adds live presence and cursors over a lightweight self-hostable relay — the CRDT format makes that purely additive, no file-format change. Collisions open a visual side-by-side picker; git conflict markers never reach a designer. To prototype early: relay vs. P2P, and merge latency at 5k objects.</td></tr>
+        <tr><td><span class="tag tag-neutral">P1</span></td><td>Plugin API beyond importers</td><td>VS Code marketplace</td><td>VS Code-style: one manifest adds tools, panels, importers, exporters, themes and ⌘K commands; in-app gallery, install without restart, no store gatekeeping — the open-source moat.</td></tr>
+        <tr><td><span class="tag tag-neutral">P1</span></td><td>Built-in icon &amp; asset library</td><td>Figma's own gap</td><td>Open icon sets bundled and searchable in the System panel (Lucide, Phosphor, Tabler — 15k+ glyphs); drag places an SVG-true instance and writes the import in code. No plugin hunt for the basics. Threaded comments grow from object notes, synced through the same repo.</td></tr>
+        <tr><td><span class="tag tag-neutral">P1</span></td><td>Vector craft depth</td><td>Sketch / Figma</td><td>Boolean ops, per-anchor vector editing, smart guides with ⌥ distance readouts, pixel fitting, copy-as-SVG/CSS.</td></tr>
+        <tr><td><span class="tag tag-neutral">P1</span></td><td>Math in every input</td><td>Sketch</td><td>340/2+8 evaluates in any numeric field, unit-aware; mixed multi-selection editing with "—" placeholders.</td></tr>
+        <tr><td><span class="tag tag-neutral">P1</span></td><td>Component variants ↔ union props</td><td>Figma variants</td><td>Variant pickers in Inspect map directly to the component's TS union props — one model for designers and the compiler.</td></tr>
+        <tr><td><span class="tag tag-neutral">P1</span></td><td>Visual version diffs</td><td>Figma history</td><td>Git is already the store; add a side-by-side rendered board diff per commit, and token/component diffs in the version picker.</td></tr>
+        <tr><td><span class="tag tag-neutral">P1</span></td><td>Presentation mode</td><td>Figma Present</td><td>Play clickable flows in-app from the same hotspot model the PDF export uses; share as a standalone HTML file — no viewer account, true to the free identity.</td></tr>
+        <tr><td><span class="tag tag-neutral">P1</span></td><td>Run the repo, no localhost</td><td>Beyond all three</td><td>Stack detects the framework (Next, Vite, Expo…), installs and runs it in an embedded runtime; the live product opens in a preview window — in-app or detached — for testing against the design. VS Code needs a terminal; Figma can't at all.</td></tr>
+        <tr><td><span class="tag tag-outline">P2</span></td><td>Split &amp; multi-board views</td><td>VS Code split editors</td><td>Two boards side by side (design + journey map), synced selection optional.</td></tr>
+        <tr><td><span class="tag tag-outline">P2</span></td><td>Library subscriptions</td><td>Figma team libraries</td><td>Subscribe a project to a design-system repo; update notifications arrive as diffs to review, not silent swaps.</td></tr>
+        <tr><td><span class="tag tag-outline">P2</span></td><td>Batch export presets</td><td>Sketch slices</td><td>Per-frame 1×/2×/3× PNG, SVG, PDF presets with an export queue; remembers per board.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section style="border-top:2px solid var(--color-divider);padding:44px 0 48px" data-screen-label="07 Experience framework">
+    <div style="font-family:var(--font-heading);font-weight:800;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--color-accent);margin-bottom:8px">07 · Experience framework</div>
+    <h2 style="margin:0 0 8px">Governed by the Universal Experience Framework 1.0</h2>
+    <p style="max-width:800px;font-size:13.5px;color:var(--color-neutral-700);margin-bottom:24px">Every screen in this spec is designed and reviewed against <strong>Ankur Sinha's</strong> Universal Experience Framework — laws of UX &amp; cognition, Nielsen's ten heuristics, WCAG 2.2 AA and an applied per-screen method (<a href="https://www.sinhaankur.com/framework">sinhaankur.com/framework</a>). When spec and principle conflict, the principle wins and the spec gets fixed. In-app it is ✦ Assistant's critique rubric: "Critique this board" scores the active screen against the ten heuristics with severities.</p>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--color-neutral-300);border:1px solid var(--color-neutral-300);margin-bottom:24px">
+      <div style="background:var(--color-bg);padding:16px"><div style="font-family:var(--font-heading);font-weight:800;font-size:12.5px;margin-bottom:6px"><span style="color:var(--color-accent)">1 </span>One primary action per screen</div><div style="font-size:11.5px;line-height:1.5;color:var(--color-neutral-700)">The active tool is the shell's only solid accent; every dialog ends in exactly one filled button (Von Restorff).</div></div>
+      <div style="background:var(--color-bg);padding:16px"><div style="font-family:var(--font-heading);font-weight:800;font-size:12.5px;margin-bottom:6px"><span style="color:var(--color-accent)">2 </span>Signal over surface area</div><div style="font-size:11.5px;line-height:1.5;color:var(--color-neutral-700)">The canvas is the hero; chrome recedes to two quiet grays, a 26 px status bar and contextual diagram chrome.</div></div>
+      <div style="background:var(--color-bg);padding:16px"><div style="font-family:var(--font-heading);font-weight:800;font-size:12.5px;margin-bottom:6px"><span style="color:var(--color-accent)">3 </span>Answers you can act on</div><div style="font-size:11.5px;line-height:1.5;color:var(--color-neutral-700)">Import warnings carry "show on canvas"; sync states name the next step; errors state the fix. No dead-end data.</div></div>
+      <div style="background:var(--color-bg);padding:16px"><div style="font-family:var(--font-heading);font-weight:800;font-size:12.5px;margin-bottom:6px"><span style="color:var(--color-accent)">4 </span>One system, not six</div><div style="font-size:11.5px;line-height:1.5;color:var(--color-neutral-700)">One token contract (05) drives both themes, the DS spine and the exported code — nothing branches by hand.</div></div>
+      <div style="background:var(--color-bg);padding:16px"><div style="font-family:var(--font-heading);font-weight:800;font-size:12.5px;margin-bottom:6px"><span style="color:var(--color-accent)">5 </span>Progressive disclosure</div><div style="font-size:11.5px;line-height:1.5;color:var(--color-neutral-700)">Ports on hover, collapsed sections, notes behind ⓘ, "10 more…" folds — density is a choice, not a default.</div></div>
+      <div style="background:var(--color-bg);padding:16px"><div style="font-family:var(--font-heading);font-weight:800;font-size:12.5px;margin-bottom:6px"><span style="color:var(--color-accent)">6 </span>Prevent, then forgive</div><div style="font-size:11.5px;line-height:1.5;color:var(--color-neutral-700)">Visual merge picker instead of git conflicts; undo toasts over blocking confirms; offline queues instead of failures.</div></div>
+      <div style="background:var(--color-bg);padding:16px"><div style="font-family:var(--font-heading);font-weight:800;font-size:12.5px;margin-bottom:6px"><span style="color:var(--color-accent)">7 </span>Accessible by default</div><div style="font-size:11.5px;line-height:1.5;color:var(--color-neutral-700)">WCAG 2.2 AA floor: the contrast pairs in 05, full-height hit areas, the accent :focus-visible ring, never meaning by color alone.</div></div>
+      <div style="background:var(--color-bg);padding:16px"><div style="font-family:var(--font-heading);font-weight:800;font-size:12.5px;margin-bottom:6px"><span style="color:var(--color-accent)">✓ </span>The applied method</div><div style="font-size:11.5px;line-height:1.5;color:var(--color-neutral-700)">Frame it · one primary action · pick the pattern · lay it out · design the states · write the words · accessibility pass · critique it. The pre-ship checklist ships as a ✦ command.</div></div>
+    </div>
+    <table class="table" style="font-size:12.5px;margin-bottom:24px">
+      <thead><tr><th style="width:200px">Law</th><th style="width:260px">Mnemonic</th><th>Wired into the shell</th></tr></thead>
+      <tbody>
+        <tr><td>Hick's Law</td><td>"More choices = more time."</td><td>One tool row of eight, no mode to pick first; ⌘K collapses everything else into one searchable field with a default.</td></tr>
+        <tr><td>Fitts's Law</td><td>"Big and close = fast."</td><td>Controls pin to pane edges; 32 px buttons with full-row hit areas; ports give a 16 px hit area on a 7 px dot.</td></tr>
+        <tr><td>Doherty / response times</td><td>"Answer under 400 ms or they drift."</td><td>Motion caps at 240 ms; &lt; 50 ms interaction budget (06); skeletons under 1 s; longer work backgrounds to the status bar.</td></tr>
+        <tr><td>Jakob's Law</td><td>"Yours should work like the rest."</td><td>Familiar pane grammar; keymap presets for Figma, Sketch and VS Code so muscle memory transfers (06).</td></tr>
+        <tr><td>Miller / chunking</td><td>"Hold about seven — so chunk it."</td><td>Panels chunk into labelled sections of 3–7 rows; tokens group by role; boards nest instead of sprawling.</td></tr>
+        <tr><td>Zeigarnik / goal-gradient</td><td>"Unfinished things nag at you."</td><td>The sync chip counts unpushed commits; import shows per-page fidelity; proposals stay dashed until accepted.</td></tr>
+        <tr><td>Peak–End rule</td><td>"They remember the peak and the end."</td><td>The peak: ghost proposals snapping solid on Accept (200 ms). The end: "Pushed ✓" and a quiet changelog entry.</td></tr>
+        <tr><td>Postel's Law</td><td>"Accept messy in; give clean out."</td><td>Every numeric field takes math and messy formats (06) and normalises to tokens on blur.</td></tr>
+      </tbody>
+    </table>
+    <div style="border:1px solid var(--color-neutral-400);padding:16px 20px;font-size:12.5px;line-height:1.6;color:var(--color-neutral-800);max-width:1000px"><span class="tag tag-accent" style="margin-right:10px">Licence</span>The application is <strong>MIT, © 2026 Ankur Sinha</strong> — free forever, no gates. The framework — its structure, curation, principles, mnemonics and applied method — is the authored work of Ankur Sinha under the <strong>Ankur Sinha UXD</strong> licence: read, share and cite with attribution; do not resell or present as your own. The underlying canon (Nielsen, Norman, Garrett, Yablonski, W3C WCAG 2.2, et al.) belongs to its authors. Not a substitute for user research — validate with real users.</div>
+  </section>
+
+  <section style="border-top:2px solid var(--color-divider);padding:44px 0 48px" data-screen-label="08 Added in review">
+    <div style="font-family:var(--font-heading);font-weight:800;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--color-accent);margin-bottom:8px">08 · Added in review</div>
+    <h2 style="margin:0 0 8px">What was still missing</h2>
+    <p style="max-width:800px;font-size:13.5px;color:var(--color-neutral-700);margin-bottom:24px">Raised in review and now specified. A guided design-thinking template (empathize → define → ideate → prototype → test) also ships, stringing journey, mind-map, flow and design boards into one project.</p>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--color-neutral-300);border:1px solid var(--color-neutral-300)">
+      <div style="background:var(--color-bg);padding:16px"><div style="font-family:var(--font-heading);font-weight:800;font-size:12.5px;margin-bottom:6px">Opens design files, period</div><div style="font-size:11.5px;line-height:1.5;color:var(--color-neutral-700)">.fig (file or API token), .sketch, .graffle, .xd, .drawio, .vsdx, .svg, .pdf, images — one importer pipeline; every import gets the fidelity report (B).</div></div>
+      <div style="background:var(--color-bg);padding:16px"><div style="font-family:var(--font-heading);font-weight:800;font-size:12.5px;margin-bottom:6px">Decks &amp; documents are boards</div><div style="font-size:11.5px;line-height:1.5;color:var(--color-neutral-700)">Deck and doc board kinds use the same canvas tools; export editable .pptx, .docx, .md and clickable .pdf (F). Slides and pages, no second app.</div></div>
+      <div style="background:var(--color-bg);padding:16px"><div style="font-family:var(--font-heading);font-weight:800;font-size:12.5px;margin-bottom:6px">Run &amp; test, no localhost</div><div style="font-size:11.5px;line-height:1.5;color:var(--color-neutral-700)">Stack reads the repo, detects the framework, runs it in an embedded runtime; the live product opens in a preview window — resize, detach, test beside the design.</div></div>
+      <div style="background:var(--color-bg);padding:16px"><div style="font-family:var(--font-heading);font-weight:800;font-size:12.5px;margin-bottom:6px">Branches &amp; PRs</div><div style="font-size:11.5px;line-height:1.5;color:var(--color-neutral-700)">The sync chip switches branches; the commit sheet opens PRs; review renders as a visual board diff, never raw JSON (E).</div></div>
+      <div style="background:var(--color-bg);padding:16px"><div style="font-family:var(--font-heading);font-weight:800;font-size:12.5px;margin-bottom:6px">Design systems, plural</div><div style="font-size:11.5px;line-height:1.5;color:var(--color-neutral-700)">Attach several, set a project default, start from bundled open systems (Draften Base, Material 3, Radix). Switching re-themes instances through tokens.</div></div>
+      <div style="background:var(--color-bg);padding:16px"><div style="font-family:var(--font-heading);font-weight:800;font-size:12.5px;margin-bottom:6px">Intuitive by explanation</div><div style="font-size:11.5px;line-height:1.5;color:var(--color-neutral-700)">Rich hover help on every control — name, shortcut, one line of what it does, ⌥ for an example. Empty states teach the next action; ⌘K answers "how do I…".</div></div>
+      <div style="background:var(--color-bg);padding:16px"><div style="font-family:var(--font-heading);font-weight:800;font-size:12.5px;margin-bottom:6px">Micro-interactions, one grammar</div><div style="font-size:11.5px;line-height:1.5;color:var(--color-neutral-700)">120 ms hovers and port fades · 200 ms ghost→solid accepts · 240 ms panel docks. One curve, no bounce; prefers-reduced-motion honored everywhere.</div></div>
+      <div style="background:var(--color-bg);padding:16px"><div style="font-family:var(--font-heading);font-weight:800;font-size:12.5px;margin-bottom:6px">Updates like an app, on any device</div><div style="font-size:11.5px;line-height:1.5;color:var(--color-neutral-700)">Stable/beta channels, in-app release notes, plugins update independently. Browser or installed desktop; the repo carries work across devices.</div></div>
+      <div style="background:var(--color-bg);padding:16px"><div style="font-family:var(--font-heading);font-weight:800;font-size:12.5px;margin-bottom:6px">Design lint &amp; redlines</div><div style="font-size:11.5px;line-height:1.5;color:var(--color-neutral-700)">Token-drift and detached-style warnings; WCAG contrast and target-size checks inline; ⌥ measure overlays and a spec handoff view.</div></div>
+      <div style="background:var(--color-bg);padding:16px"><div style="font-family:var(--font-heading);font-weight:800;font-size:12.5px;margin-bottom:6px">Groups &amp; auto-arrange</div><div style="font-size:11.5px;line-height:1.5;color:var(--color-neutral-700)">⌘G groups (transparent to connector routing, double-click to enter). Tidy snaps a selection to a grid; tree and layered auto-layout re-flow whole diagrams; Layers can mirror canvas order.</div></div>
+      <div style="background:var(--color-bg);padding:16px"><div style="font-family:var(--font-heading);font-weight:800;font-size:12.5px;margin-bottom:6px">Canvas management, deeper</div><div style="font-size:11.5px;line-height:1.5;color:var(--color-neutral-700)">Duplicate, archive and template boards; sections within a board; a minimap toggle for big canvases; ⇧1 fit, ⇧2 zoom to selection.</div></div>
+      <div style="background:var(--color-bg);padding:16px"><div style="font-family:var(--font-heading);font-weight:800;font-size:12.5px;margin-bottom:6px">Extensions, VS Code-style</div><div style="font-size:11.5px;line-height:1.5;color:var(--color-neutral-700)">One API adds tools, panels, importers, exporters, themes and ⌘K commands. Browse and install from the in-app gallery without a restart; the marketplace is open.</div></div>
+      <div style="background:var(--color-bg);padding:16px"><div style="font-family:var(--font-heading);font-weight:800;font-size:12.5px;margin-bottom:6px">Insights: heatmaps on the live product</div><div style="font-size:11.5px;line-height:1.5;color:var(--color-neutral-700)">Once shipped, an opt-in, self-hosted Insights plugin overlays real usage on the boards that designed it: click/tap heatmaps and scroll depth per page, rage-click and dead-click flags, funnel drop-off along the flow connectors, and lightweight "how did this feel?" micro-surveys for perception. Data stays in your own store (privacy-first, no third-party trackers); a heat layer toggles on any frame like the grid does.</div></div>
+      <div style="background:var(--color-bg);padding:16px"><div style="font-family:var(--font-heading);font-weight:800;font-size:12.5px;margin-bottom:6px">Design ↔ evidence loop</div><div style="font-size:11.5px;line-height:1.5;color:var(--color-neutral-700)">Heat and survey data pin to the exact frame version that was live, so a redesign can be judged against its predecessor; a cold primary button or a missed hotspot becomes a note on the layer that owns it. The framework's rule stands: telemetry guides, real user research decides.</div></div>
+    </div>
+  </section>
+
+  <div class="hr" style="margin:0 0 12px"></div>
+  <div style="display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;font-size:11.5px;color:var(--color-neutral-600)">
+    <span>draften. — UI specification · sections 00–08 · by <strong>Ankur Sinha</strong> · app MIT © 2026 Ankur Sinha · framework: Ankur Sinha UXD</span>
+    <span>Spec chrome: Modernist · Product UI inside frames: Draften tokens</span>
+  </div>
+</div></x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;showAnnotations&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Spec&quot;}}">
+class Component extends DCLogic {
+  renderVals() {
+    return { showAnnotations: this.props.showAnnotations ?? true };
+  }
+}
+</script>
+</body>
+</html>

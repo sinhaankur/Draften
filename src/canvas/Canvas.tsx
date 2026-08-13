@@ -22,8 +22,9 @@ type Drag =
   | { kind: "pan"; startScreen: { x: number; y: number }; startVp: { x: number; y: number } }
   | null;
 
-/** The canvas surface. Owns the <canvas>, DPR sizing, pan/zoom, tool pointer I/O. */
-export function Canvas() {
+/** The canvas surface. Owns the <canvas>, DPR sizing, pan/zoom, tool pointer I/O.
+ *  `theme` is passed only to force a repaint when the light/dark ground flips. */
+export function Canvas({ theme }: { theme?: string }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const doc = useEditor((s) => s.doc);
   const activeBoardId = useEditor((s) => s.activeBoardId);
@@ -63,14 +64,15 @@ export function Canvas() {
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       ctx.translate(viewport.x, viewport.y);
       ctx.scale(viewport.zoom, viewport.zoom);
-      ctx.strokeStyle = "#4c6fff";
+      ctx.strokeStyle =
+        getComputedStyle(document.documentElement).getPropertyValue("--accent").trim() || "#5b34d6";
       ctx.lineWidth = 1 / viewport.zoom;
       ctx.setLineDash([4 / viewport.zoom, 3 / viewport.zoom]);
       const p = drag.preview;
       ctx.strokeRect(p.x, p.y, p.width, p.height);
       ctx.restore();
     }
-  }, [doc, activeBoardId, viewport, selection, drag]);
+  }, [doc, activeBoardId, viewport, selection, drag, theme]);
 
   useEffect(() => {
     const onResize = () => setViewport({});

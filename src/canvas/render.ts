@@ -20,12 +20,13 @@ export function renderBoard(
   size: { width: number; height: number; dpr: number },
 ): void {
   const { width, height, dpr } = size;
+  const theme = readTheme();
   ctx.save();
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-  // background
-  ctx.fillStyle = "#0f1116";
+  // background — the canvas ground, from the active theme's --canvas token
+  ctx.fillStyle = theme.canvas;
   ctx.fillRect(0, 0, width, height);
-  drawGrid(ctx, viewport, width, height);
+  drawGrid(ctx, viewport, width, height, theme.gridDot);
 
   // world transform: pan + zoom
   ctx.translate(viewport.x, viewport.y);
@@ -46,29 +47,63 @@ export function renderBoard(
   // selection overlay
   for (const id of selection) {
     const n = doc.nodes[id];
-    if (n) drawSelection(ctx, n.frame);
+    if (n) drawSelection(ctx, n.frame, theme.accent);
   }
 
   ctx.restore();
 }
 
-function drawGrid(ctx: CanvasRenderingContext2D, vp: Viewport, w: number, h: number): void {
+interface ThemeColors {
+  canvas: string;
+  gridDot: string;
+  accent: string;
+  raised: string;
+  text: string;
+  border: string;
+}
+
+/** Cache so drawNode (called per node) can read theme colors without re-querying. */
+let _theme: ThemeColors = {
+  canvas: "#edeff4",
+  gridDot: "rgba(23,26,33,0.06)",
+  accent: "#5b34d6",
+  raised: "#ffffff",
+  text: "#171a21",
+  border: "#e2e5ec",
+};
+
+/** Read the live theme colors from CSS custom properties (light/dark aware). */
+function readTheme(): ThemeColors {
+  if (typeof window === "undefined") return _theme;
+  const cs = getComputedStyle(document.documentElement);
+  const v = (name: string, fb: string) => cs.getPropertyValue(name).trim() || fb;
+  const dark = document.documentElement.getAttribute("data-theme") === "dark";
+  _theme = {
+    canvas: v("--canvas", "#edeff4"),
+    accent: v("--accent", "#5b34d6"),
+    raised: v("--raised", "#ffffff"),
+    text: v("--text", "#171a21"),
+    border: v("--border", "#e2e5ec"),
+    gridDot: dark ? "rgba(255,255,255,0.05)" : "rgba(23,26,33,0.06)",
+  };
+  return _theme;
+}
+
+function drawGrid(ctx: CanvasRenderingContext2D, vp: Viewport, w: number, h: number, dot: string): void {
   const step = 24 * vp.zoom;
-  if (step < 6) return;
-  ctx.strokeStyle = "rgba(255,255,255,0.035)";
-  ctx.lineWidth = 1;
-  const ox = vp.x % step;
-  const oy = vp.y % step;
-  ctx.beginPath();
+  if (step < 8) return; // hide dots when too dense
+  // dotted grid (the spec's canvas ground), one dot per grid cell
+  ctx.fillStyle = dot;
+  const ox = ((vp.x % step) + step) % step;
+  const oy = ((vp.y % step) + step) % step;
+  const r = Math.min(1.2, step / 22);
   for (let x = ox; x < w; x += step) {
-    ctx.moveTo(x, 0);
-    ctx.lineTo(x, h);
+    for (let y = oy; y < h; y += step) {
+      ctx.beginPath();
+      ctx.arc(x, y, r, 0, Math.PI * 2);
+      ctx.fill();
+    }
   }
-  for (let y = oy; y < h; y += step) {
-    ctx.moveTo(0, y);
-    ctx.lineTo(w, y);
-  }
-  ctx.stroke();
 }
 
 function drawNode(ctx: CanvasRenderingContext2D, doc: DraftenDocument, n: Node): void {
@@ -104,7 +139,7 @@ function drawNode(ctx: CanvasRenderingContext2D, doc: DraftenDocument, n: Node):
       paintFills(ctx, n.fills);
       ctx.fill();
       strokeIf(ctx, n);
-      if (n.label) drawCenteredLabel(ctx, n.label, f, "#e6e9ef");
+      if (n.label) drawCenteredLabel(ctx, n.label, f, _theme.text);
       break;
     }
     case "sticky": {
@@ -116,7 +151,7 @@ function drawNode(ctx: CanvasRenderingContext2D, doc: DraftenDocument, n: Node):
     }
     case "text": {
       const s = n.style;
-      ctx.fillStyle = solidOf(n.fills) ?? "#e6e9ef";
+      ctx.fillStyle = solidOf(n.fills) ?? _theme.text;
       ctx.font = `${s?.fontWeight ?? 400} ${s?.fontSize ?? 16}px ${s?.fontFamily ?? "Inter"}, sans-serif`;
       ctx.textBaseline = "top";
       ctx.fillText(n.text, f.x, f.y);
@@ -124,21 +159,21 @@ function drawNode(ctx: CanvasRenderingContext2D, doc: DraftenDocument, n: Node):
     }
     case "mindNode": {
       roundRect(ctx, f, 10);
-      ctx.fillStyle = "#1b2233";
+      ctx.fillStyle = _theme.raised;
       ctx.fill();
-      ctx.strokeStyle = "#4c6fff";
+      ctx.strokeStyle = _theme.accent;
       ctx.lineWidth = 1.5;
       ctx.stroke();
-      drawCenteredLabel(ctx, n.text, f, "#e6e9ef");
+      drawCenteredLabel(ctx, n.text, f, _theme.text);
       break;
     }
     case "journeyStage": {
       roundRect(ctx, f, 8);
-      ctx.fillStyle = "#141821";
+      ctx.fillStyle = _theme.raised;
       ctx.fill();
-      ctx.strokeStyle = "rgba(255,255,255,0.08)";
+      ctx.strokeStyle = _theme.border;
       ctx.stroke();
-      drawCenteredLabel(ctx, n.title, { ...f, height: 28 }, "#e6e9ef");
+      drawCenteredLabel(ctx, n.title, { ...f, height: 28 }, _theme.text);
       break;
     }
     default:
@@ -266,8 +301,8 @@ function drawCenteredLabel(ctx: CanvasRenderingContext2D, text: string, f: Rect,
   ctx.textAlign = "start";
 }
 
-function drawSelection(ctx: CanvasRenderingContext2D, f: Rect): void {
-  ctx.strokeStyle = "#4c6fff";
+function drawSelection(ctx: CanvasRenderingContext2D, f: Rect, accent: string): void {
+  ctx.strokeStyle = accent || "#5b34d6";
   ctx.lineWidth = 1.5;
   ctx.strokeRect(f.x - 1, f.y - 1, f.width + 2, f.height + 2);
 }
