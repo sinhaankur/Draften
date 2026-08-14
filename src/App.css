@@ -13,11 +13,20 @@
   align-items: center;
   gap: 10px;
   height: 52px;
-  padding: 0 14px;
+  /* left clearance for the macOS traffic-light buttons (overlay title bar) */
+  padding: 0 14px 0 82px;
   background: color-mix(in srgb, var(--raised) 82%, transparent);
   backdrop-filter: saturate(180%) blur(20px);
   -webkit-backdrop-filter: saturate(180%) blur(20px);
   border-bottom: 1px solid var(--border);
+  /* the empty parts of the toolbar drag the window (native feel) */
+  -webkit-app-region: drag;
+}
+/* interactive controls must opt out of the drag region */
+.topbar button,
+.topbar .segmented,
+.topbar .chip {
+  -webkit-app-region: no-drag;
 }
 .brand {
   display: flex;
