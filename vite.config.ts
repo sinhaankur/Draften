@@ -1,8 +1,14 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 
-// Vite config tuned for Tauri: fixed dev port, no clearing the Rust logs, and
-// env-var prefixing so Tauri can inject build-time values.
+// Draften ships two ways from one codebase:
+//   • as a WEBSITE on GitHub Pages (a /Draften/ project subpath), and
+//   • as a NATIVE desktop app via Tauri (assets loaded relative from the shell).
+// The base path differs between the two, so it's env-driven:
+//   DEPLOY_TARGET=pages → "/Draften/"   (the Pages CI sets this)
+//   default             → "./"          (Tauri + local dev)
+const base = process.env.DEPLOY_TARGET === "pages" ? "/Draften/" : "./";
+
 export default defineConfig({
   plugins: [react()],
   clearScreen: false,
@@ -14,8 +20,7 @@ export default defineConfig({
       ignored: ["**/src-tauri/**"],
     },
   },
-  // Tauri expects a fixed, relative base so the built assets load from the shell.
-  base: "./",
+  base,
   build: {
     target: "esnext",
     outDir: "dist",

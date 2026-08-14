@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 
 import { Canvas } from "./canvas/Canvas";
+import { isTauri } from "./env";
 import { byAtomicLevel, type AtomicLevel } from "./model/design-system";
 import type { Node } from "./model/node";
 import { useEditor, type ToolId } from "./state/store";
@@ -223,6 +224,7 @@ export function App() {
         </a>
         <span>Drag from a port to connect · ⌥ drag duplicates</span>
         <div className="right">
+          <span>{isTauri() ? "Desktop" : "Web"}</span>
           <span>Snap on</span>
           <span>Grid 24</span>
         </div>

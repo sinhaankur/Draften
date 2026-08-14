@@ -15,6 +15,7 @@
  * is active; `pickBestAvailable()` chooses the best the device offers.
  */
 
+import { capabilities } from "../env";
 import { generateSystem, type BrandBrief } from "./design-gen";
 import type { AiMessage, AiProvider, AiProviderInfo } from "./provider";
 
@@ -33,11 +34,15 @@ export async function probeDeviceAi(): Promise<DeviceAiCapabilities> {
   // Apple Intelligence (Foundation Models) is reachable from the native (Tauri)
   // shell on supported Apple silicon, surfaced to the web layer via a bridge.
   // We detect the bridge rather than sniff the UA (honest capability detection).
+  // Apple Intelligence needs the native shell (the web build can't reach it) AND
+  // the Tauri bridge to report the OS model is present.
   const appleIntelligence =
+    capabilities.appleIntelligence &&
     typeof window !== "undefined" &&
-    // the Tauri shell injects this when the OS model is available
     Boolean((window as unknown as { __draftenAppleIntelligence?: boolean }).__draftenAppleIntelligence);
   if (appleIntelligence) reason.push("Apple Intelligence on-device model available.");
+  else if (!capabilities.appleIntelligence)
+    reason.push("Web build — Apple Intelligence needs the desktop app; using WebLLM/deterministic.");
 
   return { webgpu, appleIntelligence, reason };
 }

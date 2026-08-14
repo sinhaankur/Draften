@@ -55,13 +55,28 @@ src/
 src-tauri/       Rust shell: decode_omnigraffle (gzip+plist), app_version
 ```
 
+## Two ways to run — one codebase
+
+Draften is a Tauri app: the whole editor is TypeScript/React, so it runs both as a
+**website** and as a **native desktop app**. The web build gracefully does without
+the native-only features (local file dialogs, OmniGraffle decode, Apple
+Intelligence); the app detects its environment (`src/env.ts`) and only offers what
+it can deliver.
+
+- **Web** — hosted on GitHub Pages at **`sinhaankur.github.io/Draften`** (deployed
+  by `.github/workflows/deploy-pages.yml` on every push to `main`). Zero install,
+  just a link — the front door for the free/open tool.
+- **Desktop** — native `.dmg`/`.msi`/AppImage via Tauri (release CI added later).
+  This is where the Rust shell earns its keep: real files, OmniGraffle, Apple AI.
+
 ## Develop
 
 ```bash
 pnpm install
 pnpm dev            # Vite dev server (browser)
-pnpm build          # type-check + production web build
-pnpm test           # vitest (model + importers)
+pnpm build          # type-check + production web build (Tauri base)
+DEPLOY_TARGET=pages pnpm exec vite build   # web build for the /Draften/ Pages subpath
+pnpm test           # vitest (model + importers + generator + interaction)
 pnpm tauri dev      # native desktop app (needs Rust toolchain)
 ```
 
