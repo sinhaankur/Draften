@@ -4,6 +4,8 @@ import { ExcalidrawCanvas } from "./canvas/ExcalidrawCanvas";
 import { isTauri } from "./env";
 import { byAtomicLevel, type AtomicLevel } from "./model/design-system";
 import { useEditor } from "./state/store";
+import { AiPanel } from "./ui/AiPanel";
+import { ImportButton } from "./ui/ImportButton";
 import "./App.css";
 
 const LEVELS: AtomicLevel[] = ["atom", "molecule", "organism", "template", "page"];
@@ -16,13 +18,22 @@ export function App() {
   const [view, setView] = useState<"Design" | "Split" | "Code">("Design");
   const [dsTab, setDsTab] = useState<"System" | "Inspect" | "Stack">("System");
   const [theme, setTheme] = useState<"light" | "dark">("light");
+  const [aiOpen, setAiOpen] = useState(false);
 
   useEffect(() => {
     document.documentElement.setAttribute("data-theme", theme);
   }, [theme]);
 
   const library = byAtomicLevel(doc.designSystem.components);
+  const hasComponents = doc.designSystem.components.length > 0;
   const activeBoard = doc.boards.find((b) => b.id === activeBoardId);
+  // Brand-kit swatches: real generated palette when present, else theme tokens.
+  const genColors = doc.designSystem.tokens.colors;
+  const swatchColors = hasComponents
+    ? ["brand.500", "brand.700", "accent.500", "neutral.500", "neutral.900"]
+        .map((k) => genColors[k])
+        .filter(Boolean)
+    : ["var(--accent)", "var(--text)", "var(--raised)", "var(--kind-diagram)", "var(--kind-journey)"];
 
   return (
     <div className="app">
@@ -57,8 +68,12 @@ export function App() {
         >
           {theme === "light" ? "☾" : "☀"}
         </button>
-        <button className="ai-btn">✦ AI</button>
+        <button className="ai-btn" onClick={() => setAiOpen(true)}>
+          ✦ AI
+        </button>
       </header>
+
+      {aiOpen && <AiPanel onClose={() => setAiOpen(false)} />}
 
       <div className="body">
         {/* left: boards + layers */}
@@ -77,6 +92,11 @@ export function App() {
                 <span className="count">{b.children.length || ""}</span>
               </button>
             ))}
+
+            <div className="divider" />
+
+            <div className="section-title">Import</div>
+            <ImportButton />
 
             <div className="divider" />
 
@@ -113,57 +133,49 @@ export function App() {
 
                 <div className="section-title">Brand Kit</div>
                 <div className="swatches">
-                  <span className="swatch" style={{ background: "var(--accent)" }} />
-                  <span className="swatch" style={{ background: "var(--text)" }} />
-                  <span className="swatch" style={{ background: "var(--raised)" }} />
-                  <span className="swatch" style={{ background: "var(--kind-diagram)" }} />
-                  <span className="swatch" style={{ background: "var(--kind-journey)" }} />
+                  {swatchColors.map((c, i) => (
+                    <span key={i} className="swatch" style={{ background: c }} />
+                  ))}
                 </div>
                 <div className="muted small">Inter · 4pt grid</div>
 
                 <div className="divider" />
 
-                {LEVELS.map((lvl) => (
-                  <div key={lvl} className="ds-group">
-                    <div className="ds-level">
-                      <span>{lvl}s</span>
-                      <span>{library[lvl].length || ""}</span>
-                    </div>
-                    {library[lvl].length === 0 ? (
-                      lvl === "atom" ? (
-                        <div className="comp-cards">
-                          <div className="comp-card">
-                            <div className="demo">
-                              <span className="mini-btn">Button</span>
-                            </div>
-                            <div className="cname">Button</div>
-                          </div>
-                          <div className="comp-card">
-                            <div className="demo">
-                              <span className="mini-input" />
-                            </div>
-                            <div className="cname">Input</div>
-                          </div>
-                        </div>
-                      ) : (
-                        <div className="muted small">— none yet —</div>
-                      )
-                    ) : (
-                      <div className="comp-cards">
-                        {library[lvl].map((c) => (
-                          <div key={c.id} className="comp-card">
-                            <div className="demo muted small">{c.name}</div>
-                            <div className="cname">
-                              {c.name} <span className="muted">v{c.version}</span>
-                            </div>
-                          </div>
-                        ))}
+                {hasComponents ? (
+                  LEVELS.map((lvl) => (
+                    <div key={lvl} className="ds-group">
+                      <div className="ds-level">
+                        <span>{lvl}s</span>
+                        <span>{library[lvl].length || ""}</span>
                       </div>
-                    )}
+                      {library[lvl].length === 0 ? (
+                        <div className="muted small">— none yet —</div>
+                      ) : (
+                        <div className="comp-cards">
+                          {library[lvl].map((c) => (
+                            <div key={c.id} className="comp-card" title={c.description}>
+                              <div className="demo muted small">{c.name}</div>
+                              <div className="cname">
+                                {c.name} <span className="muted">v{c.version}</span>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  ))
+                ) : (
+                  <div className="ds-empty">
+                    <div className="muted small">No components yet.</div>
+                    <button className="ai-btn" onClick={() => setAiOpen(true)}>
+                      ✦ Generate a library
+                    </button>
                   </div>
-                ))}
+                )}
               </div>
-              <button className="new-component">+ New component</button>
+              <button className="new-component" onClick={() => setAiOpen(true)}>
+                + New component
+              </button>
             </>
           )}
 

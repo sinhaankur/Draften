@@ -49,3 +49,19 @@ describe("deterministic design-system generator (model-free core)", () => {
     expect(org.composedOf?.length).toBeGreaterThan(0);
   });
 });
+
+import { generateDesignSystem } from "./design-gen";
+
+describe("generateDesignSystem (store bridge)", () => {
+  it("returns a full DesignSystem with brand, tokens, and components", () => {
+    const ds = generateDesignSystem({ brand: "Northwind", style: "calm" });
+    expect(ds.brand.name).toBe("Northwind");
+    expect(ds.brand.primaryColorTokens?.length).toBeGreaterThan(0);
+    expect(Object.keys(ds.tokens.colors).length).toBeGreaterThan(10);
+    expect(ds.components.length).toBeGreaterThanOrEqual(5);
+    // the brand's referenced primary tokens resolve to real colors
+    for (const key of ds.brand.primaryColorTokens ?? []) {
+      expect(ds.tokens.colors[key]).toMatch(/^#[0-9a-f]{6}$/i);
+    }
+  });
+});

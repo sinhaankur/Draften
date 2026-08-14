@@ -421,3 +421,79 @@
   display: flex;
   gap: var(--s5);
 }
+
+/* ── ✦ AI dialog ─────────────────────────────────────────────────────────── */
+.ai-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(12, 14, 18, 0.45);
+  display: grid;
+  place-items: center;
+  z-index: 100;
+}
+.ai-dialog {
+  width: 380px;
+  max-width: calc(100vw - 32px);
+  background: var(--raised);
+  border: 1px solid var(--border);
+  border-radius: var(--r-panel);
+  box-shadow: var(--shadow-3);
+  padding: var(--s7);
+}
+.ai-title {
+  font-size: var(--fs-xl);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin-bottom: var(--s3);
+}
+.ai-field {
+  display: block;
+  margin-top: var(--s5);
+}
+.ai-field span {
+  display: block;
+  font-size: var(--fs-sm);
+  color: var(--text-2);
+  margin-bottom: var(--s2);
+}
+.ai-field input,
+.ai-field select {
+  width: 100%;
+  height: 34px;
+  padding: 0 10px;
+  background: var(--bg);
+  color: var(--text);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--r-ctl);
+  font-size: var(--fs-md);
+  font-family: var(--font-ui);
+}
+.ai-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--s3);
+  margin-top: var(--s7);
+}
+
+/* ── import + empty states ──────────────────────────────────────────────── */
+.import-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s2);
+}
+.import-status {
+  padding: var(--s2) var(--s3);
+  background: var(--accent-soft);
+  border-radius: var(--r-ctl);
+  color: var(--text-2);
+}
+.import-note {
+  line-height: 1.4;
+}
+.ds-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--s3);
+  padding: var(--s4) 0;
+}

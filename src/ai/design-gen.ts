@@ -15,6 +15,7 @@
 import type {
   Component,
   ComponentProp,
+  DesignSystem,
   DesignTokens,
   TypographyToken,
 } from "../model/design-system";
@@ -278,5 +279,22 @@ export function generateSystem(brief: BrandBrief): GeneratedSystem {
       `Generated ${components.length} components across atoms → organisms for "${brief.brand}".`,
       "Deterministic baseline (no model). A tiny on-device LLM can refine names, palette, and add ideas.",
     ],
+  };
+}
+
+/**
+ * Produce a full DesignSystem (brand + tokens + components) from a brief — the
+ * shape the store + right-hand panel consume. The brand kit points its primary
+ * color tokens at the generated ramp so the swatches reflect the real palette.
+ */
+export function generateDesignSystem(brief: BrandBrief): DesignSystem {
+  const { tokens, components } = generateSystem(brief);
+  return {
+    brand: {
+      name: brief.brand,
+      primaryColorTokens: ["brand.500", "brand.700", "accent.500"],
+    },
+    tokens,
+    components,
   };
 }
