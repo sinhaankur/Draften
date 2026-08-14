@@ -1,32 +1,17 @@
 import { useEffect, useState } from "react";
 
-import { Canvas } from "./canvas/Canvas";
+import { ExcalidrawCanvas } from "./canvas/ExcalidrawCanvas";
 import { isTauri } from "./env";
 import { byAtomicLevel, type AtomicLevel } from "./model/design-system";
-import type { Node } from "./model/node";
-import { useEditor, type ToolId } from "./state/store";
+import { useEditor } from "./state/store";
 import "./App.css";
-
-const TOOLS: Array<{ id: ToolId; label: string; glyph: string }> = [
-  { id: "select", label: "Select (V)", glyph: "▶" },
-  { id: "frame", label: "Frame (F)", glyph: "⌗" },
-  { id: "rectangle", label: "Rectangle (R)", glyph: "▭" },
-  { id: "ellipse", label: "Ellipse (O)", glyph: "◯" },
-  { id: "text", label: "Text (T)", glyph: "T" },
-  { id: "shape", label: "Shape (S)", glyph: "◇" },
-  { id: "connector", label: "Connector (C)", glyph: "⟿" },
-  { id: "sticky", label: "Sticky (N)", glyph: "▧" },
-];
 
 const LEVELS: AtomicLevel[] = ["atom", "molecule", "organism", "template", "page"];
 
 export function App() {
-  const tool = useEditor((s) => s.tool);
-  const setTool = useEditor((s) => s.setTool);
   const doc = useEditor((s) => s.doc);
   const activeBoardId = useEditor((s) => s.activeBoardId);
   const setActiveBoard = useEditor((s) => s.setActiveBoard);
-  const addNode = useEditor((s) => s.addNode);
 
   const [view, setView] = useState<"Design" | "Split" | "Code">("Design");
   const [dsTab, setDsTab] = useState<"System" | "Inspect" | "Stack">("System");
@@ -35,11 +20,6 @@ export function App() {
   useEffect(() => {
     document.documentElement.setAttribute("data-theme", theme);
   }, [theme]);
-
-  useEffect(() => {
-    if (Object.keys(useEditor.getState().doc.nodes).length > 0) return;
-    seedSample(addNode);
-  }, [addNode]);
 
   const library = byAtomicLevel(doc.designSystem.components);
   const activeBoard = doc.boards.find((b) => b.id === activeBoardId);
@@ -58,18 +38,7 @@ export function App() {
           <span className="sep">›</span>
           <span className="current">{activeBoard?.name ?? "Board"}</span>
         </div>
-        <div className="toolbar">
-          {TOOLS.map((t) => (
-            <button
-              key={t.id}
-              className={tool === t.id ? "tool active" : "tool"}
-              onClick={() => setTool(t.id)}
-              title={t.label}
-            >
-              {t.glyph}
-            </button>
-          ))}
-        </div>
+        {/* Drawing tools live on the Excalidraw canvas itself now. */}
         <div className="spacer" />
         <div className="segmented">
           {(["Design", "Split", "Code"] as const).map((v) => (
@@ -112,15 +81,7 @@ export function App() {
             <div className="divider" />
 
             <div className="section-title">Layers</div>
-            {(activeBoard?.children ?? []).map((id) => {
-              const n = doc.nodes[id];
-              if (!n) return null;
-              return (
-                <div key={id} className="row small">
-                  <span className="muted">{glyphForType(n.type)}</span> {n.name}
-                </div>
-              );
-            })}
+            <div className="muted small">Managed on the canvas.</div>
           </div>
           <div className="pane-footer">
             <span className="live" /> All changes saved locally
@@ -129,7 +90,7 @@ export function App() {
 
         {/* center: canvas */}
         <main className="stage">
-          <Canvas theme={theme} />
+          <ExcalidrawCanvas theme={theme} />
         </main>
 
         {/* right: system / inspect / stack */}
@@ -231,80 +192,4 @@ export function App() {
       </footer>
     </div>
   );
-}
-
-function glyphForType(t: Node["type"]): string {
-  switch (t) {
-    case "frame":
-      return "⌗";
-    case "text":
-      return "T";
-    case "shape":
-      return "◇";
-    case "connector":
-      return "⟿";
-    case "ellipse":
-      return "◯";
-    case "sticky":
-      return "▧";
-    default:
-      return "▭";
-  }
-}
-
-/** Seed: one UI card + a two-box flow, to show design + diagram on one canvas. */
-function seedSample(addNode: (n: Node) => void) {
-  addNode({
-    id: crypto.randomUUID(),
-    type: "frame",
-    name: "Signup / mobile",
-    frame: { x: 80, y: 90, width: 260, height: 300 },
-    fills: [{ kind: "solid", color: "#ffffff" }],
-    cornerRadius: 8,
-    stroke: { paint: { kind: "solid", color: "#e2e5ec" }, width: 1 },
-    children: [],
-  } as Node);
-  addNode({
-    id: crypto.randomUUID(),
-    type: "text",
-    name: "Create account",
-    frame: { x: 100, y: 112, width: 220, height: 24 },
-    text: "Create account",
-    fills: [{ kind: "solid", color: "#171a21" }],
-    style: { fontFamily: "Inter", fontSize: 18, fontWeight: 700, lineHeight: 1.3 },
-  } as Node);
-
-  const boxA = crypto.randomUUID();
-  const boxB = crypto.randomUUID();
-  addNode({
-    id: boxA,
-    type: "shape",
-    name: "App opened",
-    shape: "roundRect",
-    frame: { x: 420, y: 110, width: 130, height: 56 },
-    fills: [{ kind: "solid", color: "#ffffff" }],
-    stroke: { paint: { kind: "solid", color: "#5b34d6" }, width: 1.5 },
-    label: "App opened",
-  } as Node);
-  addNode({
-    id: boxB,
-    type: "shape",
-    name: "Has account?",
-    shape: "diamond",
-    frame: { x: 610, y: 96, width: 140, height: 84 },
-    fills: [{ kind: "solid", color: "#ffffff" }],
-    stroke: { paint: { kind: "solid", color: "#1d8f7e" }, width: 1.5 },
-    label: "Has account?",
-  } as Node);
-  addNode({
-    id: crypto.randomUUID(),
-    type: "connector",
-    name: "edge",
-    frame: { x: 0, y: 0, width: 0, height: 0 },
-    from: { nodeId: boxA },
-    to: { nodeId: boxB },
-    routing: "orthogonal",
-    stroke: { paint: { kind: "solid", color: "#5b34d6" }, width: 1.5 },
-    endArrow: "arrow",
-  } as Node);
 }
