@@ -1,9 +1,13 @@
 import { useEffect, useState } from "react";
 
-import { ExcalidrawCanvas } from "./canvas/ExcalidrawCanvas";
+import { useRef } from "react";
+import type { ExcalidrawImperativeAPI } from "@excalidraw/excalidraw/types";
+
+import { ExcalidrawCanvas, toElements } from "./canvas/ExcalidrawCanvas";
 import { isTauri } from "./env";
 import { byAtomicLevel, type AtomicLevel } from "./model/design-system";
 import { useEditor } from "./state/store";
+import { sinhaankurDesignSystem, sinhaankurScreenSkeleton } from "./templates/sinhaankur";
 import { AiPanel } from "./ui/AiPanel";
 import { ImportButton } from "./ui/ImportButton";
 import "./App.css";
@@ -19,6 +23,25 @@ export function App() {
   const [dsTab, setDsTab] = useState<"System" | "Inspect" | "Stack">("System");
   const [theme, setTheme] = useState<"light" | "dark">("light");
   const [aiOpen, setAiOpen] = useState(false);
+  const setDesignSystem = useEditor((s) => s.setDesignSystem);
+  const rename = useEditor((s) => s.rename);
+  const excalidrawApi = useRef<ExcalidrawImperativeAPI | null>(null);
+
+  /** Load the sinhaankur.com template: real design system into the panel, and
+   *  the hero screen onto the canvas (dark ground). One click, whole pipeline. */
+  const openTemplate = () => {
+    setDesignSystem(sinhaankurDesignSystem);
+    rename(sinhaankurDesignSystem.brand.name);
+    setTheme("dark");
+    const api = excalidrawApi.current;
+    if (api) {
+      api.updateScene({
+        elements: toElements(sinhaankurScreenSkeleton()),
+        appState: { viewBackgroundColor: "#0c0e12" },
+      });
+      api.scrollToContent(api.getSceneElements(), { fitToContent: true });
+    }
+  };
 
   useEffect(() => {
     document.documentElement.setAttribute("data-theme", theme);
@@ -68,6 +91,9 @@ export function App() {
         >
           {theme === "light" ? "☾" : "☀"}
         </button>
+        <button className="branch" onClick={openTemplate} title="Load the sinhaankur.com test template">
+          ⎘ Template
+        </button>
         <button className="ai-btn" onClick={() => setAiOpen(true)}>
           ✦ AI
         </button>
@@ -110,7 +136,7 @@ export function App() {
 
         {/* center: canvas */}
         <main className="stage">
-          <ExcalidrawCanvas theme={theme} />
+          <ExcalidrawCanvas theme={theme} onReady={(api) => (excalidrawApi.current = api)} />
         </main>
 
         {/* right: system / inspect / stack */}

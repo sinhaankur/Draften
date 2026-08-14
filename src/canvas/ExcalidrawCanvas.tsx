@@ -1,4 +1,5 @@
 import { convertToExcalidrawElements, Excalidraw } from "@excalidraw/excalidraw";
+import type { ExcalidrawImperativeAPI } from "@excalidraw/excalidraw/types";
 import "@excalidraw/excalidraw/index.css";
 import { useMemo } from "react";
 
@@ -17,7 +18,14 @@ import { useMemo } from "react";
  * Excalidraw *skeleton* and expanded with convertToExcalidrawElements (which fills
  * in the fractional index / binding internals correctly).
  */
-export function ExcalidrawCanvas({ theme }: { theme?: "light" | "dark" }) {
+export function ExcalidrawCanvas({
+  theme,
+  onReady,
+}: {
+  theme?: "light" | "dark";
+  /** receives the Excalidraw API so the app can push a template scene */
+  onReady?: (api: ExcalidrawImperativeAPI) => void;
+}) {
   const initialData = useMemo(
     () => ({
       elements: convertToExcalidrawElements(seedSkeleton()),
@@ -39,6 +47,7 @@ export function ExcalidrawCanvas({ theme }: { theme?: "light" | "dark" }) {
     <div style={{ position: "absolute", inset: 0 }}>
       <Excalidraw
         initialData={initialData}
+        excalidrawAPI={onReady}
         theme={theme === "dark" ? "dark" : "light"}
         gridModeEnabled
         UIOptions={{
@@ -117,4 +126,9 @@ function seedSkeleton() {
       end: { id: "decide" },
     },
   ];
+}
+
+/** Convert an Excalidraw element skeleton to full elements (for template loads). */
+export function toElements(skeleton: Parameters<typeof convertToExcalidrawElements>[0]) {
+  return convertToExcalidrawElements(skeleton);
 }
