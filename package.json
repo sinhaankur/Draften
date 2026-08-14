@@ -12,6 +12,9 @@
     "test": "vitest run",
     "test:watch": "vitest"
   },
+  "pnpm": {
+    "onlyBuiltDependencies": ["esbuild"]
+  },
   "dependencies": {
     "@tauri-apps/api": "^2.0.0",
     "react": "^19.0.0",
