@@ -10,6 +10,7 @@
 import type { DraftenDocument } from "../model/document";
 import type { ConnectorNode, Node, Paint, Rect } from "../model/node";
 import type { Viewport } from "../state/store";
+import { clippedEndpoints } from "./connector-geometry";
 
 export function renderBoard(
   ctx: CanvasRenderingContext2D,
@@ -186,9 +187,13 @@ function drawNode(ctx: CanvasRenderingContext2D, doc: DraftenDocument, n: Node):
 }
 
 function drawConnector(ctx: CanvasRenderingContext2D, doc: DraftenDocument, n: ConnectorNode): void {
-  const a = endpoint(doc, n.from);
-  const b = endpoint(doc, n.to);
-  if (!a || !b) return;
+  // Clip each end to its shape's boundary (edge, not center) so the line touches
+  // the shapes instead of stabbing through them.
+  const fromNode = n.from.nodeId ? doc.nodes[n.from.nodeId] : undefined;
+  const toNode = n.to.nodeId ? doc.nodes[n.to.nodeId] : undefined;
+  const clipped = clippedEndpoints(fromNode, n.from.point, toNode, n.to.point);
+  if (!clipped) return;
+  const { a, b } = clipped;
   ctx.strokeStyle = solidOfPaint(n.stroke.paint) ?? "#8892a6";
   ctx.lineWidth = n.stroke.width || 1.5;
   ctx.beginPath();
@@ -209,14 +214,6 @@ function drawConnector(ctx: CanvasRenderingContext2D, doc: DraftenDocument, n: C
 }
 
 // ── helpers ────────────────────────────────────────────────────────────────
-
-function endpoint(doc: DraftenDocument, e: ConnectorNode["from"]): { x: number; y: number } | undefined {
-  if (e.point) return e.point;
-  const node = e.nodeId ? doc.nodes[e.nodeId] : undefined;
-  if (!node) return undefined;
-  const f = node.frame;
-  return { x: f.x + f.width / 2, y: f.y + f.height / 2 };
-}
 
 function drawArrow(ctx: CanvasRenderingContext2D, a: { x: number; y: number }, b: { x: number; y: number }): void {
   const ang = Math.atan2(b.y - a.y, b.x - a.x);
