@@ -60,20 +60,24 @@ export function App() {
 
   return (
     <div className="app">
-      {/* top bar */}
+      {/* unified toolbar (Xcode-style): leading identity · flexible space ·
+          grouped trailing actions, separated by spacers */}
       <header className="topbar">
         <div className="brand">
           <span className="logo">◗</span>
-          <span>draften</span>
-          <span className="chip">v{doc.appVersion} · MIT</span>
+          <span>Draften</span>
+          <span className="chip">v{doc.appVersion}</span>
         </div>
+        <div className="tb-sep" />
         <div className="breadcrumb">
           <span>{doc.name}</span>
           <span className="sep">›</span>
           <span className="current">{activeBoard?.name ?? "Board"}</span>
         </div>
-        {/* Drawing tools live on the Excalidraw canvas itself now. */}
+
         <div className="spacer" />
+
+        {/* editor-mode segmented control */}
         <div className="segmented">
           {(["Design", "Split", "Code"] as const).map((v) => (
             <button key={v} className={view === v ? "on" : ""} onClick={() => setView(v)}>
@@ -81,19 +85,27 @@ export function App() {
             </button>
           ))}
         </div>
-        <button className="branch" title="Git branch">
-          ⑂ main ✓
+
+        <div className="tb-sep" />
+
+        {/* document actions group */}
+        <button className="tb-btn" title="Git branch">
+          ⑂ main
+        </button>
+        <button className="tb-btn" onClick={openTemplate} title="Load the sinhaankur.com test template">
+          Template
         </button>
         <button
-          className="branch"
+          className="tb-btn tb-icon"
           onClick={() => setTheme((t) => (t === "light" ? "dark" : "light"))}
-          title="Toggle theme"
+          title="Toggle appearance"
         >
           {theme === "light" ? "☾" : "☀"}
         </button>
-        <button className="branch" onClick={openTemplate} title="Load the sinhaankur.com test template">
-          ⎘ Template
-        </button>
+
+        <div className="tb-sep" />
+
+        {/* primary action, trailing-most */}
         <button className="ai-btn" onClick={() => setAiOpen(true)}>
           ✦ AI
         </button>

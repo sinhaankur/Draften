@@ -5,101 +5,83 @@
   background: var(--bg);
 }
 
-/* ── top bar ─────────────────────────────────────────────────────────────── */
+/* ── unified toolbar (Xcode-style) ───────────────────────────────────────────
+   One toolbar, 52px, translucent, grouped items with spacers. Native control
+   sizing (28px), SF typography, subtle hover/active. */
 .topbar {
   display: flex;
   align-items: center;
-  gap: var(--s5);
-  height: var(--topbar-h);
-  padding: 0 var(--s4);
-  background: var(--raised);
+  gap: 10px;
+  height: 52px;
+  padding: 0 14px;
+  background: color-mix(in srgb, var(--raised) 82%, transparent);
+  backdrop-filter: saturate(180%) blur(20px);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
   border-bottom: 1px solid var(--border);
 }
 .brand {
   display: flex;
   align-items: center;
-  gap: var(--s3);
-  font-weight: 700;
-  font-size: var(--fs-lg);
-  letter-spacing: -0.035em;
+  gap: 8px;
+  font-weight: 600;
+  font-size: 14px;
+  letter-spacing: -0.01em;
 }
 .brand .logo {
   color: var(--accent);
-  font-size: 18px;
+  font-size: 17px;
 }
 .chip {
   font-family: var(--font-code);
-  font-size: var(--fs-2xs);
+  font-size: 10px;
   color: var(--text-3);
-  border: 1px solid var(--border);
-  border-radius: var(--r-ctl);
-  padding: 2px 6px;
-  letter-spacing: 0.02em;
+  background: var(--canvas);
+  border-radius: 5px;
+  padding: 3px 6px;
+  letter-spacing: 0.01em;
 }
 .breadcrumb {
   display: flex;
   align-items: center;
-  gap: var(--s2);
-  font-size: var(--fs-sm);
+  gap: 5px;
+  font-size: 13px;
   color: var(--text-3);
 }
 .breadcrumb .sep {
-  opacity: 0.5;
+  opacity: 0.4;
 }
 .breadcrumb .current {
   color: var(--text);
-  font-weight: 600;
+  font-weight: 590;
 }
 
-.toolbar {
-  display: flex;
-  gap: var(--s1);
-  margin-left: var(--s3);
+/* toolbar-group separator (ToolbarSpacer analogue) */
+.tb-sep {
+  width: 1px;
+  height: 22px;
+  background: var(--border);
+  margin: 0 2px;
 }
-.tool {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 30px;
-  height: 30px;
-  padding: 0 8px;
-  background: transparent;
-  color: var(--text-2);
-  border: 1px solid transparent;
-  border-radius: var(--r-ctl);
-  font-size: var(--fs-sm);
-  cursor: pointer;
-  transition: background var(--t-fast), color var(--t-fast);
-}
-.tool:hover {
-  color: var(--text);
-  background: var(--accent-soft);
-}
-.tool.active {
-  color: #fff;
-  background: var(--accent);
-}
-
 .spacer {
   flex: 1;
 }
 
-/* segmented Design / Split / Code */
+/* segmented control — native pill, compact */
 .segmented {
   display: flex;
   background: var(--canvas);
-  border: 1px solid var(--border);
-  border-radius: var(--r-ctl);
+  border-radius: 7px;
   padding: 2px;
+  height: 28px;
 }
 .segmented button {
   border: none;
   background: transparent;
   color: var(--text-2);
-  font-size: var(--fs-sm);
+  font-size: 12px;
   font-weight: 500;
-  padding: 4px 12px;
-  border-radius: 3px;
+  padding: 0 12px;
+  border-radius: 5px;
   cursor: pointer;
   transition: background var(--t-fast), color var(--t-fast);
 }
@@ -109,33 +91,56 @@
   box-shadow: var(--shadow-1);
 }
 
-.branch {
+/* toolbar buttons — compact 28px native controls */
+.tb-btn {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  font-size: var(--fs-sm);
+  height: 28px;
+  padding: 0 11px;
+  font-size: 13px;
+  font-weight: 500;
   color: var(--text-2);
-  border: 1px solid var(--border);
-  border-radius: var(--r-ctl);
-  padding: 5px 10px;
+  background: var(--canvas);
+  border: 0.5px solid var(--border);
+  border-radius: 7px;
   cursor: pointer;
+  transition: background var(--t-fast), color var(--t-fast), border-color var(--t-fast);
+}
+.tb-btn:hover {
+  color: var(--text);
+  border-color: var(--border-strong);
+}
+.tb-btn:active {
+  background: var(--accent-soft);
+}
+/* icon-only toolbar button (square) */
+.tb-icon {
+  width: 28px;
+  padding: 0;
+  justify-content: center;
+  font-size: 15px;
 }
 .ai-btn {
   display: inline-flex;
   align-items: center;
   gap: 6px;
+  height: 28px;
   background: var(--accent);
   color: #fff;
   border: none;
-  border-radius: var(--r-ctl);
-  padding: 6px 12px;
-  font-size: var(--fs-sm);
-  font-weight: 600;
+  border-radius: 7px;
+  padding: 0 13px;
+  font-size: 13px;
+  font-weight: 590;
   cursor: pointer;
   transition: background var(--t-fast);
 }
 .ai-btn:hover {
   background: var(--accent-hover);
+}
+.ai-btn:active {
+  background: var(--accent-down);
 }
 
 /* ── body: three panes ───────────────────────────────────────────────────── */
@@ -146,17 +151,19 @@
 }
 .left,
 .right {
-  background: var(--raised);
+  background: color-mix(in srgb, var(--raised) 60%, var(--canvas));
   overflow-y: auto;
   display: flex;
   flex-direction: column;
 }
 .left {
   width: var(--rail-left);
+  min-width: 220px;
   border-right: 1px solid var(--border);
 }
 .right {
   width: var(--rail-right);
+  min-width: 260px;
   border-left: 1px solid var(--border);
 }
 .stage {
@@ -191,24 +198,29 @@
 .row {
   display: flex;
   align-items: center;
-  gap: var(--s3);
+  gap: 8px;
   width: 100%;
   text-align: left;
   background: transparent;
   border: none;
   color: var(--text);
-  padding: 6px var(--s3);
-  border-radius: var(--r-ctl);
+  padding: 5px 8px;
+  border-radius: 6px;
   cursor: pointer;
-  font-size: var(--fs-md);
+  font-size: 13px;
+  line-height: 1.3;
 }
 .row:hover {
-  background: var(--accent-soft);
+  background: color-mix(in srgb, var(--text) 6%, transparent);
 }
+/* Finder/Xcode-style filled selection */
 .row.active {
-  background: var(--accent-soft);
-  color: var(--accent-text);
-  box-shadow: inset 2px 0 0 var(--accent);
+  background: var(--accent);
+  color: #fff;
+}
+.row.active .count,
+.row.active .muted {
+  color: rgba(255, 255, 255, 0.7);
 }
 .row .count {
   margin-left: auto;

@@ -34,9 +34,10 @@
   --warn: #b97f14;
   --danger: #d0453b;
 
-  /* type */
-  --font-ui: "Inter", system-ui, sans-serif;
-  --font-code: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  /* type — SF Pro system font first (native macOS), Inter as fallback */
+  --font-ui: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display",
+    "Inter", system-ui, sans-serif;
+  --font-code: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, monospace;
   --fs-2xs: 10px;
   --fs-xs: 11px;
   --fs-sm: 12px;
