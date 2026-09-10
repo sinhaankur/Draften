@@ -4,6 +4,7 @@ import { useRef } from "react";
 import type { ExcalidrawImperativeAPI } from "@excalidraw/excalidraw/types";
 
 import { ExcalidrawCanvas, toElements } from "./canvas/ExcalidrawCanvas";
+import { parsePaste, toExcalidrawSkeleton } from "./import/paste";
 import { isTauri } from "./env";
 import { byAtomicLevel, type AtomicLevel } from "./model/design-system";
 import { useEditor } from "./state/store";
@@ -18,11 +19,13 @@ export function App() {
   const doc = useEditor((s) => s.doc);
   const activeBoardId = useEditor((s) => s.activeBoardId);
   const setActiveBoard = useEditor((s) => s.setActiveBoard);
+  const addBoard = useEditor((s) => s.addBoard);
 
   const [view, setView] = useState<"Design" | "Split" | "Code">("Design");
   const [dsTab, setDsTab] = useState<"System" | "Inspect" | "Stack">("System");
   const [theme, setTheme] = useState<"light" | "dark">("light");
   const [aiOpen, setAiOpen] = useState(false);
+  const [pasteNote, setPasteNote] = useState<string | null>(null);
   const setDesignSystem = useEditor((s) => s.setDesignSystem);
   const rename = useEditor((s) => s.rename);
   const excalidrawApi = useRef<ExcalidrawImperativeAPI | null>(null);
@@ -46,6 +49,28 @@ export function App() {
   useEffect(() => {
     document.documentElement.setAttribute("data-theme", theme);
   }, [theme]);
+
+  // Paste from Figma / Sketch / web / image → real elements on the canvas.
+  // (Fixes "copy from Figma/Sketch doesn't work" — before this, nothing caught it.)
+  useEffect(() => {
+    const onPaste = async (e: ClipboardEvent) => {
+      // let Excalidraw handle its own native paste (its own elements)
+      const target = e.target as HTMLElement | null;
+      if (target && target.closest(".excalidraw")) return;
+      const api = excalidrawApi.current;
+      if (!api) return;
+      const result = await parsePaste(e);
+      if (!result.nodes.length) return;
+      e.preventDefault();
+      const skeleton = toExcalidrawSkeleton(result.nodes, 60, 60);
+      const existing = api.getSceneElements();
+      api.updateScene({ elements: [...existing, ...toElements(skeleton)] });
+      api.scrollToContent(api.getSceneElements(), { fitToContent: true, animate: true });
+      if (result.note) setPasteNote(result.note);
+    };
+    window.addEventListener("paste", onPaste);
+    return () => window.removeEventListener("paste", onPaste);
+  }, []);
 
   const library = byAtomicLevel(doc.designSystem.components);
   const hasComponents = doc.designSystem.components.length > 0;
@@ -113,12 +138,18 @@ export function App() {
 
       {aiOpen && <AiPanel onClose={() => setAiOpen(false)} />}
 
+      {pasteNote && (
+        <div className="paste-toast" onClick={() => setPasteNote(null)}>
+          {pasteNote}
+        </div>
+      )}
+
       <div className="body">
         {/* left: boards + layers */}
         <aside className="left">
           <div className="pane-body">
             <div className="section-title">
-              Boards <span className="add">+</span>
+              Boards <button className="add" onClick={() => addBoard()} title="Add a board">+</button>
             </div>
             {doc.boards.map((b) => (
               <button

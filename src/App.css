@@ -518,3 +518,28 @@
   gap: var(--s3);
   padding: var(--s4) 0;
 }
+
+/* paste note — brief honest toast when Figma/Sketch content is pasted */
+.paste-toast {
+  position: fixed;
+  bottom: 56px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 50;
+  max-width: 440px;
+  padding: 10px 14px;
+  background: var(--raised);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.25);
+  font-size: 12.5px;
+  cursor: pointer;
+}
+/* make the Boards "+" a real button */
+.section-title .add {
+  border: 0; background: transparent; color: var(--muted);
+  cursor: pointer; font-size: 15px; line-height: 1; padding: 0 4px;
+  border-radius: 6px;
+}
+.section-title .add:hover { background: color-mix(in srgb, var(--accent) 14%, transparent); color: var(--accent); }

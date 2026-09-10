@@ -109,6 +109,35 @@ single source of truth; canvas, code view, design-system panel, AI, and exporter
 all read/write it. Importers map foreign formats *into* it. This is what keeps the
 surfaces from drifting — the failure mode of the tools Draften replaces.
 
+## Free at every level — the architecture, not charity
+
+Most "free Figma alternatives" are free until the part that costs money (cloud,
+collab servers, AI credits), then paywall it. Draften is designed so **every layer
+has zero marginal cost per user** — that's what makes "free forever" real:
+
+1. **Local-first = the model.** Every design is a file on the user's disk
+   (`.draften` JSON). No storage cost, works offline; we never pay to host work.
+2. **Git IS the backend.** Share/version/collaborate ride on Git/GitHub — a design
+   is a repo, share = push, history = commits, teamwork = branches+merge. We run
+   **no backend**; the normally-paid stack (cloud+versioning+collab) is free
+   because GitHub already provides it.
+3. **AI on-device.** WebGPU / Apple Foundation Models + deterministic no-model
+   fallback → AI costs us nothing per use. Optional bring-your-own-key for cloud.
+4. **Real-time = peer-to-peer CRDT** (Yjs/WebRTC), not a paid relay; solo works offline.
+5. **Plugins from GitHub** extend it without us hosting each feature.
+6. **Free distribution** — tiny Tauri desktop app + static web build.
+
+## Design → deploy → preview on every device
+
+Draften closes the loop, not just a canvas:
+- **Design** a screen from the system (tokens + components).
+- **Preview live at real device sizes** — phone / tablet / desktop frames,
+  responsive, from the same document (no separate handoff step).
+- **Deploy** — export a real hostable static site (HTML/CSS/React) from the design,
+  or push to a repo → it's live. The design *is* the deliverable.
+
+Idea → live, checkable on any screen, still free.
+
 ## Build order (living)
 
 1. Document model + design tokens + atomic component model (the spine).

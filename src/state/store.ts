@@ -29,6 +29,8 @@ interface EditorState {
   setDesignSystem: (ds: DesignSystem) => void;
   /** Rename the document. */
   rename: (name: string) => void;
+  /** Add a new board and make it active. */
+  addBoard: (kind?: DraftenDocument["boards"][number]["kind"]) => void;
 }
 
 const initialDoc = createEmptyDocument();
@@ -54,4 +56,14 @@ export const useEditor = create<EditorState>((set, get) => ({
 
   rename: (name) =>
     set((s) => ({ doc: { ...s.doc, name, updatedAt: new Date().toISOString() } })),
+
+  addBoard: (kind = "design") =>
+    set((s) => {
+      const n = s.doc.boards.length + 1;
+      const board = { id: crypto.randomUUID(), name: `Board ${n}`, kind, children: [] };
+      return {
+        doc: { ...s.doc, boards: [...s.doc.boards, board], updatedAt: new Date().toISOString() },
+        activeBoardId: board.id,
+      };
+    }),
 }));
