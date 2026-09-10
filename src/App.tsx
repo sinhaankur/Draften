@@ -3,9 +3,12 @@ import { useEffect, useState } from "react";
 import { useRef } from "react";
 import type { ExcalidrawImperativeAPI } from "@excalidraw/excalidraw/types";
 
+import { AnimatePresence, motion } from "motion/react";
+
 import { ExcalidrawCanvas, toElements } from "./canvas/ExcalidrawCanvas";
 import { parsePaste, toExcalidrawSkeleton } from "./import/paste";
 import { isTauri } from "./env";
+import { toast as toastMotion } from "./ui/motion";
 import { byAtomicLevel, type AtomicLevel } from "./model/design-system";
 import { useEditor } from "./state/store";
 import { sinhaankurDesignSystem, sinhaankurScreenSkeleton } from "./templates/sinhaankur";
@@ -141,13 +144,17 @@ export function App() {
         <button className="rail-toggle" title="Design system" onClick={() => { setRightOpen((v) => !v); setLeftOpen(false); }}>⧉</button>
       </header>
 
-      {aiOpen && <AiPanel onClose={() => setAiOpen(false)} />}
+      <AnimatePresence>
+        {aiOpen && <AiPanel key="ai" onClose={() => setAiOpen(false)} />}
+      </AnimatePresence>
 
-      {pasteNote && (
-        <div className="paste-toast" onClick={() => setPasteNote(null)}>
-          {pasteNote}
-        </div>
-      )}
+      <AnimatePresence>
+        {pasteNote && (
+          <motion.div className="paste-toast" onClick={() => setPasteNote(null)} {...toastMotion}>
+            {pasteNote}
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <div className="body">
         {/* scrim (mobile) — tap to close any open drawer */}

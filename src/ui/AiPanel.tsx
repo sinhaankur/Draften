@@ -1,7 +1,9 @@
 import { useState } from "react";
+import { motion } from "motion/react";
 
 import { generateDesignSystem } from "../ai/design-gen";
 import { useEditor } from "../state/store";
+import { overlay, scrim } from "./motion";
 
 /**
  * The ✦ AI panel — generates a real design system from a brand brief.
@@ -31,8 +33,8 @@ export function AiPanel({ onClose }: { onClose: () => void }) {
   };
 
   return (
-    <div className="ai-overlay" onClick={onClose}>
-      <div className="ai-dialog" onClick={(e) => e.stopPropagation()}>
+    <motion.div className="ai-overlay" onClick={onClose} {...scrim}>
+      <motion.div className="ai-dialog" onClick={(e) => e.stopPropagation()} {...overlay}>
         <div className="ai-title">✦ Generate a design system</div>
         <p className="muted small">
           Brand + vibe → design tokens and an atomic component library (atoms →
@@ -64,7 +66,7 @@ export function AiPanel({ onClose }: { onClose: () => void }) {
             {busy ? "Generating…" : "Generate"}
           </button>
         </div>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 }
