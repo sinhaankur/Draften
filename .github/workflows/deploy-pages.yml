@@ -42,21 +42,27 @@ jobs:
           pnpm exec tsc --noEmit -p tsconfig.json
           pnpm exec vitest run
 
-      - name: Build (GitHub Pages base)
+      - name: Build the app (served at /app)
         env:
           DEPLOY_TARGET: pages
         run: pnpm exec vite build
 
-      - name: Add SPA + Jekyll-bypass files
+      - name: Compose the Pages site — landing at root, app at /app
         run: |
-          # single-page app: 404 falls back to index so deep links work
-          cp dist/index.html dist/404.html
-          # stop GitHub Pages' Jekyll from ignoring _-prefixed asset files
-          touch dist/.nojekyll
+          mkdir -p public_site
+          # landing page (site/) at the root
+          cp -R site/* public_site/
+          # the in-browser app under /app
+          mkdir -p public_site/app
+          cp -R dist/* public_site/app/
+          # SPA fallback for the app's deep links
+          cp public_site/app/index.html public_site/app/404.html
+          # stop Jekyll from dropping _-prefixed asset files
+          touch public_site/.nojekyll
 
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: dist
+          path: public_site
 
   deploy:
     needs: build

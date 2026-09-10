@@ -5,9 +5,9 @@ import react from "@vitejs/plugin-react";
 //   • as a WEBSITE on GitHub Pages (a /Draften/ project subpath), and
 //   • as a NATIVE desktop app via Tauri (assets loaded relative from the shell).
 // The base path differs between the two, so it's env-driven:
-//   DEPLOY_TARGET=pages → "/Draften/"   (the Pages CI sets this)
-//   default             → "./"          (Tauri + local dev)
-const base = process.env.DEPLOY_TARGET === "pages" ? "/Draften/" : "./";
+//   DEPLOY_TARGET=pages → "/Draften/app/"  (landing site is at /Draften/, app under /app)
+//   default             → "./"             (Tauri + local dev)
+const base = process.env.DEPLOY_TARGET === "pages" ? "/Draften/app/" : "./";
 
 export default defineConfig({
   plugins: [react()],
