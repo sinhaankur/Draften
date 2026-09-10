@@ -13,14 +13,23 @@
   align-items: center;
   gap: 10px;
   height: 52px;
-  /* left clearance for the macOS traffic-light buttons (overlay title bar) */
-  padding: 0 14px 0 82px;
+  /* default left padding (Windows/Linux/web have no left traffic-lights) */
+  padding: 0 14px;
   background: color-mix(in srgb, var(--raised) 82%, transparent);
   backdrop-filter: saturate(180%) blur(20px);
   -webkit-backdrop-filter: saturate(180%) blur(20px);
   border-bottom: 1px solid var(--border);
   /* the empty parts of the toolbar drag the window (native feel) */
   -webkit-app-region: drag;
+}
+/* macOS overlay title bar: leave clearance for the traffic-light buttons */
+:root[data-os="macos"] .topbar {
+  padding-left: 82px;
+}
+/* Windows/Linux desktop: reserve room on the RIGHT for native window controls */
+:root[data-os="windows"] .topbar,
+:root[data-os="linux"] .topbar {
+  padding-right: 46px;
 }
 /* interactive controls must opt out of the drag region */
 .topbar button,

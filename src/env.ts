@@ -21,6 +21,27 @@ export function isWeb(): boolean {
   return !isTauri();
 }
 
+/** The OS Draften is running on — drives per-platform window chrome. */
+export type OS = "macos" | "windows" | "linux" | "web";
+export function detectOS(): OS {
+  if (typeof navigator === "undefined") return "web";
+  const p = (navigator.platform || "").toLowerCase();
+  const ua = (navigator.userAgent || "").toLowerCase();
+  if (/mac/.test(p) || /mac/.test(ua)) return "macos";
+  if (/win/.test(p) || /win/.test(ua)) return "windows";
+  if (/linux/.test(p) || /x11/.test(ua)) return "linux";
+  return "web";
+}
+
+/** Tag <html> with the OS + shell so CSS can adapt (traffic-light gap on mac
+ *  only, native window controls on win/linux, etc.). Call once at startup. */
+export function applyPlatformClass(): void {
+  if (typeof document === "undefined") return;
+  const root = document.documentElement;
+  root.setAttribute("data-os", detectOS());
+  root.setAttribute("data-shell", isTauri() ? "desktop" : "web");
+}
+
 /**
  * Capabilities gate. The UI reads these to show/hide native-only affordances
  * (e.g. "Open .graffle from disk" or the Apple Intelligence AI tier) so the web
