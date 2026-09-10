@@ -552,3 +552,66 @@
   border-radius: 6px;
 }
 .section-title .add:hover { background: color-mix(in srgb, var(--accent) 14%, transparent); color: var(--accent); }
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   Responsive — grounded in the sinhaankur.com UX framework:
+   · Hick's Law   → on smaller screens, reduce visible choices: shrink then hide
+                    the secondary rails so the canvas (the primary task) leads.
+   · Fitts's Law  → on touch/coarse pointers, enlarge tap targets.
+   · Jakob's Law  → 768px md breakpoint (the familiar tablet threshold), like the
+                    site's md: usage.
+   ───────────────────────────────────────────────────────────────────────────── */
+
+/* Tablet-ish: narrow the rails so the canvas keeps room */
+@media (max-width: 1100px) {
+  :root { --rail-left: 210px; --rail-right: 240px; }
+  .left { min-width: 180px; }
+  .right { min-width: 200px; }
+}
+
+/* Below md (768px): collapse rails to the canvas + top bar. The panels become
+   slide-over drawers toggled from the top bar (see .rail-toggle). */
+@media (max-width: 768px) {
+  .left, .right {
+    position: absolute;
+    top: 52px;
+    bottom: 24px;
+    z-index: 30;
+    width: min(84vw, 320px);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.35);
+    transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .left  { left: 0;  transform: translateX(-100%); }
+  .right { right: 0; transform: translateX(100%); }
+  .left.open  { transform: translateX(0); }
+  .right.open { transform: translateX(0); }
+  .stage { width: 100%; }
+  /* Fitts's: bigger touch targets in the chrome */
+  .topbar { height: 56px; }
+  .tb-btn, .segmented button, .ai-btn, .rail-toggle { min-height: 40px; }
+  /* Hick's: hide low-priority top-bar items on tiny screens */
+  .breadcrumb, .chip { display: none; }
+}
+
+/* the drawer toggles (hamburger for left, panel for right) — hidden ≥ md */
+.rail-toggle {
+  display: none;
+  -webkit-app-region: no-drag;
+  border: 0; background: transparent; color: var(--text);
+  cursor: pointer; font-size: 16px; padding: 6px 10px; border-radius: 8px;
+}
+.rail-toggle:hover { background: color-mix(in srgb, var(--accent) 12%, transparent); }
+@media (max-width: 768px) { .rail-toggle { display: inline-flex; align-items: center; } }
+
+/* scrim behind an open drawer */
+.rail-scrim {
+  display: none;
+  position: absolute; inset: 52px 0 24px 0; z-index: 25;
+  background: rgba(0,0,0,0.35);
+}
+@media (max-width: 768px) { .rail-scrim.show { display: block; } }
+
+/* Fitts's Law on any coarse pointer (touch), regardless of width */
+@media (pointer: coarse) {
+  .tb-btn, .segmented button, .ai-btn, .row, .dl { min-height: 40px; }
+}

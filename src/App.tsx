@@ -26,6 +26,9 @@ export function App() {
   const [theme, setTheme] = useState<"light" | "dark">("light");
   const [aiOpen, setAiOpen] = useState(false);
   const [pasteNote, setPasteNote] = useState<string | null>(null);
+  // Responsive drawers (below md the rails slide over the canvas — Hick's Law).
+  const [leftOpen, setLeftOpen] = useState(false);
+  const [rightOpen, setRightOpen] = useState(false);
   const setDesignSystem = useEditor((s) => s.setDesignSystem);
   const rename = useEditor((s) => s.rename);
   const excalidrawApi = useRef<ExcalidrawImperativeAPI | null>(null);
@@ -88,6 +91,7 @@ export function App() {
       {/* unified toolbar (Xcode-style): leading identity · flexible space ·
           grouped trailing actions, separated by spacers */}
       <header className="topbar">
+        <button className="rail-toggle" title="Boards & layers" onClick={() => { setLeftOpen((v) => !v); setRightOpen(false); }}>☰</button>
         <div className="brand">
           <span className="logo">◗</span>
           <span>Draften</span>
@@ -134,6 +138,7 @@ export function App() {
         <button className="ai-btn" onClick={() => setAiOpen(true)}>
           ✦ AI
         </button>
+        <button className="rail-toggle" title="Design system" onClick={() => { setRightOpen((v) => !v); setLeftOpen(false); }}>⧉</button>
       </header>
 
       {aiOpen && <AiPanel onClose={() => setAiOpen(false)} />}
@@ -145,8 +150,13 @@ export function App() {
       )}
 
       <div className="body">
+        {/* scrim (mobile) — tap to close any open drawer */}
+        <div
+          className={`rail-scrim${leftOpen || rightOpen ? " show" : ""}`}
+          onClick={() => { setLeftOpen(false); setRightOpen(false); }}
+        />
         {/* left: boards + layers */}
-        <aside className="left">
+        <aside className={`left${leftOpen ? " open" : ""}`}>
           <div className="pane-body">
             <div className="section-title">
               Boards <button className="add" onClick={() => addBoard()} title="Add a board">+</button>
@@ -183,7 +193,7 @@ export function App() {
         </main>
 
         {/* right: system / inspect / stack */}
-        <aside className="right">
+        <aside className={`right${rightOpen ? " open" : ""}`}>
           <div className="tabs">
             {(["System", "Inspect", "Stack"] as const).map((t) => (
               <button key={t} className={dsTab === t ? "on" : ""} onClick={() => setDsTab(t)}>
