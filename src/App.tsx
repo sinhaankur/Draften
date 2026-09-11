@@ -13,6 +13,7 @@ import { byAtomicLevel, type AtomicLevel } from "./model/design-system";
 import { useEditor } from "./state/store";
 import { sinhaankurDesignSystem, sinhaankurScreenSkeleton } from "./templates/sinhaankur";
 import { AiPanel } from "./ui/AiPanel";
+import { PluginsPanel } from "./ui/PluginsPanel";
 import { ImportButton } from "./ui/ImportButton";
 import "./App.css";
 
@@ -28,6 +29,7 @@ export function App() {
   const [dsTab, setDsTab] = useState<"System" | "Inspect" | "Stack">("System");
   const [theme, setTheme] = useState<"light" | "dark">("light");
   const [aiOpen, setAiOpen] = useState(false);
+  const [pluginsOpen, setPluginsOpen] = useState(false);
   const [pasteNote, setPasteNote] = useState<string | null>(null);
   // Responsive drawers (below md the rails slide over the canvas — Hick's Law).
   const [leftOpen, setLeftOpen] = useState(false);
@@ -127,6 +129,9 @@ export function App() {
         <button className="tb-btn" onClick={openTemplate} title="Load the sinhaankur.com test template">
           Template
         </button>
+        <button className="tb-btn" onClick={() => setPluginsOpen(true)} title="Install plugins from GitHub">
+          🧩 Plugins
+        </button>
         <button
           className="tb-btn tb-icon"
           onClick={() => setTheme((t) => (t === "light" ? "dark" : "light"))}
@@ -146,6 +151,7 @@ export function App() {
 
       <AnimatePresence>
         {aiOpen && <AiPanel key="ai" onClose={() => setAiOpen(false)} />}
+        {pluginsOpen && <PluginsPanel key="plugins" onClose={() => setPluginsOpen(false)} />}
       </AnimatePresence>
 
       <AnimatePresence>

@@ -10,6 +10,8 @@ import "./index.css";
 applyPlatformClass();
 // Register built-in plugins (importers, AI providers) before the app mounts.
 registerBuiltins();
+// Re-enable any GitHub-installed plugins the user added (non-blocking).
+import("./api/github-plugins").then((m) => m.restoreInstalled()).catch(() => {});
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>

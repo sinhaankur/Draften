@@ -615,3 +615,11 @@
 @media (pointer: coarse) {
   .tb-btn, .segmented button, .ai-btn, .row, .dl { min-height: 40px; }
 }
+
+/* Plugins panel */
+.plugin-error { background: color-mix(in srgb, #f43f5e 14%, transparent); color: #ff6b81; border-radius: 8px; padding: 8px 10px; font-size: 12px; margin-top: 8px; }
+.plugin-list { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; max-height: 220px; overflow-y: auto; }
+.plugin-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 10px 12px; background: color-mix(in srgb, var(--raised) 60%, var(--canvas)); border: 1px solid var(--border); border-radius: 10px; }
+.plugin-name { font-weight: 600; font-size: 13px; display: flex; align-items: center; gap: 7px; }
+.plugin-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--muted); }
+.plugin-dot.on { background: #34d399; }
