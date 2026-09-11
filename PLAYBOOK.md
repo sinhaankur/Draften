@@ -56,8 +56,20 @@ Blender is candid it's not yet the studio default. Draften keeps the same honest
 - **VS Code / Language Server Protocol** — the extension API + the idea of a
   documented protocol others implement (mirror for Draften's MCP + plugin API).
 
-## The one thing to get right first
-**A `bpy`-style unified Draften API.** Everything else (plugins, GitHub-installed
-extensions, MCP server, AI actions) hangs off it. Design it once, cleanly, and the
-ecosystem can grow the way Blender's did. This supersedes ad-hoc feature work as
-the architectural priority — see DEPTH.md Tier 4, promote it.
+## The one thing to get right first — ✅ BUILT
+**A `bpy`-style unified Draften API** — `src/api/draften.ts` (tested, 9/9). ONE
+object everything hangs off:
+- `draften.document` — get/load/rename, **toJSON/fromJSON open format** (Excalidraw),
+  `.boards` (list/add/activate), `.designSystem` (get/set/components/tokens) (Penpot).
+- `draften.commands` — register / execute / list (**VS Code** commands).
+- `draften.events` — on/emit bus with disposables (VS Code).
+- `draften.panels` — contribute UI to left/right/inspector (Blender/Godot).
+- `draften.importers` / `draften.ai` — the existing registries, unified in.
+- **Plugin lifecycle** `enablePlugin/disablePlugin` with `activate(ctx)` +
+  `ctx.subscriptions` auto-cleanup (**VS Code + Godot**).
+- Exposed on `window.draften` for the console + external tools (like `bpy`).
+
+Next off this surface: (1) GitHub-installed plugins (fetch a plugin module → run
+its `activate`), (2) MCP server that maps to `draften.commands`, (3) migrate the
+app's own buttons to `draften.commands` so the app dogfoods its own API (the
+Blender rule: no core-only powers).
