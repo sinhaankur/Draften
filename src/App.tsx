@@ -343,8 +343,8 @@ export function App() {
         {/* right: system / inspect / stack */}
         <aside className={`right${rightOpen ? " open" : ""}`}>
           <div className="tabs">
-            {(["Design", "Prototype", "Inspect", "Assistant", "Review"] as const).map((t) => (
-              <button key={t} className={dsTab === t ? "on" : ""} onClick={() => { setDsTab(t); if (t === "Assistant") setAiOpen(true); }}>
+            {(["Design", "Prototype", "Inspect", "Review"] as const).map((t) => (
+              <button key={t} className={dsTab === t ? "on" : ""} onClick={() => { setDsTab(t); }}>
                 {t}
               </button>
             ))}

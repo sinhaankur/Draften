@@ -93,7 +93,7 @@ export function ExcalidrawCanvas({
 // real content + the teal primary button, so the canvas opens populated like the
 // screenshot instead of an empty flowchart.
 const INK = "#1d1d1b", MUTED = "#8e8d88", LINE = "#e7e6e2", ACC = "#3d6b5f", SURF = "#ffffff";
-const AW = 320, AH = 640; // artboard size
+const AW = 393, AH = 852; // artboard size — iPhone 16 Pro (matches v2: 393×852)
 
 // Each artboard is a REAL frame; children are listed in the frame's `children`
 // array (that's how Excalidraw's skeleton links them). Named layers → the tree
@@ -106,41 +106,45 @@ const sid = (p: string) => `${p}-${_sid++}`;
 function text(id: string, x: number, y: number, t: string, size = 15, color = INK, name?: string) {
   return { id, type: "text" as const, x, y, text: t, fontSize: size, fontFamily: 2, strokeColor: color, roughness: 0, ...(name ? { customData: { name } } : {}) };
 }
+const CW = AW - 64; // content width inside an artboard (32px padding each side)
 function field(id: string, x: number, y: number, ph: string, name: string) {
-  return { id, type: "rectangle" as const, x, y, width: 260, height: 42, roughness: 0, strokeColor: LINE, backgroundColor: SURF, strokeWidth: 1, roundness: { type: 3 } as const, customData: { name },
+  return { id, type: "rectangle" as const, x, y, width: CW, height: 46, roughness: 0, strokeColor: LINE, backgroundColor: SURF, strokeWidth: 1, roundness: { type: 3 } as const, customData: { name },
     label: { text: ph, fontSize: 13, fontFamily: 2, strokeColor: MUTED } };
 }
 function button(id: string, x: number, y: number, t: string, name = "Primary button") {
-  return { id, type: "rectangle" as const, x, y, width: 260, height: 46, roughness: 0, strokeColor: ACC, backgroundColor: ACC, strokeWidth: 1, roundness: { type: 3 } as const, customData: { name },
+  return { id, type: "rectangle" as const, x, y, width: CW, height: 50, roughness: 0, strokeColor: ACC, backgroundColor: ACC, strokeWidth: 1, roundness: { type: 3 } as const, customData: { name },
     label: { text: t, fontSize: 14, fontFamily: 2, strokeColor: "#ffffff" } };
 }
 
 function seedSkeleton() {
   const x1 = 80, x2 = x1 + AW + 60, x3 = x2 + AW + 60;
+  const PAD = 32;                 // artboard inner padding
+  const top = 80;                 // frames start at y=80
+  const btnY = top + AH - 110;    // primary button near the bottom (matches v2)
 
-  // Artboard 1: Welcome
+  // Artboard 1: Welcome — hero image up top, title/body low, button at bottom
   const w = {
-    mark: { id: sid("w"), type: "ellipse" as const, x: x1 + 100, y: 170, width: 120, height: 120, roughness: 0, strokeColor: LINE, backgroundColor: "#f3f3f1", strokeWidth: 1, name: "Mark" },
-    title: text(sid("w"), x1 + 28, 420, "Your designs, in\nyour repo", 24, INK, "Title"),
-    body: text(sid("w"), x1 + 28, 500, "Branch, commit and review boards\nthe same way your team ships code.", 12, MUTED, "Body"),
-    btn: button(sid("w"), x1 + 28, 620, "Get started"),
+    mark: { id: sid("w"), type: "ellipse" as const, x: x1 + (AW - 130) / 2, y: top + 90, width: 130, height: 130, roughness: 0, strokeColor: LINE, backgroundColor: "#f3f3f1", strokeWidth: 1, name: "Mark" },
+    title: text(sid("w"), x1 + PAD, top + 480, "Your designs, in\nyour repo", 26, INK, "Title"),
+    body: text(sid("w"), x1 + PAD, top + 560, "Branch, commit and review boards\nthe same way your team ships code.", 13, MUTED, "Body"),
+    btn: button(sid("w"), x1 + PAD, btnY, "Get started"),
   };
   // Artboard 2: Create account
   const a = {
-    title: text(sid("a"), x2 + 28, 150, "Create account", 22, INK, "Title"),
-    emailL: text(sid("a"), x2 + 28, 210, "Email", 12, MUTED, "Email label"),
-    emailF: field(sid("a"), x2 + 28, 230, "name@studio.dev", "Email field"),
-    pwL: text(sid("a"), x2 + 28, 300, "Password", 12, MUTED, "Password label"),
-    pwF: field(sid("a"), x2 + 28, 320, "••••••••", "Password field"),
-    btn: button(sid("a"), x2 + 28, 620, "Continue"),
+    title: text(sid("a"), x2 + PAD, top + 90, "Create account", 24, INK, "Title"),
+    emailL: text(sid("a"), x2 + PAD, top + 170, "Email", 12, MUTED, "Email label"),
+    emailF: field(sid("a"), x2 + PAD, top + 194, "name@studio.dev", "Email field"),
+    pwL: text(sid("a"), x2 + PAD, top + 264, "Password", 12, MUTED, "Password label"),
+    pwF: field(sid("a"), x2 + PAD, top + 288, "••••••••", "Password field"),
+    btn: button(sid("a"), x2 + PAD, btnY, "Continue"),
   };
   // Artboard 3: Connect repository
   const c = {
-    title: text(sid("c"), x3 + 28, 150, "Where do your\ndesigns live?", 22, INK, "Title"),
-    gh: field(sid("c"), x3 + 28, 250, "GitHub", "GitHub row"),
-    gl: field(sid("c"), x3 + 28, 304, "GitLab", "GitLab row"),
-    url: field(sid("c"), x3 + 28, 358, "Any git URL (SSH or HTTPS)", "Any git URL row"),
-    note: text(sid("c"), x3 + 28, 430, "You stay in the flow with your code.", 12, MUTED, "Footnote"),
+    title: text(sid("c"), x3 + PAD, top + 90, "Where do your\ndesigns live?", 24, INK, "Title"),
+    gh: field(sid("c"), x3 + PAD, top + 200, "GitHub", "GitHub row"),
+    gl: field(sid("c"), x3 + PAD, top + 258, "GitLab", "GitLab row"),
+    url: field(sid("c"), x3 + PAD, top + 316, "Any git URL (SSH or HTTPS)", "Any git URL row"),
+    note: text(sid("c"), x3 + PAD, top + 388, "You stay in the flow with your code.", 12, MUTED, "Footnote"),
   };
 
   return [
