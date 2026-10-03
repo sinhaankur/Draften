@@ -5,24 +5,26 @@
 
 :root {
   color-scheme: light;
-  --canvas: #edeff4;
-  --bg: #fafbfc;
-  --raised: #ffffff;
+  /* Claude aesthetic — the warm clay accent + calm feel, but clean WHITE surfaces
+     (Ankur: keep it white, rest same as Claude). Reskins the whole app via tokens. */
+  --canvas: #f3f3f1;             /* soft neutral canvas */
+  --bg: #ffffff;                 /* clean white app background */
+  --raised: #ffffff;             /* white panels */
   --overlay: #ffffff;
-  --border: #e2e5ec;
-  --border-strong: #c9ceda;
-  --text: #171a21;
-  --text-2: #4c5468;
-  --text-3: #8a93a6;
-  --accent: #5b34d6;
-  --accent-hover: #4c2bc2;
-  --accent-down: #4023a8;
-  --accent-text: #5228c7;
-  --accent-soft: rgba(91, 52, 214, 0.1);
-  --selection: rgba(91, 52, 214, 0.25);
+  --border: #ebe9e4;             /* soft warm-neutral hairline */
+  --border-strong: #ddd9d1;
+  --text: #2b2825;               /* warm near-black ink */
+  --text-2: #6b6459;             /* warm grey */
+  --text-3: #9a9288;
+  --accent: #c15f3c;             /* Claude clay / terracotta */
+  --accent-hover: #ad5334;
+  --accent-down: #96472c;
+  --accent-text: #b2542f;
+  --accent-soft: rgba(193, 95, 60, 0.1);
+  --selection: rgba(193, 95, 60, 0.22);
 
   /* board kinds — functional color, not brand */
-  --kind-design: #5b34d6;
+  --kind-design: #c15f3c;
   --kind-diagram: #1d8f7e;
   --kind-journey: #b97f14;
   --kind-mindmap: #2b76b8;
@@ -91,13 +93,13 @@
   --text: #e9ebf1;
   --text-2: #a9b0c0;
   --text-3: #6c7484;
-  --accent: #7048e8;
-  --accent-hover: #7e5af0;
-  --accent-down: #5c38d0;
-  --accent-text: #b49cff;
-  --accent-soft: rgba(112, 72, 232, 0.14);
-  --selection: rgba(112, 72, 232, 0.32);
-  --kind-design: #7048e8;
+  --accent: #d97a52;             /* Claude clay, lifted for dark ground */
+  --accent-hover: #e28963;
+  --accent-down: #c15f3c;
+  --accent-text: #e9a583;
+  --accent-soft: rgba(217, 122, 82, 0.16);
+  --selection: rgba(217, 122, 82, 0.3);
+  --kind-design: #d97a52;
   --kind-diagram: #2fbfaa;
   --kind-journey: #e3a73c;
   --kind-mindmap: #4ca0e8;
