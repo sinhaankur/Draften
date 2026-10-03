@@ -15,6 +15,8 @@ type El = {
   name?: string | null;
   customData?: { name?: string } | null;
   text?: string;
+  width?: number;
+  height?: number;
   isDeleted?: boolean;
   opacity?: number;
   groupIds?: string[];
@@ -70,8 +72,32 @@ export function LayersPanel({ api }: { api: ExcalidrawImperativeAPI | null }) {
 
   const rows = buildRows(els, collapsed);
   const toggleCollapse = (id: string) => setCollapsed((c) => { const n = new Set(c); n.has(id) ? n.delete(id) : n.add(id); return n; });
+  const frames = els.filter((e) => e.type === "frame" && !e.isDeleted);
 
   return (
+   <>
+    {/* Artboards — a distinct section (v2), each with its real dimensions */}
+    {frames.length > 0 && (
+      <div style={{ padding: "0 4px 8px" }}>
+        <div style={{ padding: "4px 8px", fontSize: 11.5, fontWeight: 500, color: "var(--text-3, #8e8d88)" }}>Artboards</div>
+        {frames.map((f) => {
+          const on = selected.has(f.id);
+          return (
+            <div key={f.id} onClick={(e) => select(f.id, e.metaKey || e.shiftKey)}
+              style={{ display: "flex", alignItems: "center", gap: 7, padding: "5px 8px", borderRadius: 6, cursor: "pointer", fontSize: 12.5,
+                background: on ? "var(--acc-soft, #eaf1ee)" : "transparent", color: on ? "var(--accent, #3d6b5f)" : "var(--t1, #1d1d1b)", fontWeight: on ? 600 : 400 }}>
+              <span style={{ flex: "none", display: "grid", placeItems: "center", color: on ? "var(--accent, #3d6b5f)" : "var(--text-3, #8e8d88)" }}><Frame size={14} /></span>
+              <span style={{ flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{nameOf(f, els)}</span>
+              <span style={{ flex: "none", fontFamily: "var(--font-mono, monospace)", fontSize: 10.5, color: "var(--text-3, #8e8d88)" }}>
+                {Math.round(f.width ?? 0)}×{Math.round(f.height ?? 0)}
+              </span>
+            </div>
+          );
+        })}
+      </div>
+    )}
+    {/* Layers — the full nested tree */}
+    <div style={{ padding: "4px 8px 0", fontSize: 11.5, fontWeight: 500, color: "var(--text-3, #8e8d88)", borderTop: "1px solid var(--line, #e7e6e2)" }}>Layers</div>
     <div style={{ display: "flex", flexDirection: "column", gap: 1, padding: "2px 4px", maxHeight: 420, overflow: "auto" }}>
       {rows.map((r) => {
         const on = selected.has(r.id);
@@ -102,6 +128,7 @@ export function LayersPanel({ api }: { api: ExcalidrawImperativeAPI | null }) {
         );
       })}
     </div>
+   </>
   );
 }
 

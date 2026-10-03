@@ -253,6 +253,23 @@ export function App() {
 
           {leftMode === "git" ? (
             <SourceControlPanel />
+          ) : leftMode === "components" ? (
+            <div style={{ flex: 1, minHeight: 0, overflow: "auto", padding: "4px 12px" }}>
+              <p style={{ fontSize: 12.5, color: "var(--text-3)", lineHeight: 1.6 }}>
+                Your component library appears here. Generate one with the ✦ assistant, or open Templates for a starting point.
+              </p>
+              <div style={{ display: "flex", flexDirection: "column", gap: 8, marginTop: 10 }}>
+                <button className="ai-btn" style={{ justifyContent: "center" }} onClick={() => setAiOpen(true)}><Sparkles size={14} /> Generate a library</button>
+                <button className="tb-btn" style={{ justifyContent: "center" }} onClick={() => setTemplatesOpen(true)}><LayoutTemplate size={14} /> Templates</button>
+              </div>
+            </div>
+          ) : leftMode === "history" ? (
+            <div style={{ flex: 1, minHeight: 0, overflow: "auto", padding: "4px 12px" }}>
+              <p style={{ fontSize: 12.5, color: "var(--text-3)", lineHeight: 1.6 }}>
+                Every change is saved. Open the ✦ assistant to see the full change log with undo/redo, or switch to the Console view for the event stream.
+              </p>
+              <button className="tb-btn" style={{ justifyContent: "center", width: "100%", marginTop: 10 }} onClick={() => setView("Console")}>Open Console</button>
+            </div>
           ) : (
           <div style={{ flex: 1, minHeight: 0, overflow: "auto", display: "flex", flexDirection: "column" }}>
             {/* Pages */}
@@ -283,9 +300,8 @@ export function App() {
               <ImportButton />
             </div>
 
-            {/* Layers — the real tree (click to select, 👁 to toggle) */}
+            {/* Artboards + Layers — the panel renders both sections (v2) */}
             <div style={{ padding: "0 4px 10px", borderTop: "1px solid var(--line, var(--border))" }}>
-              <div style={{ padding: "8px 8px 4px", fontSize: 11.5, fontWeight: 500, color: "var(--text-3)" }}>Layers</div>
               <LayersPanel api={canvasReady ? excalidrawApi.current : null} />
             </div>
           </div>
