@@ -27,7 +27,7 @@ const INK = "#171a21";
 const MUTED = "#6b7280";
 const BORDER = "#d7dbe3";
 const SURFACE = "#ffffff";
-const BRAND = "#4f46e5";
+const BRAND = "#3d6b5f";
 const BRAND_INK = "#ffffff";
 const FONT = 2 as const; // Excalidraw "normal" font
 

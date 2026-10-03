@@ -32,7 +32,7 @@ export function ExcalidrawCanvas({
       appState: {
         currentItemRoughness: 0, // crisp, precise shapes (not hand-drawn)
         currentItemFontFamily: 2, // Nunito — the normal (non-handwritten) font
-        currentItemStrokeColor: "#5b34d6",
+        currentItemStrokeColor: "#3d6b5f",
         viewBackgroundColor: theme === "dark" ? "#0c0e12" : "#edeff4",
         gridSize: 20,
       },
@@ -95,7 +95,7 @@ function seedSkeleton() {
       width: 140,
       height: 60,
       roughness: 0,
-      strokeColor: "#5b34d6",
+      strokeColor: "#3d6b5f",
       backgroundColor: "#f4f0ff",
       strokeWidth: 1.5,
       label: { text: "App opened", fontSize: 16, fontFamily: 2, strokeColor: "#171a21" },
@@ -120,7 +120,7 @@ function seedSkeleton() {
       x: 580,
       y: 140,
       roughness: 0,
-      strokeColor: "#5b34d6",
+      strokeColor: "#3d6b5f",
       strokeWidth: 1.5,
       start: { id: "start" },
       end: { id: "decide" },

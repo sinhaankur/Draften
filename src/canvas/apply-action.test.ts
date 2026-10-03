@@ -11,7 +11,7 @@ describe("apply-action · skeletonFor", () => {
   it("draws a styled button (brand fill + label), not a grey box", () => {
     const [el] = skeletonFor(act("create", { type: "button", label: "Get started" })) as any[];
     expect(el.type).toBe("rectangle");
-    expect(el.backgroundColor).toBe("#4f46e5");         // brand fill
+    expect(el.backgroundColor).toBe("#3d6b5f");         // brand fill
     expect(el.roundness).toBeTruthy();                   // rounded, designed
     expect(el.label.text).toBe("Get started");
   });
@@ -31,7 +31,7 @@ describe("apply-action · skeletonFor", () => {
 
   it("infers the kind from detail when no explicit type", () => {
     const [btn] = skeletonFor(act("create", {}, "a primary submit button")) as any[];
-    expect(btn.backgroundColor).toBe("#4f46e5"); // inferred button
+    expect(btn.backgroundColor).toBe("#3d6b5f"); // inferred button
     const [card] = skeletonFor(act("create", {}, "a product card")) as any[];
     expect(card.width).toBeGreaterThanOrEqual(300); // inferred card
   });
