@@ -25,6 +25,8 @@ import { ImportButton } from "./ui/ImportButton";
 import { InspectPanel } from "./ui/InspectPanel";
 import { TemplatesPanel } from "./ui/TemplatesPanel";
 import type { TemplateDef } from "./templates/gallery";
+import { CodeView } from "./ui/CodeView";
+import { ConsoleView } from "./ui/ConsoleView";
 import "./App.css";
 
 const LEVELS: AtomicLevel[] = ["atom", "molecule", "organism", "template", "page"];
@@ -268,9 +270,25 @@ export function App() {
           </div>
         </aside>
 
-        {/* center: canvas */}
-        <main className="stage">
-          <ExcalidrawCanvas theme={theme} onReady={(api) => { excalidrawApi.current = api; registerCanvasApplier(api); setCanvasReady(true); }} />
+        {/* center: canvas + code. The canvas stays MOUNTED (so its API persists);
+            Code/Console/Split overlay it. The segmented control up top drives this. */}
+        <main className="stage" style={{ position: "relative", display: "flex" }}>
+          {/* canvas — hidden (not unmounted) in pure Code/Console view */}
+          <div style={{ position: "relative", flex: view === "Split" ? "1 1 50%" : "1 1 100%", display: view === "Code" || view === "Console" ? "none" : "block" }}>
+            <ExcalidrawCanvas theme={theme} onReady={(api) => { excalidrawApi.current = api; registerCanvasApplier(api); setCanvasReady(true); }} />
+          </div>
+          {/* code panel — Code (full) or Split (half) */}
+          {(view === "Code" || view === "Split") && (
+            <div style={{ position: "relative", flex: view === "Split" ? "1 1 50%" : "1 1 100%", borderLeft: view === "Split" ? "1px solid var(--line, #e7e6e2)" : "none" }}>
+              <CodeView api={canvasReady ? excalidrawApi.current : null} />
+            </div>
+          )}
+          {/* console — the real changelog/event log */}
+          {view === "Console" && (
+            <div style={{ position: "absolute", inset: 0 }}>
+              <ConsoleView />
+            </div>
+          )}
         </main>
 
         {/* right: system / inspect / stack */}
