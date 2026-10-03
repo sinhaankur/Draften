@@ -161,12 +161,12 @@ body,
   outline-offset: 2px;
 }
 
-/* Icons — match the v2 design system EXACTLY. The approved mockup draws every
- * icon as an inline vector (viewBox 0 0 24 24, round caps/joins) at a lighter
- * 1.6 stroke weight — not lucide's default 2.0. "Vector is everything": crisp
- * at any zoom, with the design's finer line. One rule aligns every lucide icon. */
+/* Icons — match the v2 design system EXACTLY. Its readme mandates Lucide icons
+ * at stroke-width 1.5 ("a lighter, more technical look throughout"), not lucide's
+ * default 2.0. Inline vector (viewBox 0 0 24 24, round caps/joins). "Vector is
+ * everything": crisp at any zoom. One rule aligns every lucide icon to the DS. */
 svg.lucide {
-  stroke-width: 1.6;
+  stroke-width: 1.5;
   stroke-linecap: round;
   stroke-linejoin: round;
 }
