@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import { GitBranch, GitPullRequest, RefreshCw } from "lucide-react";
+import { GitBranch, GitPullRequest, RefreshCw, Download, GitFork } from "lucide-react";
 import { useGitSession } from "../git/session";
-import { listRepos, listBranches, listCommits, listPulls, commitFile, openPull, type Repo, type Commit, type PullRequest } from "../git/github-api";
+import { listRepos, listBranches, listCommits, listPulls, commitFile, openPull, readDraftenFromRepo, type Repo, type Commit, type PullRequest } from "../git/github-api";
 import { useEditor } from "../state/store";
 
 /**
@@ -15,6 +15,8 @@ import { useEditor } from "../state/store";
 export function SourceControlPanel() {
   const { token, isSignedIn } = useGitSession();
   const doc = useEditor((s) => s.doc);
+  const loadDocument = useEditor((s) => s.loadDocument);
+  const [cloneUrl, setCloneUrl] = useState("");
 
   const [repos, setRepos] = useState<Repo[]>([]);
   const [repo, setRepo] = useState<string>("");
@@ -64,7 +66,38 @@ export function SourceControlPanel() {
     } finally { setBusy(false); }
   }
 
+  // Clone a repository: parse owner/repo from a URL (or owner/repo), load its
+  // Draften document onto the canvas.
+  async function doClone() {
+    if (!token) return;
+    const m = cloneUrl.trim().match(/(?:github\.com[/:])?([\w.-]+\/[\w.-]+?)(?:\.git)?\/?$/);
+    const full = m?.[1];
+    if (!full) { setStatus("Enter a repo as owner/name or a github.com URL."); return; }
+    setBusy(true); setStatus(null);
+    try {
+      const b = await listBranches(token, full);
+      const def = b[0]?.name ?? "main";
+      const got = await readDraftenFromRepo(token, full, def);
+      if (!got) { setStatus(`Opened ${full}, but it has no draften/ document yet.`); setRepo(full); }
+      else { loadDocument(got.content as Parameters<typeof loadDocument>[0]); setRepo(full); setStatus(`Cloned ${full} · loaded ${got.path}`); }
+      setCloneUrl("");
+    } catch (e) { setStatus((e as Error).message); }
+    finally { setBusy(false); }
+  }
+
+  // Pull: refresh this repo's Draften document from the current branch.
   async function doPull() {
+    if (!token || !repo || !branch) return;
+    setBusy(true); setStatus(null);
+    try {
+      const got = await readDraftenFromRepo(token, repo, branch);
+      if (!got) { setStatus("Nothing to pull — no draften/ document on this branch."); }
+      else { loadDocument(got.content as Parameters<typeof loadDocument>[0]); setStatus(`Pulled latest from ${repo}@${branch}`); }
+    } catch (e) { setStatus((e as Error).message); }
+    finally { setBusy(false); }
+  }
+
+  async function doPR() {
     if (!token || !repo) return;
     const def = repos.find((r) => r.full_name === repo)?.default_branch ?? "main";
     if (branch === def) { setStatus("Switch to a feature branch to open a PR."); return; }
@@ -80,11 +113,20 @@ export function SourceControlPanel() {
   const label = (s: string) => <div style={{ fontSize: 11.5, fontWeight: 500, color: "var(--t3)", padding: "8px 0 4px" }}>{s}</div>;
 
   if (!isSignedIn()) {
-    return <div style={{ padding: 16, fontSize: 12.5, color: "var(--t3)" }}>Sign in with GitHub (top bar) to commit, push and open pull requests from here.</div>;
+    return <div style={{ padding: 16, fontSize: 12.5, color: "var(--t3)", lineHeight: 1.6 }}>Connect GitHub (the account avatar at the bottom of the icon rail) to clone, pull, commit and open pull requests from here.</div>;
   }
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 2, padding: "4px 12px", overflow: "auto", minHeight: 0 }}>
+      {/* Clone a repository (v2) */}
+      {label("Clone a repository")}
+      <div style={{ display: "flex", gap: 6 }}>
+        <input value={cloneUrl} onChange={(e) => setCloneUrl(e.target.value)} placeholder="owner/repo or github.com URL"
+          onKeyDown={(e) => { if (e.key === "Enter") doClone(); }}
+          style={{ ...selStyle, flex: 1, minWidth: 0 }} />
+        <button className="tb-btn" disabled={busy || !cloneUrl.trim()} onClick={doClone} title="Clone / open"><GitFork size={13} /></button>
+      </div>
+
       {label("Repository")}
       <select value={repo} onChange={(e) => setRepo(e.target.value)} style={selStyle}>
         {repos.map((r) => <option key={r.full_name} value={r.full_name}>{r.full_name}{r.private ? " · private" : ""}</option>)}
@@ -95,14 +137,15 @@ export function SourceControlPanel() {
         {branches.map((b) => <option key={b} value={b}>{b}</option>)}
       </select>
 
-      {label("Commit this document")}
+      {label("Review and commit")}
       <textarea value={msg} onChange={(e) => setMsg(e.target.value)} placeholder="Describe your changes" rows={2}
         style={{ ...selStyle, resize: "vertical", minHeight: 48 }} />
       <div style={{ display: "flex", gap: 6, marginTop: 6 }}>
         <button className="ai-btn" style={{ flex: 1, justifyContent: "center" }} disabled={busy || !msg.trim()} onClick={doCommit}>
           <GitBranch size={13} /> Commit
         </button>
-        <button className="tb-btn" disabled={busy} onClick={doPull} title="Open a pull request"><GitPullRequest size={13} /> PR</button>
+        <button className="tb-btn" disabled={busy} onClick={doPull} title="Pull latest from this branch"><Download size={13} /> Pull</button>
+        <button className="tb-btn" disabled={busy} onClick={doPR} title="Open a pull request"><GitPullRequest size={13} /> PR</button>
       </div>
 
       {status && <div style={{ fontSize: 11.5, color: "var(--t2)", marginTop: 6 }}>{status}</div>}

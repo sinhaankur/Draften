@@ -80,6 +80,36 @@ export async function commitFile(
   return res.commit.sha;
 }
 
+/**
+ * Clone / Pull — read a Draften document out of a repo. Finds the first
+ * `draften/*.draften.json` on the branch (or a given path) and returns its
+ * parsed content + sha. This is how "Clone a repository" + "Pull" open/refresh
+ * a design that lives in git. Returns null if the repo has no Draften document.
+ */
+export async function readDraftenFromRepo(
+  token: string, repo: string, branch: string, path?: string,
+): Promise<{ path: string; content: unknown; sha: string } | null> {
+  let target = path;
+  if (!target) {
+    // list the draften/ folder and pick the first .draften.json
+    try {
+      const entries = await gh<Array<{ name: string; path: string; type: string }>>(
+        token, `/repos/${repo}/contents/draften?ref=${branch}`,
+      );
+      const file = entries.find((e) => e.type === "file" && e.name.endsWith(".draften.json"));
+      if (!file) return null;
+      target = file.path;
+    } catch { return null; } // no draften/ folder
+  }
+  try {
+    const f = await gh<{ content: string; sha: string }>(
+      token, `/repos/${repo}/contents/${encodeURIComponent(target)}?ref=${branch}`,
+    );
+    const text = decodeURIComponent(escape(atob(f.content.replace(/\n/g, ""))));
+    return { path: target, content: JSON.parse(text), sha: f.sha };
+  } catch { return null; }
+}
+
 /** Open a pull request from `head` into `base`. */
 export function openPull(
   token: string, repo: string, title: string, head: string, base: string, body = "",
