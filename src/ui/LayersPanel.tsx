@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Eye, EyeOff, Square, Circle, Diamond, Type, MoveUpRight, Minus, Image, Frame, Group, PenLine, Dot } from "lucide-react";
+import { Eye, EyeOff, Square, Circle, Diamond, Type, MoveUpRight, Minus, Image, Frame, Group, PenLine, Dot, ChevronRight, ChevronDown } from "lucide-react";
 import type { ExcalidrawImperativeAPI } from "@excalidraw/excalidraw/types";
 
 /**
@@ -12,6 +12,7 @@ import type { ExcalidrawImperativeAPI } from "@excalidraw/excalidraw/types";
 type El = {
   id: string;
   type: string;
+  name?: string | null;
   text?: string;
   isDeleted?: boolean;
   opacity?: number;
@@ -24,6 +25,7 @@ type El = {
 export function LayersPanel({ api }: { api: ExcalidrawImperativeAPI | null }) {
   const [els, setEls] = useState<El[]>([]);
   const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [collapsed, setCollapsed] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     if (!api) return;
@@ -65,23 +67,31 @@ export function LayersPanel({ api }: { api: ExcalidrawImperativeAPI | null }) {
     api.updateScene({ elements: scene as Parameters<typeof api.updateScene>[0]["elements"] });
   };
 
-  // Group consecutive elements that share a group id under one collapsible row.
-  const rows = buildRows(els);
+  const rows = buildRows(els, collapsed);
+  const toggleCollapse = (id: string) => setCollapsed((c) => { const n = new Set(c); n.has(id) ? n.delete(id) : n.add(id); return n; });
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 1, padding: "2px 4px", maxHeight: 360, overflow: "auto" }}>
+    <div style={{ display: "flex", flexDirection: "column", gap: 1, padding: "2px 4px", maxHeight: 420, overflow: "auto" }}>
       {rows.map((r) => {
         const on = selected.has(r.id);
         const hidden = (r.opacity ?? 100) === 0;
+        const isFrame = r.type === "frame";
         return (
           <div key={r.id}
             onClick={(e) => select(r.id, e.metaKey || e.shiftKey)}
-            style={{ display: "flex", alignItems: "center", gap: 7, padding: "5px 8px", paddingLeft: 8 + r.depth * 14,
+            style={{ display: "flex", alignItems: "center", gap: 5, padding: "5px 8px", paddingLeft: 6 + r.depth * 16,
               borderRadius: 6, cursor: "pointer", fontSize: 12.5,
               background: on ? "var(--acc-soft, #eaf1ee)" : "transparent",
               color: on ? "var(--accent, #3d6b5f)" : hidden ? "var(--text-3, #8e8d88)" : "var(--t1, #1d1d1b)",
-              opacity: hidden ? 0.55 : 1, fontWeight: on ? 600 : 400 }}>
-            <span style={{ flex: "none", width: 15, display: "grid", placeItems: "center", color: on ? "var(--accent, #3d6b5f)" : "var(--text-3, #8e8d88)" }}><Glyph type={r.type} /></span>
+              opacity: hidden ? 0.55 : 1, fontWeight: on || isFrame ? 600 : 400 }}>
+            {/* collapse chevron for frames; spacer otherwise so labels align */}
+            {isFrame ? (
+              <button onClick={(e) => { e.stopPropagation(); toggleCollapse(r.id); }}
+                style={{ flex: "none", border: 0, background: "transparent", cursor: "pointer", color: "var(--text-3, #8e8d88)", display: "grid", placeItems: "center", width: 14, height: 14, padding: 0 }}>
+                {collapsed.has(r.id) ? <ChevronRight size={13} /> : <ChevronDown size={13} />}
+              </button>
+            ) : <span style={{ width: 14, flex: "none" }} />}
+            <span style={{ flex: "none", width: 15, display: "grid", placeItems: "center", color: on || isFrame ? "var(--accent, #3d6b5f)" : "var(--text-3, #8e8d88)" }}><Glyph type={r.type} /></span>
             <span style={{ flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{r.label}</span>
             <button onClick={(e) => { e.stopPropagation(); toggleVisible(r.id); }} title={hidden ? "Show" : "Hide"}
               style={{ flex: "none", border: 0, background: "transparent", cursor: "pointer", color: "var(--text-3, #8e8d88)", display: "grid", placeItems: "center", width: 20, height: 20, padding: 0 }}>
@@ -96,16 +106,32 @@ export function LayersPanel({ api }: { api: ExcalidrawImperativeAPI | null }) {
 
 type Row = { id: string; type: string; label: string; depth: number; opacity?: number };
 
-function buildRows(els: El[]): Row[] {
+/**
+ * The layers TREE (SketchApp/Figma style): frames (artboards) at the top, their
+ * children nested beneath, then any loose elements + groups. Newest on top.
+ */
+function buildRows(els: El[], collapsed: Set<string>): Row[] {
   const rows: Row[] = [];
-  // newest on top (design tools list reverse of paint order)
-  const ordered = els.slice().reverse();
+  const ordered = els.slice().reverse(); // newest first
+  const frames = ordered.filter((e) => e.type === "frame");
+  const framed = new Set<string>();
+
+  // 1) each frame + its children nested under it
+  for (const f of frames) {
+    rows.push({ id: f.id, type: "frame", label: nameOf(f, els), depth: 0, opacity: f.opacity });
+    if (collapsed.has(f.id)) { ordered.forEach((e) => { if (e.frameId === f.id) framed.add(e.id); }); continue; }
+    const kids = ordered.filter((e) => e.frameId === f.id && e.type !== "frame");
+    for (const k of kids) { framed.add(k.id); rows.push({ id: k.id, type: k.type, label: nameOf(k, els), depth: 1, opacity: k.opacity }); }
+  }
+
+  // 2) loose elements (not in a frame), grouped where they share a group id
   const seenGroup = new Set<string>();
   for (const e of ordered) {
+    if (e.type === "frame" || framed.has(e.id)) continue;
     const gid = e.groupIds && e.groupIds.length ? e.groupIds[e.groupIds.length - 1] : null;
     if (gid && !seenGroup.has(gid)) {
       seenGroup.add(gid);
-      const members = ordered.filter((x) => (x.groupIds || []).includes(gid));
+      const members = ordered.filter((x) => !x.frameId && (x.groupIds || []).includes(gid));
       rows.push({ id: gid, type: "group", label: `Group · ${members.length}`, depth: 0 });
       for (const m of members) rows.push({ id: m.id, type: m.type, label: nameOf(m, els), depth: 1, opacity: m.opacity });
     } else if (!gid) {
@@ -116,8 +142,8 @@ function buildRows(els: El[]): Row[] {
 }
 
 function nameOf(e: El, all: El[]): string {
+  if (e.name) return trim(e.name);                       // explicit layer name (frames + seeded)
   if (e.type === "text" && e.text) return trim(e.text);
-  // a shape with a bound label → show the label text
   const bound = (e.boundElements || []).find((b) => b.type === "text");
   if (bound) { const t = all.find((x) => x.id === bound.id); if (t?.text) return trim(t.text); }
   return cap(e.type);
