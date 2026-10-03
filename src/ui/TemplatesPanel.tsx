@@ -63,6 +63,8 @@ function Preview({ id }: { id: string }) {
     mobile: <>{bar({ left: "8%", top: 10, width: 22, bottom: 10 })}{bar({ left: "40%", top: 10, width: 22, bottom: 10 })}{bar({ left: "72%", top: 10, width: 22, bottom: 10 })}</>,
     blank: <>{bar({ left: "40%", top: 8, width: 20, bottom: 8 })}</>,
     sinhaankur: <>{bar({ left: 0, top: 0, right: 0, bottom: 0, background: "#050505", borderRadius: 8 })}{bar({ left: 12, top: 30, width: "55%", height: 14, background: "#f5f5f0" })}{acc({ left: 12, top: 50, width: "20%", height: 14, background: "#e9b545" })}</>,
+    vscode: <>{bar({ left: 0, top: 0, right: 0, bottom: 0, background: "#1e1e1e", borderRadius: 8 })}{bar({ left: 0, top: 0, bottom: 0, width: 12, background: "#333" })}{bar({ left: 12, top: 0, bottom: 0, width: 34, background: "#252526" })}{bar({ left: 52, top: 14, width: "20%", height: 6, background: "#555" })}{bar({ left: 52, top: 28, width: "44%", height: 6, background: "#777" })}{bar({ left: 52, top: 40, width: "32%", height: 6, background: "#555" })}{acc({ left: 0, bottom: 0, right: 0, height: 8, background: "#007acc" })}</>,
+    fitness: <>{bar({ left: "34%", top: 0, width: "32%", bottom: 0, background: "#f4f3f0", borderRadius: 6 })}{acc({ left: "40%", top: 10, width: 20, height: 20, background: "transparent" })}{acc({ left: "40%", top: 10, width: 20, height: 20, background: "#3d6b5f", borderRadius: 99 })}{bar({ left: "38%", top: 38, width: "24%", height: 14 })}{bar({ left: "38%", top: 56, width: "24%", height: 12 })}</>,
   };
   return <div style={box}>{common[id]}</div>;
 }

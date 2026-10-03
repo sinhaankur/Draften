@@ -137,6 +137,74 @@ export const TEMPLATES: TemplateDef[] = [
     },
   },
   {
+    id: "vscode",
+    name: "Code editor (VS Code-style)",
+    blurb: "Desktop app layout: activity bar, file tree, tabs, editor + a status bar.",
+    tags: ["desktop", "app"],
+    build: () => {
+      const DARK = "#1e1e1e", PANEL = "#252526", BAR = "#333333", TXT = "#d4d4d4", DIM = "#858585", BLUE = "#007acc";
+      const t = (x: number, y: number, s: string, size = 12, c = TXT) => ({ ...base, type: "text" as const, x, y, text: s, fontSize: size, fontFamily: 3, strokeColor: c });
+      return [
+        // window frame
+        rect(60, 60, 1040, 680, { backgroundColor: DARK, strokeColor: "#000", roundness: { type: 3 } }),
+        // activity bar (far left)
+        rect(60, 60, 48, 680, { backgroundColor: BAR, strokeColor: BAR, roundness: null }),
+        ...["▢", "⎇", "↧", "⚙"].map((g, i) => t(76, 90 + i * 46, g, 18, i === 0 ? TXT : DIM)),
+        // side bar (file tree)
+        rect(108, 60, 220, 680, { backgroundColor: PANEL, strokeColor: PANEL, roundness: null }),
+        t(124, 80, "EXPLORER", 10, DIM),
+        ...["▾ src", "   App.tsx", "   main.tsx", "   styles.css", "▸ public", "package.json", "README.md"].map((f, i) => t(124, 112 + i * 26, f, 12, i === 1 ? "#fff" : TXT)),
+        // tab bar
+        rect(328, 60, 772, 36, { backgroundColor: "#2d2d2d", strokeColor: "#2d2d2d", roundness: null }),
+        rect(328, 60, 120, 36, { backgroundColor: DARK, strokeColor: "#000", roundness: null }),
+        t(348, 72, "App.tsx", 12, "#fff"),
+        t(472, 72, "main.tsx", 12, DIM),
+        // editor gutter + code lines
+        ...Array.from({ length: 16 }, (_, i) => t(344, 112 + i * 30, String(i + 1), 11, DIM)),
+        ...["import React from 'react'", "", "export function App() {", "  return (", "    <main className=\"app\">", "      <h1>Hello, Draften</h1>", "    </main>", "  )", "}"].map((l, i) => t(380, 112 + i * 30, l, 13, i === 0 ? "#c586c0" : TXT)),
+        // status bar
+        rect(60, 716, 1040, 24, { backgroundColor: BLUE, strokeColor: BLUE, roundness: null }),
+        t(76, 721, "⎇ main   ✓ 0  ✗ 0", 11, "#fff"),
+        t(980, 721, "TypeScript  UTF-8", 11, "#fff"),
+      ];
+    },
+  },
+  {
+    id: "fitness",
+    name: "Fitness app (mobile)",
+    blurb: "A phone artboard: today's rings, workout cards + a bottom tab bar.",
+    tags: ["mobile", "app"],
+    build: () => {
+      const CARD = "#ffffff", RING = "#3d6b5f", WARM = "#e9b545", BG2 = "#f4f3f0";
+      const out: Skeleton = [
+        // phone artboard (frame)
+        rect(80, 60, 390, 844, { backgroundColor: BG2, strokeColor: LINE, label: { ...label("Fitness · 390×844"), fontSize: 11, strokeColor: MUTED, verticalAlign: "top" } }),
+        // header
+        txt(110, 100, "Good morning, Ankur", 20),
+        txt(110, 132, "Tuesday, 3 Oct", 13, MUTED),
+        // activity rings card
+        rect(110, 170, 330, 150, { backgroundColor: CARD }),
+        { ...base, type: "ellipse" as const, x: 130, y: 196, width: 100, height: 100, strokeColor: RING, strokeWidth: 8, backgroundColor: "transparent" },
+        { ...base, type: "ellipse" as const, x: 145, y: 211, width: 70, height: 70, strokeColor: WARM, strokeWidth: 8, backgroundColor: "transparent" },
+        txt(260, 200, "Move", 13, MUTED), txt(260, 218, "420 / 500 cal", 15),
+        txt(260, 250, "Steps", 13, MUTED), txt(260, 268, "7,842", 15),
+        // workout cards
+        txt(110, 345, "Today's workouts", 15),
+        ...[["Upper body", "45 min · 6 exercises"], ["Core & mobility", "20 min · 4 exercises"]].map(([ti, sub], i) => [
+          rect(110, 375 + i * 92, 330, 78, { backgroundColor: CARD }),
+          { ...base, type: "ellipse" as const, x: 128, y: 393 + i * 92, width: 42, height: 42, strokeColor: i === 0 ? RING : WARM, backgroundColor: i === 0 ? RING : WARM },
+          txt(188, 392 + i * 92, ti as string, 15),
+          txt(188, 416 + i * 92, sub as string, 12, MUTED),
+          button(390, 398 + i * 92, 40, "▶"),
+        ]).flat(),
+        // bottom tab bar
+        rect(80, 844, 390, 60, { backgroundColor: CARD, strokeColor: LINE, roundness: null }),
+      ];
+      ["🏠 Today", "💪 Train", "📊 Stats", "👤 You"].forEach((t2, i) => out.push(txt(110 + i * 95, 862, t2, 11, i === 0 ? RING : MUTED)));
+      return out;
+    },
+  },
+  {
     id: "blank",
     name: "Blank frame",
     blurb: "A single empty artboard to start from scratch.",
