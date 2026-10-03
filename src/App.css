@@ -648,3 +648,15 @@
 .ai-history-list li.ai-undone { opacity: 0.4; text-decoration: line-through; }
 .ai-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--text-3, var(--text-2)); flex: 0 0 auto; }
 .ai-dot-ai { background: var(--accent); }
+
+/* assistant: provider picker + prompt starters */
+.ai-provider-pick {
+  background: var(--bg); border: 1px solid var(--border); border-radius: var(--r-input);
+  color: var(--text-2); padding: 2px var(--s3); max-width: 190px;
+}
+.ai-starters { display: flex; flex-wrap: wrap; gap: var(--s2); margin: var(--s3) 0 var(--s2); }
+.ai-starter {
+  background: var(--bg); border: 1px solid var(--border); border-radius: 999px;
+  color: var(--text-2); padding: var(--s2) var(--s3); cursor: pointer; transition: all .14s;
+}
+.ai-starter:hover { border-color: var(--accent); color: var(--text-1); }

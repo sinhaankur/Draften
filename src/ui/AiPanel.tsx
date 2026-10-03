@@ -2,9 +2,22 @@ import { useEffect, useRef, useState } from "react";
 import { motion } from "motion/react";
 
 import { generateDesignSystem } from "../ai/design-gen";
-import { pickBestAvailable } from "../ai/providers";
+import {
+  pickBestAvailable, DeterministicProvider, WebLlmProvider,
+  LmStudioProvider, AppleIntelligenceProvider,
+} from "../ai/providers";
 import { runAssistant, type DraftenAction, type DocContext } from "../ai/assistant";
 import type { AiProvider } from "../ai/provider";
+
+// Prompt starters — so a designer isn't staring at a blank box. Easy to use:
+// tap one to fill the prompt, or write your own.
+const STARTERS = [
+  "A sign-up screen using our design tokens",
+  "A pricing section with three cards",
+  "Turn the attached document into a landing page",
+  "A mobile onboarding flow, 3 screens",
+  "A dashboard header with search and avatar",
+];
 import { useEditor } from "../state/store";
 import { useChangelog } from "../state/changelog";
 import { overlay, scrim } from "./motion";
@@ -36,6 +49,21 @@ export function AiPanel({ onClose }: { onClose: () => void }) {
 
   // Pick the best on-device provider once, so the badge + runs use it.
   useEffect(() => { pickBestAvailable().then(setProvider).catch(() => {}); }, []);
+
+  // The providers a designer can switch between — all local/keyless by default;
+  // LM Studio runs whatever model they've loaded on their machine.
+  const PROVIDERS: { id: string; make: () => AiProvider }[] = [
+    { id: "lmstudio", make: () => new LmStudioProvider() },
+    { id: "webllm", make: () => new WebLlmProvider() },
+    { id: "apple", make: () => new AppleIntelligenceProvider() },
+    { id: "deterministic", make: () => new DeterministicProvider() },
+  ];
+  async function chooseProvider(id: string) {
+    const made = PROVIDERS.find((p) => p.id === id)?.make();
+    if (!made) return;
+    if (made instanceof LmStudioProvider) { try { await made.refresh(); } catch { /* server may be off */ } }
+    setProvider(made);
+  }
 
   // A compact summary of the live document so edits are grounded in THIS doc.
   function docContext(): DocContext {
@@ -113,14 +141,28 @@ export function AiPanel({ onClose }: { onClose: () => void }) {
       <motion.div className="ai-dialog ai-assistant" onClick={(e) => e.stopPropagation()} {...overlay}>
         <div className="ai-head">
           <div className="ai-title">✦ Design assistant</div>
-          <span className="ai-provider muted small">
-            {provider ? provider.info.label : "loading…"}{provider?.info.local ? " · on-device" : ""}
-          </span>
+          <select className="ai-provider-pick small" value={provider?.info.id ?? ""}
+            onChange={(e) => chooseProvider(e.target.value)} title="Choose the AI model">
+            {!provider && <option value="">loading…</option>}
+            <option value="lmstudio">LM Studio (local)</option>
+            <option value="webllm">On-device (tiny LLM)</option>
+            <option value="apple">Apple Intelligence</option>
+            <option value="deterministic">Built-in (no model)</option>
+          </select>
         </div>
 
         {/* streaming reply / status */}
         {streaming && (
           <div className="ai-reply small" aria-live="polite">{streaming}</div>
+        )}
+
+        {/* prompt starters — help a designer get going (easy to use) */}
+        {!streaming && !prompt && (
+          <div className="ai-starters">
+            {STARTERS.map((s) => (
+              <button key={s} className="ai-starter small" onClick={() => setPrompt(s)}>{s}</button>
+            ))}
+          </div>
         )}
 
         {/* the prompt */}

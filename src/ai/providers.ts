@@ -141,10 +141,102 @@ export class WebLlmProvider implements AiProvider {
   }
 }
 
-/** Pick the best provider the device can run, cheapest-capable first. */
+/**
+ * Tier 2b — a local LLM via an OpenAI-COMPATIBLE server: **LM Studio**, Ollama,
+ * llama.cpp, Jan, etc. LM Studio serves at http://localhost:1234/v1 by default and
+ * speaks the OpenAI chat API, so the user runs ANY model they've downloaded, fully
+ * on their machine (no key, private). Streamed token-by-token. The base URL +
+ * model are configurable so Ollama (11434) or a custom port work too.
+ */
+export class LmStudioProvider implements AiProvider {
+  info: AiProviderInfo = {
+    id: "lmstudio",
+    label: "LM Studio (local)",
+    models: ["local-model"], // whatever the server has loaded; filled by refresh()
+    local: true,
+  };
+
+  constructor(private baseUrl = "http://localhost:1234/v1") {}
+
+  /** Probe the server for the models it has loaded (so the picker shows real ones). */
+  async refresh(): Promise<string[]> {
+    try {
+      const r = await fetch(`${this.baseUrl}/models`);
+      if (!r.ok) return this.info.models;
+      const data = (await r.json()) as { data?: Array<{ id: string }> };
+      const ids = (data.data ?? []).map((m) => m.id).filter(Boolean);
+      if (ids.length) this.info.models = ids;
+      return this.info.models;
+    } catch {
+      return this.info.models; // server not running → keep the placeholder
+    }
+  }
+
+  async chat(
+    messages: AiMessage[],
+    opts?: { model?: string; onToken?: (t: string) => void; signal?: AbortSignal },
+  ): Promise<string> {
+    const res = await fetch(`${this.baseUrl}/chat/completions`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      signal: opts?.signal,
+      body: JSON.stringify({
+        model: opts?.model ?? this.info.models[0],
+        messages,
+        temperature: 0.3,
+        stream: true,
+      }),
+    }).catch(() => {
+      throw new Error("LM Studio isn't reachable. Start its local server (default http://localhost:1234).");
+    });
+    if (!res.ok || !res.body) throw new Error(`LM Studio error: ${res.status}`);
+
+    // Parse the OpenAI SSE stream, emitting tokens as they arrive.
+    const reader = res.body.getReader();
+    const dec = new TextDecoder();
+    let full = "";
+    let buf = "";
+    for (;;) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      buf += dec.decode(value, { stream: true });
+      const lines = buf.split("\n");
+      buf = lines.pop() ?? "";
+      for (const line of lines) {
+        const s = line.trim();
+        if (!s.startsWith("data:")) continue;
+        const payload = s.slice(5).trim();
+        if (payload === "[DONE]") continue;
+        try {
+          const delta = JSON.parse(payload)?.choices?.[0]?.delta?.content as string | undefined;
+          if (delta) { full += delta; opts?.onToken?.(delta); }
+        } catch { /* ignore keep-alive / partial frames */ }
+      }
+    }
+    return full;
+  }
+}
+
+/** Is an LM Studio / OpenAI-compatible local server reachable? */
+export async function probeLmStudio(baseUrl = "http://localhost:1234/v1"): Promise<boolean> {
+  try {
+    const r = await fetch(`${baseUrl}/models`, { method: "GET" });
+    return r.ok;
+  } catch {
+    return false;
+  }
+}
+
+/** Pick the best provider the device can run, cheapest-capable first. A running
+ *  LM Studio server wins when present (the user chose to run their own model). */
 export async function pickBestAvailable(): Promise<AiProvider> {
   const caps = await probeDeviceAi();
   if (caps.appleIntelligence) return new AppleIntelligenceProvider();
+  if (await probeLmStudio()) {
+    const p = new LmStudioProvider();
+    await p.refresh();
+    return p;
+  }
   if (caps.webgpu) return new WebLlmProvider();
   return new DeterministicProvider();
 }
