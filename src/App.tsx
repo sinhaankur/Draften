@@ -12,6 +12,7 @@ import {
 import { ExcalidrawCanvas, toElements } from "./canvas/ExcalidrawCanvas";
 import { registerCanvasApplier } from "./canvas/apply-action";
 import { GitHubSignIn } from "./ui/GitHubSignIn";
+import { SourceControlPanel } from "./ui/SourceControlPanel";
 import { parsePaste, toExcalidrawSkeleton } from "./import/paste";
 import { isTauri } from "./env";
 import { toast as toastMotion } from "./ui/motion";
@@ -39,6 +40,7 @@ export function App() {
   const [pasteNote, setPasteNote] = useState<string | null>(null);
   // Responsive drawers (below md the rails slide over the canvas — Hick's Law).
   const [leftOpen, setLeftOpen] = useState(false);
+  const [leftMode, setLeftMode] = useState<"layers" | "git">("layers");
   const [rightOpen, setRightOpen] = useState(false);
   const setDesignSystem = useEditor((s) => s.setDesignSystem);
   const rename = useEditor((s) => s.rename);
@@ -181,18 +183,31 @@ export function App() {
             (exact markup + inline styles, wired to real state). */}
         <aside className={`left${leftOpen ? " open" : ""}`}
           style={{ width: 256, flex: "none", display: "flex", flexDirection: "column", minHeight: 0, borderRight: "1px solid var(--line, var(--border))", background: "var(--panel, var(--raised))" }}>
-          {/* header — serif title + hide button */}
+          {/* header — serif title + mode toggle (Layers / Source control) */}
           <div style={{ height: 44, flex: "none", display: "flex", alignItems: "center", padding: "0 10px 0 16px", gap: 6 }}>
-            <span style={{ flex: 1, fontFamily: "var(--font-serif)", fontSize: 16, fontWeight: 500 }}>Artboards &amp; layers</span>
-            <button title="Add a page" onClick={() => addBoard()}
-              style={{ width: 26, height: 26, border: 0, borderRadius: 7, background: "transparent", color: "var(--text-3)", cursor: "pointer", display: "grid", placeItems: "center", fontSize: 16 }}>+</button>
+            <span style={{ flex: 1, fontFamily: "var(--font-serif)", fontSize: 16, fontWeight: 500 }}>
+              {leftMode === "layers" ? "Artboards & layers" : "Source control"}
+            </span>
+            <button title="Artboards & layers" onClick={() => setLeftMode("layers")}
+              style={{ width: 26, height: 26, border: 0, borderRadius: 7, background: leftMode === "layers" ? "var(--acc-soft)" : "transparent", color: leftMode === "layers" ? "var(--accent)" : "var(--text-3)", cursor: "pointer", display: "grid", placeItems: "center" }}>
+              <PanelLeft size={15} />
+            </button>
+            <button title="Source control" onClick={() => setLeftMode("git")}
+              style={{ width: 26, height: 26, border: 0, borderRadius: 7, background: leftMode === "git" ? "var(--acc-soft)" : "transparent", color: leftMode === "git" ? "var(--accent)" : "var(--text-3)", cursor: "pointer", display: "grid", placeItems: "center" }}>
+              <GitBranch size={15} />
+            </button>
           </div>
 
+          {leftMode === "git" ? (
+            <SourceControlPanel />
+          ) : (
           <div style={{ flex: 1, minHeight: 0, overflow: "auto", display: "flex", flexDirection: "column" }}>
             {/* Pages */}
             <div style={{ padding: "0 8px 10px", display: "flex", flexDirection: "column", gap: 1 }}>
               <div style={{ display: "flex", alignItems: "center", padding: "4px 8px" }}>
                 <span style={{ flex: 1, fontSize: 11.5, fontWeight: 500, color: "var(--text-3)" }}>Pages</span>
+                <button title="Add a page" onClick={() => addBoard()}
+                  style={{ width: 20, height: 20, border: 0, borderRadius: 5, background: "transparent", color: "var(--text-3)", cursor: "pointer", display: "grid", placeItems: "center", fontSize: 14 }}>+</button>
               </div>
               {doc.boards.map((b) => (
                 <button key={b.id} onClick={() => setActiveBoard(b.id)}
@@ -221,6 +236,7 @@ export function App() {
               <div style={{ padding: "2px 8px", fontSize: 12, color: "var(--text-3)" }}>Managed on the canvas.</div>
             </div>
           </div>
+          )}
 
           <div style={{ height: 30, flex: "none", display: "flex", alignItems: "center", gap: 6, padding: "0 12px", borderTop: "1px solid var(--line, var(--border))", fontSize: 11.5, color: "var(--text-3)" }}>
             <span style={{ width: 6, height: 6, borderRadius: "50%", background: "var(--accent)" }} /> All changes saved locally
