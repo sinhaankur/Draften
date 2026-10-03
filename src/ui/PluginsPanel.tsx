@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { motion } from "motion/react";
 
+import { Puzzle } from "lucide-react";
+
 import { installFromGitHub, uninstall, loadInstalled, type InstalledRef } from "../api/github-plugins";
 import { listPlugins } from "../api/draften";
 import { overlay, scrim } from "./motion";
@@ -39,7 +41,7 @@ export function PluginsPanel({ onClose }: { onClose: () => void }) {
   return (
     <motion.div className="ai-overlay" onClick={onClose} {...scrim}>
       <motion.div className="ai-dialog" onClick={(e) => e.stopPropagation()} {...overlay}>
-        <div className="ai-title">🧩 Plugins</div>
+        <div className="ai-title" style={{ display: "flex", alignItems: "center", gap: 7 }}><Puzzle size={16} /> Plugins</div>
         <p className="muted small">
           Install a plugin from GitHub. Enter <code>owner/repo</code>, a github.com
           file URL, or a raw module URL. Plugins are code — only install ones you trust.

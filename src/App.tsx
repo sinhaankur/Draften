@@ -6,7 +6,7 @@ import type { ExcalidrawImperativeAPI } from "@excalidraw/excalidraw/types";
 import { AnimatePresence, motion } from "motion/react";
 import {
   PanelLeft, PanelRight, GitBranch, LayoutTemplate, Puzzle,
-  Moon, Sun, Sparkles,
+  Moon, Sun, Sparkles, Play,
 } from "lucide-react";
 
 import { ExcalidrawCanvas, toElements } from "./canvas/ExcalidrawCanvas";
@@ -370,9 +370,9 @@ export function App() {
               <div style={{ fontSize: 12, color: "var(--t3)" }}>
                 Preview your design with no editor chrome — at real phone, tablet &amp; desktop widths.
               </div>
-              <button className="ai-btn" style={{ width: "100%", justifyContent: "center" }}
+              <button className="ai-btn" style={{ width: "100%", justifyContent: "center", gap: 6 }}
                 onClick={() => canvasReady && excalidrawApi.current && setPlaying(true)}>
-                ▶ Play
+                <Play size={14} /> Play
               </button>
               <div style={{ fontSize: 11.5, color: "var(--t3)", marginTop: 4, lineHeight: 1.5 }}>
                 Tip: use frames (artboards) to lay out separate screens — Play shows the whole canvas as a clean preview.

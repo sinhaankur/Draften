@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { X } from "lucide-react";
+import { X, Play } from "lucide-react";
 import type { ExcalidrawImperativeAPI } from "@excalidraw/excalidraw/types";
 
 /**
@@ -47,7 +47,7 @@ export function PrototypePlay({ api, onClose }: { api: ExcalidrawImperativeAPI; 
     <div style={{ position: "fixed", inset: 0, zIndex: 1000, background: "#1a1a18", display: "flex", flexDirection: "column" }}>
       {/* minimal play bar */}
       <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 16px", color: "#fff" }}>
-        <span style={{ fontWeight: 700, fontSize: 14 }}>▶ Preview</span>
+        <span style={{ fontWeight: 700, fontSize: 14, display: "inline-flex", alignItems: "center", gap: 6 }}><Play size={14} /> Preview</span>
         <div style={{ display: "flex", gap: 2, background: "rgba(255,255,255,.08)", borderRadius: 8, padding: 2, marginLeft: 8 }}>
           {(["fit", "phone", "tablet", "desktop"] as const).map((f) => (
             <button key={f} onClick={() => setFrame(f)}

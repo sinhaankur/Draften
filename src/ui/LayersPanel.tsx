@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Eye, EyeOff, Square, Circle, Diamond, Type, MoveUpRight, Minus, Image, Frame, Group, PenLine, Dot } from "lucide-react";
 import type { ExcalidrawImperativeAPI } from "@excalidraw/excalidraw/types";
 
 /**
@@ -80,11 +81,11 @@ export function LayersPanel({ api }: { api: ExcalidrawImperativeAPI | null }) {
               background: on ? "var(--acc-soft, #eaf1ee)" : "transparent",
               color: on ? "var(--accent, #3d6b5f)" : hidden ? "var(--text-3, #8e8d88)" : "var(--t1, #1d1d1b)",
               opacity: hidden ? 0.55 : 1, fontWeight: on ? 600 : 400 }}>
-            <span style={{ flex: "none", width: 14, textAlign: "center", color: "var(--text-3, #8e8d88)" }}>{glyph(r.type)}</span>
+            <span style={{ flex: "none", width: 15, display: "grid", placeItems: "center", color: on ? "var(--accent, #3d6b5f)" : "var(--text-3, #8e8d88)" }}><Glyph type={r.type} /></span>
             <span style={{ flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{r.label}</span>
             <button onClick={(e) => { e.stopPropagation(); toggleVisible(r.id); }} title={hidden ? "Show" : "Hide"}
-              style={{ flex: "none", border: 0, background: "transparent", cursor: "pointer", color: "var(--text-3, #8e8d88)", fontSize: 12, width: 18 }}>
-              {hidden ? "◌" : "👁"}
+              style={{ flex: "none", border: 0, background: "transparent", cursor: "pointer", color: "var(--text-3, #8e8d88)", display: "grid", placeItems: "center", width: 20, height: 20, padding: 0 }}>
+              {hidden ? <EyeOff size={14} /> : <Eye size={14} />}
             </button>
           </div>
         );
@@ -124,8 +125,22 @@ function nameOf(e: El, all: El[]): string {
 const trim = (s: string) => { const one = s.replace(/\s+/g, " ").trim(); return one.length > 28 ? one.slice(0, 28) + "…" : one; };
 const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 
-function glyph(type: string): string {
-  return { rectangle: "▭", ellipse: "◯", diamond: "◇", text: "T", arrow: "↗", line: "─", image: "🖼", frame: "⬚", group: "▣", freedraw: "✎" }[type] ?? "▪";
+/** A real vector (lucide) icon per element type — matches the design system. */
+function Glyph({ type }: { type: string }) {
+  const sz = 13;
+  switch (type) {
+    case "rectangle": return <Square size={sz} />;
+    case "ellipse": return <Circle size={sz} />;
+    case "diamond": return <Diamond size={sz} />;
+    case "text": return <Type size={sz} />;
+    case "arrow": return <MoveUpRight size={sz} />;
+    case "line": return <Minus size={sz} />;
+    case "image": return <Image size={sz} />;
+    case "frame": return <Frame size={sz} />;
+    case "group": return <Group size={sz} />;
+    case "freedraw": return <PenLine size={sz} />;
+    default: return <Dot size={sz} />;
+  }
 }
 
 function Hint({ children }: { children: React.ReactNode }) {

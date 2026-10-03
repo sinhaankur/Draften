@@ -1,4 +1,5 @@
 import { motion } from "motion/react";
+import { LayoutTemplate } from "lucide-react";
 
 import { TEMPLATES, type TemplateDef } from "../templates/gallery";
 import { overlay, scrim } from "./motion";
@@ -12,7 +13,7 @@ export function TemplatesPanel({ onClose, onPick }: { onClose: () => void; onPic
   return (
     <motion.div className="ai-overlay" onClick={onClose} {...scrim}>
       <motion.div className="ai-dialog" onClick={(e) => e.stopPropagation()} {...overlay} style={{ maxWidth: 680 }}>
-        <div className="ai-title">▦ Templates</div>
+        <div className="ai-title" style={{ display: "flex", alignItems: "center", gap: 7 }}><LayoutTemplate size={16} /> Templates</div>
         <p className="muted small">
           A real starting point — picked, it draws onto the canvas as editable layers.
         </p>

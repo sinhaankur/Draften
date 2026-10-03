@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Square, Circle, Diamond, Type, MoveUpRight, Minus, Image, Frame, Dot } from "lucide-react";
 import type { ExcalidrawImperativeAPI } from "@excalidraw/excalidraw/types";
 
 /**
@@ -85,7 +86,7 @@ export function InspectPanel({ api }: Props) {
     <div style={pane}>
       {/* identity */}
       <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
-        <span style={{ fontSize: 16 }}>{glyph(el.type)}</span>
+        <span style={{ display: "grid", placeItems: "center", color: "var(--accent, #3d6b5f)" }}><Glyph type={el.type} /></span>
         <span style={{ fontWeight: 600, textTransform: "capitalize" }}>{el.type}</span>
         <span style={{ marginLeft: "auto", fontFamily: "var(--font-mono, monospace)", fontSize: 11, color: "var(--text-3, #8e8d88)" }}>
           {el.id.slice(0, 6)}
@@ -206,8 +207,20 @@ function Color({ label, value, onChange }: { label: string; value: string; onCha
   );
 }
 
-function glyph(type: string): string {
-  return { rectangle: "▭", ellipse: "◯", diamond: "◇", text: "T", arrow: "↗", line: "─", image: "🖼", frame: "⬚" }[type] ?? "▪";
+/** Vector (lucide) icon per element type — matches the design system. */
+function Glyph({ type }: { type: string }) {
+  const sz = 15;
+  switch (type) {
+    case "rectangle": return <Square size={sz} />;
+    case "ellipse": return <Circle size={sz} />;
+    case "diamond": return <Diamond size={sz} />;
+    case "text": return <Type size={sz} />;
+    case "arrow": return <MoveUpRight size={sz} />;
+    case "line": return <Minus size={sz} />;
+    case "image": return <Image size={sz} />;
+    case "frame": return <Frame size={sz} />;
+    default: return <Dot size={sz} />;
+  }
 }
 
 function toHex(c: string): string {
