@@ -19,6 +19,7 @@ export function RailAccount() {
   const [code, setCode] = useState<{ user_code: string; verification_uri: string } | null>(null);
   const [sub, setSub] = useState<null | "identity" | "pat">(null);
   const [pat, setPat] = useState("");
+  const [patErr, setPatErr] = useState<string | null>(null);
   // Git identity for commit authorship (persisted on-device).
   const [gitName, setGitName] = useState(() => { try { return localStorage.getItem("draften-git-name") || ""; } catch { return ""; } });
   const [gitEmail, setGitEmail] = useState(() => { try { return localStorage.getItem("draften-git-email") || ""; } catch { return ""; } });
@@ -93,20 +94,35 @@ export function RailAccount() {
             </div>
           ) : sub === "pat" ? (
             <div style={{ padding: "8px 2px" }}>
-              <div style={{ fontSize: 12, fontWeight: 600, marginBottom: 2 }}>Personal access token</div>
-              <p style={{ fontSize: 11, color: "var(--text-3,#8e8d88)", margin: "0 0 6px", lineHeight: 1.5 }}>Paste a GitHub PAT (repo scope) to connect without the device flow.</p>
-              <input value={pat} onChange={(e) => setPat(e.target.value)} type="password" placeholder="ghp_…" style={inp} autoComplete="off" />
+              <div style={{ fontSize: 12, fontWeight: 600, marginBottom: 2 }}>Connect GitHub</div>
+              <p style={{ fontSize: 11, color: "var(--text-3,#8e8d88)", margin: "0 0 6px", lineHeight: 1.5 }}>
+                Paste a GitHub token with <b>repo</b> scope. <a href="https://github.com/settings/tokens/new?scopes=repo&description=Draften" target="_blank" rel="noreferrer" style={{ color: "var(--accent,#3d6b5f)" }}>Create one →</a>
+              </p>
+              <input value={pat} onChange={(e) => setPat(e.target.value)} type="password" placeholder="ghp_… or github_pat_…" style={inp} autoComplete="off" />
+              {patErr && <p style={{ fontSize: 11, color: "#b23b3b", margin: "4px 0 0" }}>{patErr}</p>}
               <div style={{ display: "flex", gap: 6, marginTop: 8 }}>
-                <button onClick={async () => { if (pat.trim()) { await setToken(pat.trim()); setPat(""); setSub(null); setOpen(false); } }} style={btnPrimary} disabled={!pat.trim()}>Connect</button>
-                <button onClick={() => setSub(null)} style={btnGhost}>Back</button>
+                <button onClick={async () => {
+                  if (!pat.trim()) return;
+                  setPatErr(null);
+                  try { await setToken(pat.trim()); if (useGitSession.getState().user) { setPat(""); setSub(null); setOpen(false); } else { setPatErr("Couldn't verify that token — check it has repo scope."); } }
+                  catch { setPatErr("Couldn't connect — check the token."); }
+                }} style={btnPrimary} disabled={!pat.trim()}>Connect</button>
+                <button onClick={() => { setSub(null); setPatErr(null); }} style={btnGhost}>Back</button>
               </div>
             </div>
           ) : (
             <>
               {!token && (
-                <button onClick={startSignIn} style={{ ...item, ...itemBtn, color: "var(--accent,#3d6b5f)", fontWeight: 600 }}>
-                  <GitBranch size={14} /> Continue on GitHub
-                </button>
+                <>
+                  {/* PAT is the reliable path (the device flow is CORS-blocked from
+                      the webview); lead with it, label it as the working method. */}
+                  <button onClick={() => setSub("pat")} style={{ ...item, ...itemBtn, color: "var(--accent,#3d6b5f)", fontWeight: 600 }}>
+                    <Key size={14} /> Connect with a GitHub token
+                  </button>
+                  <button onClick={startSignIn} style={{ ...item, ...itemBtn }}>
+                    <GitBranch size={14} /> Device-flow sign in
+                  </button>
+                </>
               )}
               {token && user?.login && (
                 <a href={`https://github.com/${user.login}`} target="_blank" rel="noreferrer" style={item}>
