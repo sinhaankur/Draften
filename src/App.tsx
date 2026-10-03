@@ -33,6 +33,8 @@ import { downloadProject } from "./export/project";
 import { PrototypePlay } from "./ui/PrototypePlay";
 import { LayersPanel } from "./ui/LayersPanel";
 import { RailAccount } from "./ui/RailAccount";
+import { StylesPanel } from "./ui/StylesPanel";
+import { AlignBar } from "./ui/AlignBar";
 import "./App.css";
 
 const LEVELS: AtomicLevel[] = ["atom", "molecule", "organism", "template", "page"];
@@ -361,6 +363,7 @@ export function App() {
                 {/* Inspect — selected layer's properties fold in here (v2 has no
                     separate Inspect tab). Shows guidance when nothing's selected. */}
                 <InspectPanel api={canvasReady ? excalidrawApi.current : null} />
+                <AlignBar api={canvasReady ? excalidrawApi.current : null} />
                 <div className="divider" />
 
                 {/* Page (v2) */}
@@ -402,6 +405,11 @@ export function App() {
                   ))}
                 </div>
                 <div className="muted small">Inter · 4pt grid</div>
+
+                <div className="divider" />
+
+                {/* Color styles + Text styles — apply to selection (v2 spine) */}
+                <StylesPanel api={canvasReady ? excalidrawApi.current : null} colors={genColors} />
 
                 <div className="divider" />
 
