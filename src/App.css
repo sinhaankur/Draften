@@ -675,6 +675,10 @@
 .plugin-dot.on { background: #34d399; }
 
 /* ── ✦ Design assistant (conversational) ──────────────────────────────── */
+/* page rows: delete × only on hover (clean until you need it) */
+.page-row .page-del { opacity: 0; transition: opacity .12s; }
+.page-row:hover .page-del { opacity: 1; }
+
 .ai-assistant { width: 440px; }
 /* Docked assistant — fills the right rail (Claude Design-style), not a popup. */
 .ai-docked {

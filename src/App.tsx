@@ -44,6 +44,9 @@ export function App() {
   const activeBoardId = useEditor((s) => s.activeBoardId);
   const setActiveBoard = useEditor((s) => s.setActiveBoard);
   const addBoard = useEditor((s) => s.addBoard);
+  const renameBoard = useEditor((s) => s.renameBoard);
+  const deleteBoard = useEditor((s) => s.deleteBoard);
+  const [editingBoard, setEditingBoard] = useState<string | null>(null);
 
   const [view, setView] = useState<"Design" | "Split" | "Code" | "Console">("Design");
   const [dsTab, setDsTab] = useState<"Design" | "Prototype" | "Inspect" | "Assistant" | "Review">("Design");
@@ -290,21 +293,33 @@ export function App() {
             <div style={{ padding: "0 8px 10px", display: "flex", flexDirection: "column", gap: 1 }}>
               <div style={{ display: "flex", alignItems: "center", padding: "4px 8px" }}>
                 <span style={{ flex: 1, fontSize: 11.5, fontWeight: 500, color: "var(--text-3)" }}>Pages</span>
-                <button title="Add a page" onClick={() => addBoard()}
+                <button title="Add a page" onClick={() => { const name = window.prompt("New page name", `Page ${doc.boards.length + 1}`); if (name !== null) addBoard("design", name); }}
                   style={{ width: 20, height: 20, border: 0, borderRadius: 5, background: "transparent", color: "var(--text-3)", cursor: "pointer", display: "grid", placeItems: "center", fontSize: 14 }}>+</button>
               </div>
               {doc.boards.map((b) => (
-                <button key={b.id} onClick={() => setActiveBoard(b.id)}
+                <div key={b.id} className="page-row" onClick={() => setActiveBoard(b.id)} onDoubleClick={() => setEditingBoard(b.id)}
                   style={{
-                    display: "flex", alignItems: "center", gap: 8, padding: "5px 8px", border: 0, borderRadius: 6, cursor: "pointer", textAlign: "left",
+                    display: "flex", alignItems: "center", gap: 8, padding: "5px 8px", borderRadius: 6, cursor: "pointer",
                     background: b.id === activeBoardId ? "var(--acc-soft, var(--accent-soft))" : "transparent",
                     color: b.id === activeBoardId ? "var(--accent-text, var(--accent))" : "var(--text)",
                     fontWeight: b.id === activeBoardId ? 500 : 400,
                   }}>
-                  <span style={{ width: 6, height: 6, borderRadius: 2, background: "var(--accent)", opacity: b.id === activeBoardId ? 1 : 0.4 }} />
-                  <span style={{ flex: 1 }}>{b.name}</span>
+                  <span style={{ width: 6, height: 6, borderRadius: 2, background: "var(--accent)", opacity: b.id === activeBoardId ? 1 : 0.4, flex: "none" }} />
+                  {editingBoard === b.id ? (
+                    <input autoFocus defaultValue={b.name}
+                      onClick={(e) => e.stopPropagation()}
+                      onBlur={(e) => { const v = e.target.value.trim(); if (v) renameBoard(b.id, v); setEditingBoard(null); }}
+                      onKeyDown={(e) => { if (e.key === "Enter") (e.target as HTMLInputElement).blur(); if (e.key === "Escape") setEditingBoard(null); }}
+                      style={{ flex: 1, minWidth: 0, border: "1px solid var(--accent)", borderRadius: 4, padding: "1px 5px", fontSize: 13, background: "var(--surf)", color: "var(--t1)" }} />
+                  ) : (
+                    <span style={{ flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{b.name}</span>
+                  )}
                   <span style={{ color: "var(--text-3)", fontSize: 11 }}>{b.children.length || ""}</span>
-                </button>
+                  {doc.boards.length > 1 && (
+                    <button className="page-del" title="Delete page" onClick={(e) => { e.stopPropagation(); if (window.confirm(`Delete page "${b.name}"?`)) deleteBoard(b.id); }}
+                      style={{ border: 0, background: "transparent", color: "var(--text-3)", cursor: "pointer", fontSize: 14, lineHeight: 1, padding: 0, flex: "none" }}>×</button>
+                  )}
+                </div>
               ))}
             </div>
 

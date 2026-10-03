@@ -30,7 +30,9 @@ interface EditorState {
   /** Rename the document. */
   rename: (name: string) => void;
   /** Add a new board and make it active. */
-  addBoard: (kind?: DraftenDocument["boards"][number]["kind"]) => void;
+  addBoard: (kind?: DraftenDocument["boards"][number]["kind"], name?: string) => void;
+  renameBoard: (id: string, name: string) => void;
+  deleteBoard: (id: string) => void;
 }
 
 const initialDoc = createEmptyDocument();
@@ -57,13 +59,27 @@ export const useEditor = create<EditorState>((set, get) => ({
   rename: (name) =>
     set((s) => ({ doc: { ...s.doc, name, updatedAt: new Date().toISOString() } })),
 
-  addBoard: (kind = "design") =>
+  addBoard: (kind = "design", name) =>
     set((s) => {
-      const n = s.doc.boards.length + 1;
-      const board = { id: crypto.randomUUID(), name: `Board ${n}`, kind, children: [] };
+      const board = { id: crypto.randomUUID(), name: name?.trim() || `Page ${s.doc.boards.length + 1}`, kind, children: [] };
       return {
         doc: { ...s.doc, boards: [...s.doc.boards, board], updatedAt: new Date().toISOString() },
         activeBoardId: board.id,
+      };
+    }),
+
+  renameBoard: (id, name) =>
+    set((s) => ({
+      doc: { ...s.doc, boards: s.doc.boards.map((b) => (b.id === id ? { ...b, name } : b)), updatedAt: new Date().toISOString() },
+    })),
+
+  deleteBoard: (id) =>
+    set((s) => {
+      if (s.doc.boards.length <= 1) return s; // keep at least one page
+      const boards = s.doc.boards.filter((b) => b.id !== id);
+      return {
+        doc: { ...s.doc, boards, updatedAt: new Date().toISOString() },
+        activeBoardId: s.activeBoardId === id ? boards[0].id : s.activeBoardId,
       };
     }),
 }));
