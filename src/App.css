@@ -11,10 +11,12 @@
 .topbar {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   height: 48px;
   /* default left padding (Windows/Linux/web have no left traffic-lights) */
   padding: 0 14px;
+  /* never let trailing actions (AI, Export) fall off a narrow window */
+  overflow: hidden;
   background: var(--raised);
   backdrop-filter: saturate(180%) blur(20px);
   -webkit-backdrop-filter: saturate(180%) blur(20px);
@@ -91,7 +93,19 @@
   gap: 5px;
   font-size: 13px;
   color: var(--text-3);
+  min-width: 0;             /* allow it to shrink, not push actions off */
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
+.breadcrumb span { overflow: hidden; text-overflow: ellipsis; }
+/* trailing actions must never shrink or get pushed off the window */
+.topbar .ai-btn, .topbar .export-btn, .topbar .rail-toggle,
+.topbar .segmented, .topbar .tb-btn { flex: none; }
+.topbar .spacer { min-width: 8px; }
+/* progressive collapse so AI + Export always fit a smaller window */
+@media (max-width: 1240px) { .topbar .breadcrumb { display: none; } }
+@media (max-width: 1080px) { .topbar .segmented { display: none; } }
 .breadcrumb .sep {
   opacity: 0.4;
 }
