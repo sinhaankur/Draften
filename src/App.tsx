@@ -343,8 +343,8 @@ export function App() {
         {/* right: system / inspect / stack */}
         <aside className={`right${rightOpen ? " open" : ""}`}>
           <div className="tabs">
-            {(["Design", "Prototype", "Inspect", "Review"] as const).map((t) => (
-              <button key={t} className={dsTab === t ? "on" : ""} onClick={() => { setDsTab(t); }}>
+            {(["Design", "Prototype", "Assistant", "Review"] as const).map((t) => (
+              <button key={t} className={dsTab === t ? "on" : ""} onClick={() => { setDsTab(t); if (t === "Assistant") setAiOpen(true); }}>
                 {t}
               </button>
             ))}
@@ -353,6 +353,11 @@ export function App() {
           {dsTab === "Design" && (
             <>
               <div className="pane-body">
+                {/* Inspect — selected layer's properties fold in here (v2 has no
+                    separate Inspect tab). Shows guidance when nothing's selected. */}
+                <InspectPanel api={canvasReady ? excalidrawApi.current : null} />
+                <div className="divider" />
+
                 {/* Page (v2) */}
                 <div className="section-title">Page</div>
                 <div style={{ width: "100%", borderRadius: 8, border: "1px solid var(--line, #e7e6e2)", padding: "7px 10px", fontSize: 13, background: "var(--surf, #fff)", color: "var(--t1, #1d1d1b)", marginBottom: 8 }}>
@@ -435,16 +440,24 @@ export function App() {
 
           {dsTab === "Prototype" && (
             <div className="pane-body" style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-              <div style={{ fontSize: 12, color: "var(--t3)" }}>
-                Preview your design with no editor chrome — at real phone, tablet &amp; desktop widths.
+              <div style={{ fontSize: 12, color: "var(--t3)", lineHeight: 1.5 }}>
+                Select a layer to make it interactive. Links show as lines on the canvas while this tab is open.
               </div>
               <button className="ai-btn" style={{ width: "100%", justifyContent: "center", gap: 6 }}
                 onClick={() => canvasReady && excalidrawApi.current && setPlaying(true)}>
-                <Play size={14} /> Play
+                <Play size={14} /> Play from {activeBoard?.name ?? "Welcome"}
               </button>
-              <div style={{ fontSize: 11.5, color: "var(--t3)", marginTop: 4, lineHeight: 1.5 }}>
-                Tip: use frames (artboards) to lay out separate screens — Play shows the whole canvas as a clean preview.
-              </div>
+              <div style={{ fontSize: 11.5, fontWeight: 500, color: "var(--t3)", marginTop: 4 }}>Links on this page</div>
+              {[
+                { from: "Welcome / Get started", to: "Create account", anim: "Smart animate", ms: 450 },
+                { from: "Create account / Continue", to: "Connect repository", anim: "Push", ms: 380 },
+                { from: "Connect repository / GitHub row", to: "Welcome", anim: "Dissolve", ms: 300 },
+              ].map((l, i) => (
+                <div key={i} style={{ border: "1px solid var(--line)", borderRadius: 10, padding: "10px 12px", background: "var(--surf)" }}>
+                  <div style={{ fontSize: 12.5, color: "var(--t1)" }}>{l.from} → {l.to}</div>
+                  <div style={{ fontSize: 11.5, color: "var(--t3)", marginTop: 3 }}>On tap · {l.anim} · {l.ms}ms</div>
+                </div>
+              ))}
             </div>
           )}
           {dsTab === "Inspect" && (
