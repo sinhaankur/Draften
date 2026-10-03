@@ -96,9 +96,12 @@ describe("SketchImporter", () => {
     expect(warnings).toEqual([]);
   });
 
-  it("does not mutate an unrelated empty document", () => {
+  it("a fresh document starts clean (no nodes) with the seeded pages", () => {
     const doc = createEmptyDocument("Fresh");
     expect(Object.keys(doc.nodes)).toHaveLength(0);
-    expect(doc.boards).toHaveLength(1);
+    // A fresh doc seeds the v2 pages (Onboarding/Settings/Marketing); the point is
+    // it carries no imported NODES, not that it has exactly one board.
+    expect(doc.boards).toHaveLength(3);
+    expect(doc.boards.map((b) => b.name)).toContain("Onboarding");
   });
 });
