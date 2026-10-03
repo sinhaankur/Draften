@@ -33,7 +33,7 @@ export function ExcalidrawCanvas({
         currentItemRoughness: 0, // crisp, precise shapes (not hand-drawn)
         currentItemFontFamily: 2, // Nunito — the normal (non-handwritten) font
         currentItemStrokeColor: "#3d6b5f",
-        viewBackgroundColor: theme === "dark" ? "#0c0e12" : "#edeff4",
+        viewBackgroundColor: theme === "dark" ? "#151514" : "#efeeeb",
         gridSize: 20,
       },
       scrollToContent: true,
@@ -47,7 +47,13 @@ export function ExcalidrawCanvas({
     <div style={{ position: "absolute", inset: 0 }}>
       <Excalidraw
         initialData={initialData}
-        excalidrawAPI={onReady}
+        excalidrawAPI={(api) => {
+          onReady?.(api);
+          // Frame all the seeded artboards nicely on open (spacious, like the mockup)
+          setTimeout(() => {
+            try { api.scrollToContent(api.getSceneElements(), { fitToContent: true, animate: false }); } catch { /* ignore */ }
+          }, 60);
+        }}
         theme={theme === "dark" ? "dark" : "light"}
         gridModeEnabled
         UIOptions={{
