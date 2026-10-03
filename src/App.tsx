@@ -6,6 +6,7 @@ import type { ExcalidrawImperativeAPI } from "@excalidraw/excalidraw/types";
 import { AnimatePresence, motion } from "motion/react";
 
 import { ExcalidrawCanvas, toElements } from "./canvas/ExcalidrawCanvas";
+import { registerCanvasApplier } from "./canvas/apply-action";
 import { parsePaste, toExcalidrawSkeleton } from "./import/paste";
 import { isTauri } from "./env";
 import { toast as toastMotion } from "./ui/motion";
@@ -202,7 +203,7 @@ export function App() {
 
         {/* center: canvas */}
         <main className="stage">
-          <ExcalidrawCanvas theme={theme} onReady={(api) => (excalidrawApi.current = api)} />
+          <ExcalidrawCanvas theme={theme} onReady={(api) => { excalidrawApi.current = api; registerCanvasApplier(api); }} />
         </main>
 
         {/* right: system / inspect / stack */}
