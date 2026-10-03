@@ -77,9 +77,17 @@ export type ImportSource =
   | "native";
 
 /** Create an empty document with one design board and an empty design system. */
-export function createEmptyDocument(name = "Untitled", appVersion = "0.1.0"): DraftenDocument {
+export function createEmptyDocument(name = "app-designs", appVersion = "0.1.0"): DraftenDocument {
   const now = new Date().toISOString();
-  const boardId = crypto.randomUUID();
+  // Seed the three pages from the approved v2 mockup (design/Draften v2.dc.html)
+  // so the app opens populated like the screenshot — Onboarding active.
+  const pages = ["Onboarding", "Settings", "Marketing"].map((n) => ({
+    id: crypto.randomUUID(),
+    name: n,
+    kind: "design" as const,
+    children: [],
+    viewport: { x: 0, y: 0, zoom: 1 },
+  }));
   return {
     schemaVersion: DOCUMENT_SCHEMA_VERSION,
     id: crypto.randomUUID(),
@@ -87,15 +95,7 @@ export function createEmptyDocument(name = "Untitled", appVersion = "0.1.0"): Dr
     appVersion,
     createdAt: now,
     updatedAt: now,
-    boards: [
-      {
-        id: boardId,
-        name: "Board 1",
-        kind: "design",
-        children: [],
-        viewport: { x: 0, y: 0, zoom: 1 },
-      },
-    ],
+    boards: pages,
     nodes: {},
     designSystem: {
       brand: { name, logoNodeId: undefined },
