@@ -11,6 +11,7 @@ import {
 
 import { ExcalidrawCanvas, toElements } from "./canvas/ExcalidrawCanvas";
 import { registerCanvasApplier } from "./canvas/apply-action";
+import { GitHubSignIn } from "./ui/GitHubSignIn";
 import { parsePaste, toExcalidrawSkeleton } from "./import/paste";
 import { isTauri } from "./env";
 import { toast as toastMotion } from "./ui/motion";
@@ -126,6 +127,9 @@ export function App() {
         </div>
 
         <div className="tb-sep" />
+
+        {/* GitHub sign-in (device flow) — unlocks the git features */}
+        <GitHubSignIn />
 
         {/* document actions group — real Lucide icons (mockup) */}
         <button className="tb-btn" title="Git branch">
