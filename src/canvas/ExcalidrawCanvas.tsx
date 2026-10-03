@@ -101,15 +101,17 @@ const AW = 320, AH = 640; // artboard size
 let _sid = 0;
 const sid = (p: string) => `${p}-${_sid++}`;
 
+// Layer names ride in customData.name (Excalidraw preserves customData; the bare
+// `name` field is dropped for non-frame elements). The Layers panel reads it.
 function text(id: string, x: number, y: number, t: string, size = 15, color = INK, name?: string) {
-  return { id, type: "text" as const, x, y, text: t, fontSize: size, fontFamily: 2, strokeColor: color, roughness: 0, ...(name ? { name } : {}) };
+  return { id, type: "text" as const, x, y, text: t, fontSize: size, fontFamily: 2, strokeColor: color, roughness: 0, ...(name ? { customData: { name } } : {}) };
 }
 function field(id: string, x: number, y: number, ph: string, name: string) {
-  return { id, type: "rectangle" as const, x, y, width: 260, height: 42, roughness: 0, strokeColor: LINE, backgroundColor: SURF, strokeWidth: 1, roundness: { type: 3 } as const, name,
+  return { id, type: "rectangle" as const, x, y, width: 260, height: 42, roughness: 0, strokeColor: LINE, backgroundColor: SURF, strokeWidth: 1, roundness: { type: 3 } as const, customData: { name },
     label: { text: ph, fontSize: 13, fontFamily: 2, strokeColor: MUTED } };
 }
 function button(id: string, x: number, y: number, t: string, name = "Primary button") {
-  return { id, type: "rectangle" as const, x, y, width: 260, height: 46, roughness: 0, strokeColor: ACC, backgroundColor: ACC, strokeWidth: 1, roundness: { type: 3 } as const, name,
+  return { id, type: "rectangle" as const, x, y, width: 260, height: 46, roughness: 0, strokeColor: ACC, backgroundColor: ACC, strokeWidth: 1, roundness: { type: 3 } as const, customData: { name },
     label: { text: t, fontSize: 14, fontFamily: 2, strokeColor: "#ffffff" } };
 }
 

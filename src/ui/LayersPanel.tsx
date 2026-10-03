@@ -13,6 +13,7 @@ type El = {
   id: string;
   type: string;
   name?: string | null;
+  customData?: { name?: string } | null;
   text?: string;
   isDeleted?: boolean;
   opacity?: number;
@@ -142,7 +143,8 @@ function buildRows(els: El[], collapsed: Set<string>): Row[] {
 }
 
 function nameOf(e: El, all: El[]): string {
-  if (e.name) return trim(e.name);                       // explicit layer name (frames + seeded)
+  if (e.customData?.name) return trim(e.customData.name); // layer name (survives convert)
+  if (e.name) return trim(e.name);                        // frames carry a real name
   if (e.type === "text" && e.text) return trim(e.text);
   const bound = (e.boundElements || []).find((b) => b.type === "text");
   if (bound) { const t = all.find((x) => x.id === bound.id); if (t?.text) return trim(t.text); }
