@@ -10,6 +10,7 @@
 import { aiProviders } from "../ai/provider";
 import { DeterministicProvider } from "../ai/providers";
 import { PdfImporter } from "../import/pdf";
+import { DocxImporter } from "../import/docx";
 import { SketchImporter } from "../import/sketch";
 import { importers } from "../import/importer";
 
@@ -22,6 +23,7 @@ export function registerBuiltins(): void {
   // ── importers (the "open any design tool" pipeline) ──
   importers.register(new SketchImporter());
   importers.register(new PdfImporter());
+  importers.register(new DocxImporter());
   // Figma (REST API), OmniGraffle (Rust plist), XD, draw.io importers register
   // here once built; each is just another Importer against the same contract.
 
