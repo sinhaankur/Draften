@@ -6,7 +6,7 @@ import type { ExcalidrawImperativeAPI } from "@excalidraw/excalidraw/types";
 import { AnimatePresence, motion } from "motion/react";
 import {
   PanelLeft, PanelRight, GitBranch, LayoutTemplate, Puzzle,
-  Moon, Sun, Sparkles, Play, History, Package,
+  Moon, Sun, Sparkles, Play, History, Package, Server,
 } from "lucide-react";
 
 import { ExcalidrawCanvas, toElements } from "./canvas/ExcalidrawCanvas";
@@ -35,6 +35,7 @@ import { LayersPanel } from "./ui/LayersPanel";
 import { RailAccount } from "./ui/RailAccount";
 import { StylesPanel } from "./ui/StylesPanel";
 import { AlignBar } from "./ui/AlignBar";
+import { McpPanel } from "./ui/McpPanel";
 import "./App.css";
 
 const LEVELS: AtomicLevel[] = ["atom", "molecule", "organism", "template", "page"];
@@ -54,6 +55,7 @@ export function App() {
   const [aiOpen, setAiOpen] = useState(false);
   const [pluginsOpen, setPluginsOpen] = useState(false);
   const [templatesOpen, setTemplatesOpen] = useState(false);
+  const [mcpOpen, setMcpOpen] = useState(false);
   const [playing, setPlaying] = useState(false);
   const [dotGrid, setDotGrid] = useState(true);
   const [pasteNote, setPasteNote] = useState<string | null>(null);
@@ -242,6 +244,7 @@ export function App() {
         {aiOpen && <AiPanel key="ai" onClose={() => setAiOpen(false)} />}
         {pluginsOpen && <PluginsPanel key="plugins" onClose={() => setPluginsOpen(false)} />}
         {templatesOpen && <TemplatesPanel key="templates" onClose={() => setTemplatesOpen(false)} onPick={pickTemplate} />}
+        {mcpOpen && <McpPanel key="mcp" onClose={() => setMcpOpen(false)} />}
       </AnimatePresence>
 
       {playing && canvasReady && excalidrawApi.current && (
@@ -272,6 +275,7 @@ export function App() {
             { id: "git", icon: <GitBranch size={18} />, title: "Source control", on: () => { setLeftMode("git"); setLeftOpen(true); } },
             { id: "history", icon: <History size={18} />, title: "Version history", on: () => { setLeftMode("history"); setLeftOpen(true); } },
             { id: "plugins", icon: <Puzzle size={18} />, title: "Plugins", on: () => setPluginsOpen(true) },
+            { id: "mcp", icon: <Server size={18} />, title: "Draften as an MCP server", on: () => setMcpOpen(true) },
             { id: "assistant", icon: <Sparkles size={18} />, title: "AI assistant", on: () => { setDsTab("Assistant"); setRightOpen(true); } },
           ] as const).map((it) => (
             <button key={it.id} className={`rail-icon${leftMode === it.id ? " on" : ""}`} title={it.title} onClick={it.on}>
