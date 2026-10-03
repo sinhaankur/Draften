@@ -676,6 +676,14 @@
 
 /* ── ✦ Design assistant (conversational) ──────────────────────────────── */
 .ai-assistant { width: 440px; }
+/* Docked assistant — fills the right rail (Claude Design-style), not a popup. */
+.ai-docked {
+  width: 100%; height: 100%;
+  display: flex; flex-direction: column; min-height: 0;
+  padding: 12px 14px; overflow: hidden;
+}
+.ai-docked .ai-thread { max-height: none; flex: 1; }
+.ai-docked .ai-actions .ghost:first-child { display: none; } /* no "Close" when docked */
 .ai-head { display: flex; align-items: baseline; justify-content: space-between; gap: var(--s3); margin-bottom: var(--s2); }
 .ai-provider { white-space: nowrap; }
 .ai-reply {

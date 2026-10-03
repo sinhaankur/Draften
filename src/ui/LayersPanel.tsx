@@ -1,6 +1,18 @@
 import { useEffect, useState } from "react";
-import { Eye, EyeOff, Square, Circle, Diamond, Type, MoveUpRight, Minus, Image, Frame, Group, PenLine, Dot, ChevronRight, ChevronDown } from "lucide-react";
+import { Eye, EyeOff, Square, Circle, Diamond, Type, MoveUpRight, Minus, Image, Frame, Group, PenLine, Dot, ChevronRight, ChevronDown, Plus } from "lucide-react";
 import type { ExcalidrawImperativeAPI } from "@excalidraw/excalidraw/types";
+
+import { drawSkeletonOnCanvas } from "../canvas/apply-action";
+
+// New-artboard size presets (v2: iPhone / Desktop / Tablet / Custom).
+const ARTBOARD_PRESETS = [
+  { name: "iPhone 16 Pro", w: 393, h: 852 },
+  { name: "iPhone SE", w: 375, h: 667 },
+  { name: "Android", w: 412, h: 915 },
+  { name: "Tablet", w: 834, h: 1194 },
+  { name: "Desktop", w: 1440, h: 1024 },
+  { name: "Square", w: 1080, h: 1080 },
+];
 
 /**
  * LayersPanel — the real layers tree (Figma/Sketch have one; Excalidraw doesn't,
@@ -29,6 +41,7 @@ export function LayersPanel({ api }: { api: ExcalidrawImperativeAPI | null }) {
   const [els, setEls] = useState<El[]>([]);
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [collapsed, setCollapsed] = useState<Set<string>>(new Set());
+  const [addMenu, setAddMenu] = useState(false);
 
   useEffect(() => {
     if (!api) return;
@@ -74,12 +87,41 @@ export function LayersPanel({ api }: { api: ExcalidrawImperativeAPI | null }) {
   const toggleCollapse = (id: string) => setCollapsed((c) => { const n = new Set(c); n.has(id) ? n.delete(id) : n.add(id); return n; });
   const frames = els.filter((e) => e.type === "frame" && !e.isDeleted);
 
+  // Add a new artboard (a real frame) to the right of existing content.
+  const addArtboard = (w: number, h: number, name: string) => {
+    if (!api) return;
+    const existing = api.getSceneElements().filter((e) => !(e as unknown as El).isDeleted);
+    const maxX = existing.reduce((m, e) => Math.max(m, (e.x ?? 0) + (e.width ?? 0)), 0);
+    const x = existing.length ? maxX + 60 : 80;
+    void drawSkeletonOnCanvas([{ type: "frame", name, x, y: 80, width: w, height: h, children: [] }]);
+  };
+
   return (
    <>
-    {/* Artboards — a distinct section (v2), each with its real dimensions */}
-    {frames.length > 0 && (
-      <div style={{ padding: "0 4px 8px" }}>
-        <div style={{ padding: "4px 8px", fontSize: 11.5, fontWeight: 500, color: "var(--text-3, #8e8d88)" }}>Artboards</div>
+    {/* Artboards — a distinct section (v2) with New-artboard presets */}
+    <div style={{ padding: "0 4px 8px" }}>
+        <div style={{ display: "flex", alignItems: "center", padding: "4px 8px", position: "relative" }}>
+          <span style={{ flex: 1, fontSize: 11.5, fontWeight: 500, color: "var(--text-3, #8e8d88)" }}>Artboards</span>
+          <button title="New artboard" onClick={() => setAddMenu((v) => !v)}
+            style={{ width: 20, height: 20, border: 0, borderRadius: 5, background: "transparent", color: "var(--text-3, #8e8d88)", cursor: "pointer", display: "grid", placeItems: "center" }}>
+            <Plus size={14} />
+          </button>
+          {addMenu && (
+            <div style={{ position: "absolute", top: "100%", right: 6, zIndex: 50, width: 180, background: "var(--panel, #fbfbfa)", border: "1px solid var(--line, #e7e6e2)", borderRadius: 9, boxShadow: "0 8px 24px -8px rgba(0,0,0,.25)", padding: 4 }}>
+              <div style={{ padding: "4px 8px", fontSize: 10.5, fontWeight: 600, textTransform: "uppercase", letterSpacing: ".05em", color: "var(--text-3, #8e8d88)" }}>New artboard</div>
+              {ARTBOARD_PRESETS.map((pr) => (
+                <button key={pr.name} onClick={() => { addArtboard(pr.w, pr.h, pr.name); setAddMenu(false); }}
+                  style={{ display: "flex", justifyContent: "space-between", width: "100%", border: 0, background: "transparent", cursor: "pointer", padding: "6px 8px", borderRadius: 6, fontSize: 12.5, color: "var(--t1, #1d1d1b)" }}
+                  onMouseEnter={(e) => (e.currentTarget.style.background = "var(--hover, #f0efec)")}
+                  onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}>
+                  <span>{pr.name}</span>
+                  <span style={{ fontFamily: "var(--font-mono, monospace)", fontSize: 10.5, color: "var(--text-3, #8e8d88)" }}>{pr.w}×{pr.h}</span>
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+        {frames.length === 0 && <div style={{ padding: "2px 8px", fontSize: 12, color: "var(--text-3, #8e8d88)" }}>No artboards — add one with +</div>}
         {frames.map((f) => {
           const on = selected.has(f.id);
           return (
@@ -95,7 +137,6 @@ export function LayersPanel({ api }: { api: ExcalidrawImperativeAPI | null }) {
           );
         })}
       </div>
-    )}
     {/* Layers — the full nested tree */}
     <div style={{ padding: "4px 8px 0", fontSize: 11.5, fontWeight: 500, color: "var(--text-3, #8e8d88)", borderTop: "1px solid var(--line, #e7e6e2)" }}>Layers</div>
     <div style={{ display: "flex", flexDirection: "column", gap: 1, padding: "2px 4px", maxHeight: 420, overflow: "auto" }}>

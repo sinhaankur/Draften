@@ -34,7 +34,7 @@ const STARTERS = [
  * Every change lands in the changelog (right here), so it's reviewable + undoable,
  * never a hollow shell. Keyless + on-device by default.
  */
-export function AiPanel({ onClose }: { onClose: () => void }) {
+export function AiPanel({ onClose, docked = false }: { onClose: () => void; docked?: boolean }) {
   const setDesignSystem = useEditor((s) => s.setDesignSystem);
   const doc = useEditor((s) => s.doc);
 
@@ -167,9 +167,8 @@ export function AiPanel({ onClose }: { onClose: () => void }) {
 
   const active = entries.slice(0, cursor);
 
-  return (
-    <motion.div className="ai-overlay" onClick={onClose} {...scrim}>
-      <motion.div className="ai-dialog ai-assistant" onClick={(e) => e.stopPropagation()} {...overlay}>
+  const inner = (
+      <>
         <div className="ai-head">
           <div className="ai-title">✦ Design assistant</div>
           <select className="ai-provider-pick small" value={provider?.info.id ?? ""}
@@ -265,6 +264,17 @@ export function AiPanel({ onClose }: { onClose: () => void }) {
             <p className="muted small">{active.length} of {entries.length} applied</p>
           </div>
         )}
+      </>
+  );
+
+  // Docked (Claude Design-style): render inline in the right rail, no overlay.
+  if (docked) {
+    return <div className="ai-assistant ai-docked">{inner}</div>;
+  }
+  return (
+    <motion.div className="ai-overlay" onClick={onClose} {...scrim}>
+      <motion.div className="ai-dialog ai-assistant" onClick={(e) => e.stopPropagation()} {...overlay}>
+        {inner}
       </motion.div>
     </motion.div>
   );

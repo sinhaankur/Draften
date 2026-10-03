@@ -189,7 +189,7 @@ export function App() {
         <div className="tb-sep" />
 
         {/* primary action, trailing-most */}
-        <button className="ai-btn" onClick={() => setAiOpen(true)}>
+        <button className="ai-btn" onClick={() => { setDsTab("Assistant"); setRightOpen(true); }}>
           <Sparkles size={14} /> AI
         </button>
         {/* Export — build the runnable app (v2's green Export button) */}
@@ -234,7 +234,7 @@ export function App() {
             { id: "git", icon: <GitBranch size={18} />, title: "Source control", on: () => { setLeftMode("git"); setLeftOpen(true); } },
             { id: "history", icon: <History size={18} />, title: "Version history", on: () => { setLeftMode("history"); setLeftOpen(true); } },
             { id: "plugins", icon: <Puzzle size={18} />, title: "Plugins", on: () => setPluginsOpen(true) },
-            { id: "assistant", icon: <Sparkles size={18} />, title: "AI assistant", on: () => setAiOpen(true) },
+            { id: "assistant", icon: <Sparkles size={18} />, title: "AI assistant", on: () => { setDsTab("Assistant"); setRightOpen(true); } },
           ] as const).map((it) => (
             <button key={it.id} className={`rail-icon${leftMode === it.id ? " on" : ""}`} title={it.title} onClick={it.on}>
               {it.icon}
@@ -273,7 +273,7 @@ export function App() {
                 Your component library appears here. Generate one with the ✦ assistant, or open Templates for a starting point.
               </p>
               <div style={{ display: "flex", flexDirection: "column", gap: 8, marginTop: 10 }}>
-                <button className="ai-btn" style={{ justifyContent: "center" }} onClick={() => setAiOpen(true)}><Sparkles size={14} /> Generate a library</button>
+                <button className="ai-btn" style={{ justifyContent: "center" }} onClick={() => { setDsTab("Assistant"); setRightOpen(true); }}><Sparkles size={14} /> Generate a library</button>
                 <button className="tb-btn" style={{ justifyContent: "center" }} onClick={() => setTemplatesOpen(true)}><LayoutTemplate size={14} /> Templates</button>
               </div>
             </div>
@@ -351,7 +351,7 @@ export function App() {
         <aside className={`right${rightOpen ? " open" : ""}`}>
           <div className="tabs">
             {(["Design", "Prototype", "Assistant", "Review"] as const).map((t) => (
-              <button key={t} className={dsTab === t ? "on" : ""} onClick={() => { setDsTab(t); if (t === "Assistant") setAiOpen(true); }}>
+              <button key={t} className={dsTab === t ? "on" : ""} onClick={() => setDsTab(t)}>
                 {t}
               </button>
             ))}
@@ -445,13 +445,13 @@ export function App() {
                 ) : (
                   <div className="ds-empty">
                     <div className="muted small">No components yet.</div>
-                    <button className="ai-btn" onClick={() => setAiOpen(true)}>
+                    <button className="ai-btn" onClick={() => { setDsTab("Assistant"); setRightOpen(true); }}>
                       ✦ Generate a library
                     </button>
                   </div>
                 )}
               </div>
-              <button className="new-component" onClick={() => setAiOpen(true)}>
+              <button className="new-component" onClick={() => { setDsTab("Assistant"); setRightOpen(true); }}>
                 + New component
               </button>
             </>
@@ -485,17 +485,8 @@ export function App() {
             </div>
           )}
           {dsTab === "Assistant" && (
-            <div className="pane-body" style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-              <div style={{ fontSize: 11.5, color: "var(--t3)" }}>The assistant runs on your local model (LM Studio / Ollama). Nothing leaves this Mac.</div>
-              <div style={{ fontSize: 13, fontWeight: 500 }}>What should we change?</div>
-              {["Add a secondary button", "Make this artboard dark", "Center the layers", "Tighten the title copy"].map((s) => (
-                <button key={s} onClick={() => setAiOpen(true)}
-                  style={{ textAlign: "left", padding: "8px 10px", border: "1px solid var(--line)", borderRadius: 8, background: "var(--surf)", color: "var(--t1)", cursor: "pointer", fontSize: 12.5 }}>
-                  {s}
-                </button>
-              ))}
-              <button className="ai-btn" style={{ width: "100%", justifyContent: "center", marginTop: 4 }} onClick={() => setAiOpen(true)}>✦ Open the assistant</button>
-            </div>
+            /* The AI IS this panel — docked like Claude Design, not a popup. */
+            <AiPanel docked onClose={() => setDsTab("Design")} />
           )}
           {dsTab === "Review" && (
             <ReviewPanel boardName={activeBoard?.name ?? "This board"} />
