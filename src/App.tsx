@@ -4,6 +4,10 @@ import { useRef } from "react";
 import type { ExcalidrawImperativeAPI } from "@excalidraw/excalidraw/types";
 
 import { AnimatePresence, motion } from "motion/react";
+import {
+  PanelLeft, PanelRight, GitBranch, LayoutTemplate, Puzzle,
+  Moon, Sun, Sparkles,
+} from "lucide-react";
 
 import { ExcalidrawCanvas, toElements } from "./canvas/ExcalidrawCanvas";
 import { registerCanvasApplier } from "./canvas/apply-action";
@@ -26,7 +30,7 @@ export function App() {
   const setActiveBoard = useEditor((s) => s.setActiveBoard);
   const addBoard = useEditor((s) => s.addBoard);
 
-  const [view, setView] = useState<"Design" | "Split" | "Code">("Design");
+  const [view, setView] = useState<"Design" | "Split" | "Code" | "Console">("Design");
   const [dsTab, setDsTab] = useState<"Design" | "Prototype" | "Inspect" | "Assistant" | "Review">("Design");
   const [theme, setTheme] = useState<"light" | "dark">("light");
   const [aiOpen, setAiOpen] = useState(false);
@@ -97,25 +101,25 @@ export function App() {
       {/* unified toolbar (Xcode-style): leading identity · flexible space ·
           grouped trailing actions, separated by spacers */}
       <header className="topbar">
-        <button className="rail-toggle" title="Boards & layers" onClick={() => { setLeftOpen((v) => !v); setRightOpen(false); }}>☰</button>
+        <button className="rail-toggle" title="Boards & layers" onClick={() => { setLeftOpen((v) => !v); setRightOpen(false); }}><PanelLeft size={16} /></button>
         <div className="brand">
-          <span className="logo">◗</span>
+          <span className="logo" style={{ display: "inline-grid", placeItems: "center", width: 18, height: 18, borderRadius: 5, background: "var(--accent)", color: "#fff", fontSize: 12, fontWeight: 700, fontFamily: "var(--font-serif)" }}>d</span>
           <span>Draften</span>
           <span className="chip">v{doc.appVersion}</span>
         </div>
         <div className="tb-sep" />
         <div className="breadcrumb">
           <span>{doc.name}</span>
-          <span className="sep">›</span>
+          <span className="sep">/</span>
           <span className="current">{activeBoard?.name ?? "Board"}</span>
         </div>
 
         <div className="spacer" />
 
-        {/* editor-mode segmented control */}
+        {/* editor-mode segmented control — Design/Split/Code/Console (mockup) */}
         <div className="segmented">
-          {(["Design", "Split", "Code"] as const).map((v) => (
-            <button key={v} className={view === v ? "on" : ""} onClick={() => setView(v)}>
+          {(["Design", "Split", "Code", "Console"] as const).map((v) => (
+            <button key={v} className={view === v ? "on" : ""} onClick={() => setView(v as typeof view)}>
               {v}
             </button>
           ))}
@@ -123,31 +127,31 @@ export function App() {
 
         <div className="tb-sep" />
 
-        {/* document actions group */}
+        {/* document actions group — real Lucide icons (mockup) */}
         <button className="tb-btn" title="Git branch">
-          ⑂ main
+          <GitBranch size={14} /> main
         </button>
-        <button className="tb-btn" onClick={openTemplate} title="Load the sinhaankur.com test template">
-          Template
+        <button className="tb-btn" onClick={openTemplate} title="Templates">
+          <LayoutTemplate size={14} /> Template
         </button>
         <button className="tb-btn" onClick={() => setPluginsOpen(true)} title="Install plugins from GitHub">
-          🧩 Plugins
+          <Puzzle size={14} /> Plugins
         </button>
         <button
           className="tb-btn tb-icon"
           onClick={() => setTheme((t) => (t === "light" ? "dark" : "light"))}
           title="Toggle appearance"
         >
-          {theme === "light" ? "☾" : "☀"}
+          {theme === "light" ? <Moon size={15} /> : <Sun size={15} />}
         </button>
 
         <div className="tb-sep" />
 
         {/* primary action, trailing-most */}
         <button className="ai-btn" onClick={() => setAiOpen(true)}>
-          ✦ AI
+          <Sparkles size={14} /> AI
         </button>
-        <button className="rail-toggle" title="Design system" onClick={() => { setRightOpen((v) => !v); setLeftOpen(false); }}>⧉</button>
+        <button className="rail-toggle" title="Design system" onClick={() => { setRightOpen((v) => !v); setLeftOpen(false); }}><PanelRight size={16} /></button>
       </header>
 
       <AnimatePresence>
