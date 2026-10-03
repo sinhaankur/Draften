@@ -30,6 +30,7 @@ import { ConsoleView } from "./ui/ConsoleView";
 import { ReviewPanel } from "./ui/ReviewPanel";
 import { FileMenu } from "./ui/FileMenu";
 import { PrototypePlay } from "./ui/PrototypePlay";
+import { LayersPanel } from "./ui/LayersPanel";
 import "./App.css";
 
 const LEVELS: AtomicLevel[] = ["atom", "molecule", "organism", "template", "page"];
@@ -264,10 +265,10 @@ export function App() {
               <ImportButton />
             </div>
 
-            {/* Layers */}
-            <div style={{ padding: "0 8px 10px", borderTop: "1px solid var(--line, var(--border))" }}>
+            {/* Layers — the real tree (click to select, 👁 to toggle) */}
+            <div style={{ padding: "0 4px 10px", borderTop: "1px solid var(--line, var(--border))" }}>
               <div style={{ padding: "8px 8px 4px", fontSize: 11.5, fontWeight: 500, color: "var(--text-3)" }}>Layers</div>
-              <div style={{ padding: "2px 8px", fontSize: 12, color: "var(--text-3)" }}>Managed on the canvas.</div>
+              <LayersPanel api={canvasReady ? excalidrawApi.current : null} />
             </div>
           </div>
           )}
