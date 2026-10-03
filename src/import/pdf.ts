@@ -1,15 +1,16 @@
 /**
- * PDF importer (stub) — brings a PDF in as boards you can explore + edit.
+ * PDF importer — brings a PDF in as editable boards (REAL extraction via pdf.js).
  *
- * PDF is a common "here's the design" hand-off format, so importing it is
- * first-class. Each page becomes a board; extracted vector paths + text + images
- * become nodes. Full extraction needs a PDF engine (pdf.js on the web, or the
- * Rust side for speed on desktop) — this stub establishes the contract + page→
- * board mapping so the engine wiring is a drop-in, and the pipeline already
- * recognises `.pdf`.
+ * PDF is a common "here's the design/spec" hand-off, so importing it is
+ * first-class. Each page → a board sized to the page; each text run → a positioned,
+ * editable text node (PDF's bottom-left origin flipped to the app's top-left). This
+ * is also what lets the AI assistant "turn this PDF into a design" — the extracted
+ * text becomes real content. Images/vector paths are a follow-up; text is the
+ * high-value 90%.
  */
 
 import { createEmptyDocument } from "../model/document";
+import type { DraftenDocument } from "../model/document";
 import type { ImportInput, ImportResult, Importer } from "./importer";
 
 export class PdfImporter implements Importer {
@@ -36,21 +37,68 @@ export class PdfImporter implements Importer {
     if (!input.bytes) throw new Error("PDF import needs file bytes");
     const name = input.filename?.replace(/\.pdf$/i, "") ?? "PDF import";
     const doc = createEmptyDocument(name);
-    doc.importedFrom = "native"; // becomes "pdf" once ImportSource is extended
+    doc.boards = []; // replace the seeded pages with the PDF's real pages
+    doc.nodes = {};
+    doc.importedFrom = "native";
+    const warnings: string[] = [];
 
-    // The stub creates one board and reports what full extraction will add. The
-    // page→board loop plugs in here once the PDF engine (pdf.js / Rust) lands:
-    // for each page → new board (kind "design"), extract text runs → text nodes,
-    // vector ops → path nodes, XObject images → image nodes, at page coordinates.
-    doc.boards[0].name = "Page 1";
+    const pdfjs = await import("pdfjs-dist");
+    try {
+      const workerUrl = (await import("pdfjs-dist/build/pdf.worker.mjs?url")).default;
+      (pdfjs as unknown as { GlobalWorkerOptions: { workerSrc: string } }).GlobalWorkerOptions.workerSrc = workerUrl;
+    } catch { /* fall back to the main-thread fake worker (slower, still works) */ }
 
-    return {
-      document: doc,
-      warnings: [
-        "PDF import is a stub: the file was recognised and a page board created, " +
-          "but vector/text extraction is not wired yet (needs the PDF engine). " +
-          "Each PDF page will become an editable board.",
-      ],
-    };
+    const data = input.bytes instanceof Uint8Array ? input.bytes : new Uint8Array(input.bytes);
+    const pdf = await (pdfjs as unknown as { getDocument: (o: { data: Uint8Array }) => { promise: Promise<PdfDoc> } })
+      .getDocument({ data }).promise;
+
+    for (let p = 1; p <= pdf.numPages; p++) {
+      const page = await pdf.getPage(p);
+      const vp = page.getViewport({ scale: 1 });
+      const boardId = crypto.randomUUID();
+      const children: string[] = [];
+      const content = await page.getTextContent();
+
+      for (const raw of content.items) {
+        const it = raw as PdfTextItem;
+        if (!("str" in it) || !it.str.trim()) continue;
+        const x = it.transform[4];
+        const fontSize = Math.abs(it.transform[3]) || 12;
+        const y = vp.height - it.transform[5] - fontSize; // flip PDF bottom-left → top-left
+        const id = crypto.randomUUID();
+        doc.nodes[id] = {
+          id, type: "text", name: it.str.slice(0, 40),
+          frame: { x, y, width: it.width || it.str.length * fontSize * 0.5, height: fontSize * 1.3 },
+          text: it.str,
+          style: { fontFamily: "Inter", fontSize: Math.round(fontSize), fontWeight: 400, lineHeight: 1.3, align: "left" },
+          parentId: boardId,
+        } as DraftenDocument["nodes"][string];
+        children.push(id);
+      }
+
+      doc.boards.push({
+        id: boardId, name: `Page ${p}`, kind: "design", children,
+        viewport: { x: 0, y: 0, zoom: 1 },
+        frame: { x: (p - 1) * (vp.width + 60), y: 0, width: vp.width, height: vp.height },
+      } as DraftenDocument["boards"][number]);
+    }
+
+    if (!doc.boards.length) {
+      doc.boards.push({ id: crypto.randomUUID(), name: "Page 1", kind: "design", children: [], viewport: { x: 0, y: 0, zoom: 1 } });
+      warnings.push("No extractable text found — the PDF may be scanned images (OCR not wired).");
+    } else {
+      const total = Object.keys(doc.nodes).length;
+      warnings.push(`Imported ${pdf.numPages} page${pdf.numPages === 1 ? "" : "s"} · ${total} text runs.`);
+    }
+
+    return { document: doc, warnings };
   }
 }
+
+// Minimal structural types for the pdf.js objects we touch (version-agnostic).
+interface PdfDoc { numPages: number; getPage(n: number): Promise<PdfPage>; }
+interface PdfPage {
+  getViewport(o: { scale: number }): { width: number; height: number };
+  getTextContent(): Promise<{ items: unknown[] }>;
+}
+interface PdfTextItem { str: string; width: number; transform: number[]; }
