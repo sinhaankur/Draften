@@ -3,6 +3,8 @@ import type { ExcalidrawImperativeAPI } from "@excalidraw/excalidraw/types";
 import "@excalidraw/excalidraw/index.css";
 import { useMemo } from "react";
 
+import { loadSaved, scheduleSave } from "../io/persist";
+
 /**
  * The Draften canvas — built on Excalidraw (MIT), not a hand-rolled 2D canvas.
  *
@@ -27,18 +29,24 @@ export function ExcalidrawCanvas({
   onReady?: (api: ExcalidrawImperativeAPI) => void;
 }) {
   const initialData = useMemo(
-    () => ({
-      elements: convertToExcalidrawElements(seedSkeleton()),
-      appState: {
-        currentItemRoughness: 0, // crisp, precise shapes (not hand-drawn)
-        currentItemFontFamily: 2, // Nunito — the normal (non-handwritten) font
-        currentItemStrokeColor: "#3d6b5f",
-        viewBackgroundColor: theme === "dark" ? "#151514" : "#efeeeb",
-        gridSize: 20,
-      },
-      scrollToContent: true,
-    }),
-    // seed once; the `theme` prop below drives light/dark
+    () => {
+      // Restore the user's saved work if there is any (your work is never lost);
+      // otherwise seed the welcome artboards on a true first launch.
+      const saved = loadSaved();
+      return {
+        elements: saved ? (saved.elements as ReturnType<typeof convertToExcalidrawElements>) : convertToExcalidrawElements(seedSkeleton()),
+        appState: {
+          currentItemRoughness: 0, // crisp, precise shapes (not hand-drawn)
+          currentItemFontFamily: 2, // Nunito — the normal (non-handwritten) font
+          currentItemStrokeColor: "#3d6b5f",
+          viewBackgroundColor: (saved?.appState?.viewBackgroundColor as string) ?? (theme === "dark" ? "#151514" : "#efeeeb"),
+          gridSize: 20,
+        },
+        files: saved?.files as Record<string, never> | undefined,
+        scrollToContent: true,
+      };
+    },
+    // seed/restore once; the `theme` prop below drives light/dark
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [],
   );
@@ -49,10 +57,14 @@ export function ExcalidrawCanvas({
         initialData={initialData}
         excalidrawAPI={(api) => {
           onReady?.(api);
-          // Frame all the seeded artboards nicely on open (spacious, like the mockup)
+          // Frame all the artboards nicely on open (spacious, like the mockup)
           setTimeout(() => {
             try { api.scrollToContent(api.getSceneElements(), { fitToContent: true, animate: false }); } catch { /* ignore */ }
           }, 60);
+        }}
+        onChange={(elements, appState, files) => {
+          // Auto-save (debounced) so closing the app never loses work.
+          scheduleSave(() => ({ elements, appState: appState as unknown as Record<string, unknown>, files: files as unknown as Record<string, unknown> }));
         }}
         theme={theme === "dark" ? "dark" : "light"}
         gridModeEnabled
