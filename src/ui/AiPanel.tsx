@@ -8,19 +8,22 @@ import {
 } from "../ai/providers";
 import { runAssistant, type DraftenAction, type DocContext } from "../ai/assistant";
 import type { AiProvider } from "../ai/provider";
+import { useEditor } from "../state/store";
+import { useChangelog } from "../state/changelog";
+import { automate, AUTOMATIONS } from "../ai/automate";
+import { drawSkeletonOnCanvas } from "../canvas/apply-action";
+import { overlay, scrim } from "./motion";
 
 // Prompt starters — so a designer isn't staring at a blank box. Easy to use:
-// tap one to fill the prompt, or write your own.
+// tap one to fill the prompt, or write your own. The AUTOMATIONS run keyless.
 const STARTERS = [
   "A sign-up screen using our design tokens",
   "A pricing section with three cards",
   "Turn the attached document into a landing page",
   "A mobile onboarding flow, 3 screens",
   "A dashboard header with search and avatar",
+  ...AUTOMATIONS,
 ];
-import { useEditor } from "../state/store";
-import { useChangelog } from "../state/changelog";
-import { overlay, scrim } from "./motion";
 
 /**
  * The ✦ AI assistant — a conversational design assistant (claude.ai/design-grade).
@@ -100,6 +103,24 @@ export function AiPanel({ onClose }: { onClose: () => void }) {
     setBusy(true);
     setStreaming("");
     try {
+      // FAST, KEYLESS PATH FIRST: deterministic "scripts" (table of contents,
+      // grids, nav bars, lists) run instantly with no model — the modern
+      // OmniGraffle automation. Only fall through to the LLM if none matches.
+      const auto = automate(p);
+      if (auto) {
+        const drew = await drawSkeletonOnCanvas(auto.skeleton);
+        useChangelog.getState().record({
+          author: "ai", via: "automation",
+          summary: auto.summary,
+          actions: [{ op: "layout", detail: auto.summary }],
+        });
+        setStreaming(drew ? `✓ ${auto.summary}.` : `${auto.summary} — open a canvas to place it.`);
+        setPrompt("");
+        setAttachment(null);
+        setBusy(false);
+        return;
+      }
+
       const res = await runAssistant(provider, p, docContext(), {
         onToken: (t) => setStreaming((s) => s + t),
         apply: applyActions,
