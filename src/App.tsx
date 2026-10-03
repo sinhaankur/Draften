@@ -169,35 +169,53 @@ export function App() {
           className={`rail-scrim${leftOpen || rightOpen ? " show" : ""}`}
           onClick={() => { setLeftOpen(false); setRightOpen(false); }}
         />
-        {/* left: boards + layers */}
-        <aside className={`left${leftOpen ? " open" : ""}`}>
-          <div className="pane-body">
-            <div className="section-title">
-              Boards <button className="add" onClick={() => addBoard()} title="Add a board">+</button>
-            </div>
-            {doc.boards.map((b) => (
-              <button
-                key={b.id}
-                className={b.id === activeBoardId ? "row active" : "row"}
-                onClick={() => setActiveBoard(b.id)}
-              >
-                <span className="dot" data-kind={b.kind} /> {b.name}
-                <span className="count">{b.children.length || ""}</span>
-              </button>
-            ))}
-
-            <div className="divider" />
-
-            <div className="section-title">Import</div>
-            <ImportButton />
-
-            <div className="divider" />
-
-            <div className="section-title">Layers</div>
-            <div className="muted small">Managed on the canvas.</div>
+        {/* left: Artboards & layers — ported from design/Draften v2.dc.html
+            (exact markup + inline styles, wired to real state). */}
+        <aside className={`left${leftOpen ? " open" : ""}`}
+          style={{ width: 256, flex: "none", display: "flex", flexDirection: "column", minHeight: 0, borderRight: "1px solid var(--line, var(--border))", background: "var(--panel, var(--raised))" }}>
+          {/* header — serif title + hide button */}
+          <div style={{ height: 44, flex: "none", display: "flex", alignItems: "center", padding: "0 10px 0 16px", gap: 6 }}>
+            <span style={{ flex: 1, fontFamily: "var(--font-serif)", fontSize: 16, fontWeight: 500 }}>Artboards &amp; layers</span>
+            <button title="Add a page" onClick={() => addBoard()}
+              style={{ width: 26, height: 26, border: 0, borderRadius: 7, background: "transparent", color: "var(--text-3)", cursor: "pointer", display: "grid", placeItems: "center", fontSize: 16 }}>+</button>
           </div>
-          <div className="pane-footer">
-            <span className="live" /> All changes saved locally
+
+          <div style={{ flex: 1, minHeight: 0, overflow: "auto", display: "flex", flexDirection: "column" }}>
+            {/* Pages */}
+            <div style={{ padding: "0 8px 10px", display: "flex", flexDirection: "column", gap: 1 }}>
+              <div style={{ display: "flex", alignItems: "center", padding: "4px 8px" }}>
+                <span style={{ flex: 1, fontSize: 11.5, fontWeight: 500, color: "var(--text-3)" }}>Pages</span>
+              </div>
+              {doc.boards.map((b) => (
+                <button key={b.id} onClick={() => setActiveBoard(b.id)}
+                  style={{
+                    display: "flex", alignItems: "center", gap: 8, padding: "5px 8px", border: 0, borderRadius: 6, cursor: "pointer", textAlign: "left",
+                    background: b.id === activeBoardId ? "var(--acc-soft, var(--accent-soft))" : "transparent",
+                    color: b.id === activeBoardId ? "var(--accent-text, var(--accent))" : "var(--text)",
+                    fontWeight: b.id === activeBoardId ? 500 : 400,
+                  }}>
+                  <span style={{ width: 6, height: 6, borderRadius: 2, background: "var(--accent)", opacity: b.id === activeBoardId ? 1 : 0.4 }} />
+                  <span style={{ flex: 1 }}>{b.name}</span>
+                  <span style={{ color: "var(--text-3)", fontSize: 11 }}>{b.children.length || ""}</span>
+                </button>
+              ))}
+            </div>
+
+            {/* Import */}
+            <div style={{ padding: "0 8px 10px", borderTop: "1px solid var(--line, var(--border))" }}>
+              <div style={{ padding: "8px 8px 4px", fontSize: 11.5, fontWeight: 500, color: "var(--text-3)" }}>Import</div>
+              <ImportButton />
+            </div>
+
+            {/* Layers */}
+            <div style={{ padding: "0 8px 10px", borderTop: "1px solid var(--line, var(--border))" }}>
+              <div style={{ padding: "8px 8px 4px", fontSize: 11.5, fontWeight: 500, color: "var(--text-3)" }}>Layers</div>
+              <div style={{ padding: "2px 8px", fontSize: 12, color: "var(--text-3)" }}>Managed on the canvas.</div>
+            </div>
+          </div>
+
+          <div style={{ height: 30, flex: "none", display: "flex", alignItems: "center", gap: 6, padding: "0 12px", borderTop: "1px solid var(--line, var(--border))", fontSize: 11.5, color: "var(--text-3)" }}>
+            <span style={{ width: 6, height: 6, borderRadius: "50%", background: "var(--accent)" }} /> All changes saved locally
           </div>
         </aside>
 

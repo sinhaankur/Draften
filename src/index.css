@@ -24,6 +24,23 @@
   --accent-soft: #e2ebe7;
   --selection: rgba(61, 107, 95, 0.2);
 
+  /* Aliases matching the design/ mockup token names, so ported markup
+     (Draften v2.dc.html) works directly. Same values, mockup spelling. */
+  --panel: var(--raised);
+  --canvas-bg: var(--canvas);
+  --surf: var(--overlay);
+  --line: var(--border);
+  --line2: var(--border-strong);
+  --t1: var(--text);
+  --t2: var(--text-2);
+  --t3: var(--text-3);
+  --acc: var(--accent);
+  --acc-h: var(--accent-hover);
+  --acc-soft: var(--accent-soft);
+  --on-acc: #ffffff;
+  --hover: rgba(30, 28, 24, 0.05);
+  --press: rgba(30, 28, 24, 0.09);
+
   /* board kinds — functional color, not brand */
   --kind-design: #3d6b5f;
   --kind-diagram: #1d8f7e;
