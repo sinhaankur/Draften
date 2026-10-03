@@ -1,7 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 
-import { App } from "./App";
+import { Shell } from "./Shell";
 import { applyPlatformClass } from "./env";
 import { registerBuiltins } from "./plugins/builtins";
 import "./index.css";
@@ -15,6 +15,6 @@ import("./api/github-plugins").then((m) => m.restoreInstalled()).catch(() => {})
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <App />
+    <Shell />
   </React.StrictMode>,
 );
