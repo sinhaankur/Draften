@@ -27,7 +27,7 @@ export function App() {
   const addBoard = useEditor((s) => s.addBoard);
 
   const [view, setView] = useState<"Design" | "Split" | "Code">("Design");
-  const [dsTab, setDsTab] = useState<"System" | "Inspect" | "Stack">("System");
+  const [dsTab, setDsTab] = useState<"Design" | "Prototype" | "Inspect" | "Assistant" | "Review">("Design");
   const [theme, setTheme] = useState<"light" | "dark">("light");
   const [aiOpen, setAiOpen] = useState(false);
   const [pluginsOpen, setPluginsOpen] = useState(false);
@@ -227,14 +227,14 @@ export function App() {
         {/* right: system / inspect / stack */}
         <aside className={`right${rightOpen ? " open" : ""}`}>
           <div className="tabs">
-            {(["System", "Inspect", "Stack"] as const).map((t) => (
-              <button key={t} className={dsTab === t ? "on" : ""} onClick={() => setDsTab(t)}>
+            {(["Design", "Prototype", "Inspect", "Assistant", "Review"] as const).map((t) => (
+              <button key={t} className={dsTab === t ? "on" : ""} onClick={() => { setDsTab(t); if (t === "Assistant") setAiOpen(true); }}>
                 {t}
               </button>
             ))}
           </div>
 
-          {dsTab === "System" && (
+          {dsTab === "Design" && (
             <>
               <div className="pane-body">
                 <div className="ds-name">
@@ -290,12 +290,40 @@ export function App() {
             </>
           )}
 
-          {dsTab === "Inspect" && (
-            <div className="pane-body muted small">Select a node to inspect its properties.</div>
+          {dsTab === "Prototype" && (
+            <div className="pane-body" style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+              <div style={{ fontSize: 12, color: "var(--t3)" }}>
+                Select a layer to make it interactive. Links show as lines on the canvas while this tab is open.
+              </div>
+              <button className="ai-btn" style={{ width: "100%", justifyContent: "center" }}>▶ Play from {activeBoard?.name ?? "Welcome"}</button>
+              <div style={{ fontSize: 11.5, fontWeight: 500, color: "var(--t3)", marginTop: 4 }}>Links on this page</div>
+              <div style={{ fontSize: 12, color: "var(--t3)" }}>No interactions yet — connect a layer to another artboard.</div>
+            </div>
           )}
-          {dsTab === "Stack" && (
-            <div className="pane-body muted small">
-              Tech-stack plugins & code targets appear here.
+          {dsTab === "Inspect" && (
+            <div className="pane-body" style={{ fontSize: 12, color: "var(--t3)" }}>Select a node to inspect its size, position and styles.</div>
+          )}
+          {dsTab === "Assistant" && (
+            <div className="pane-body" style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+              <div style={{ fontSize: 11.5, color: "var(--t3)" }}>The assistant runs on your local model (LM Studio / Ollama). Nothing leaves this Mac.</div>
+              <div style={{ fontSize: 13, fontWeight: 500 }}>What should we change?</div>
+              {["Add a secondary button", "Make this artboard dark", "Center the layers", "Tighten the title copy"].map((s) => (
+                <button key={s} onClick={() => setAiOpen(true)}
+                  style={{ textAlign: "left", padding: "8px 10px", border: "1px solid var(--line)", borderRadius: 8, background: "var(--surf)", color: "var(--t1)", cursor: "pointer", fontSize: 12.5 }}>
+                  {s}
+                </button>
+              ))}
+              <button className="ai-btn" style={{ width: "100%", justifyContent: "center", marginTop: 4 }} onClick={() => setAiOpen(true)}>✦ Open the assistant</button>
+            </div>
+          )}
+          {dsTab === "Review" && (
+            <div className="pane-body" style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+              <div style={{ fontSize: 13, fontWeight: 500 }}>Onboarding: first pass</div>
+              <div style={{ fontSize: 12, color: "var(--t3)" }}>No comments yet. Drop a pin on the canvas to start a thread.</div>
+              <div style={{ display: "flex", gap: 8, marginTop: 4 }}>
+                <button style={{ flex: 1, padding: "8px", border: "1px solid var(--line)", borderRadius: 8, background: "var(--surf)", color: "var(--t1)", cursor: "pointer", fontSize: 12.5 }}>Request changes</button>
+                <button className="ai-btn" style={{ flex: 1, justifyContent: "center" }}>Approve</button>
+              </div>
             </div>
           )}
         </aside>
