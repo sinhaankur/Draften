@@ -2,6 +2,8 @@ import { useRef, useState } from "react";
 
 import { importers } from "../import/importer";
 import { useEditor } from "../state/store";
+import { documentToSkeleton } from "../import/to-canvas";
+import { drawSkeletonOnCanvas } from "../canvas/apply-action";
 
 /**
  * Import entry — makes the registered importers actually reachable.
@@ -36,10 +38,13 @@ export function ImportButton() {
       }
       const { document, warnings } = await importer.import(input);
       loadDocument(document);
+      // Draw it onto the canvas too — the whole point is to SEE the imported file.
+      const drew = await drawSkeletonOnCanvas(documentToSkeleton(document));
+      const nodeCount = Object.keys(document.nodes).length;
       setStatus(
         warnings.length
-          ? `Imported ${file.name} · ${warnings.length} note(s): ${warnings[0]}`
-          : `Imported ${file.name} ✓`,
+          ? `Imported ${file.name} · ${nodeCount} layers · ${warnings.length} note(s): ${warnings[0]}`
+          : `Imported ${file.name} · ${nodeCount} layers${drew ? " ✓" : ""}`,
       );
     } catch (err) {
       setStatus(`Import failed: ${(err as Error).message}`);

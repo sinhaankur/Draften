@@ -122,11 +122,31 @@ export async function applyActionToCanvas(api: ExcalidrawImperativeAPI, a: Draft
   api.updateScene({ elements: [...existing, ...fresh] });
 }
 
+// The live canvas API, stashed so non-assistant features (import, templates)
+// can draw without threading a ref through every component.
+let liveApi: ExcalidrawImperativeAPI | null = null;
+
 /** Register the applier on the global draften API so the assistant can reach it. */
 export function registerCanvasApplier(api: ExcalidrawImperativeAPI): void {
+  liveApi = api;
   const w = window as unknown as { draften?: Record<string, unknown> };
   w.draften = w.draften || {};
   const ai = (w.draften.ai as Record<string, unknown>) || {};
   ai.applyAction = (a: DraftenAction) => applyActionToCanvas(api, a);
   w.draften.ai = ai;
+}
+
+/**
+ * Draw an arbitrary element skeleton onto the live canvas (used by importers +
+ * templates). Appends beside existing work and frames the new content.
+ * Returns false if the canvas isn't ready.
+ */
+export async function drawSkeletonOnCanvas(skeleton: Array<Record<string, unknown>>, replace = false): Promise<boolean> {
+  if (!liveApi || !skeleton.length) return false;
+  const { convertToExcalidrawElements } = await import("@excalidraw/excalidraw");
+  const fresh = convertToExcalidrawElements(skeleton as Parameters<typeof convertToExcalidrawElements>[0]);
+  const existing = replace ? [] : liveApi.getSceneElements();
+  liveApi.updateScene({ elements: [...existing, ...fresh] });
+  liveApi.scrollToContent(fresh, { fitToContent: true, animate: true });
+  return true;
 }
