@@ -32,6 +32,7 @@ import { FileMenu } from "./ui/FileMenu";
 import { downloadProject } from "./export/project";
 import { PrototypePlay } from "./ui/PrototypePlay";
 import { LayersPanel } from "./ui/LayersPanel";
+import { RailAccount } from "./ui/RailAccount";
 import "./App.css";
 
 const LEVELS: AtomicLevel[] = ["atom", "molecule", "organism", "template", "page"];
@@ -237,6 +238,10 @@ export function App() {
               {it.icon}
             </button>
           ))}
+
+          {/* account — pinned at the bottom of the rail (v2's avatar) */}
+          <div style={{ flex: 1 }} />
+          <RailAccount />
         </nav>
 
         {/* left: Artboards & layers — ported from design/Draften v2.dc.html
