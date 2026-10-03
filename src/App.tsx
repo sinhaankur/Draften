@@ -36,6 +36,7 @@ import { RailAccount } from "./ui/RailAccount";
 import { StylesPanel } from "./ui/StylesPanel";
 import { AlignBar } from "./ui/AlignBar";
 import { McpPanel } from "./ui/McpPanel";
+import { importFile, canImportFile } from "./import/import-file";
 import "./App.css";
 
 const LEVELS: AtomicLevel[] = ["atom", "molecule", "organism", "template", "page"];
@@ -59,6 +60,7 @@ export function App() {
   const [playing, setPlaying] = useState(false);
   const [dotGrid, setDotGrid] = useState(true);
   const [pasteNote, setPasteNote] = useState<string | null>(null);
+  const [dragOver, setDragOver] = useState(false);
   // Responsive drawers (below md the rails slide over the canvas — Hick's Law).
   const [leftOpen, setLeftOpen] = useState(false);
   const [leftMode, setLeftMode] = useState<"layers" | "git" | "components" | "history">("layers");
@@ -176,7 +178,24 @@ export function App() {
     : ["var(--accent)", "var(--text)", "var(--raised)", "var(--kind-diagram)", "var(--kind-journey)"];
 
   return (
-    <div className="app">
+    <div className="app"
+      onDragOver={(e) => { if (e.dataTransfer?.types?.includes("Files")) { e.preventDefault(); setDragOver(true); } }}
+      onDragLeave={(e) => { if (e.currentTarget === e.target) setDragOver(false); }}
+      onDrop={async (e) => {
+        if (!e.dataTransfer?.files?.length) return;
+        e.preventDefault(); setDragOver(false);
+        const file = Array.from(e.dataTransfer.files).find((f) => canImportFile(f.name)) ?? e.dataTransfer.files[0];
+        setPasteNote("Opening " + file.name + "…");
+        try { setPasteNote(await importFile(file)); } catch (err) { setPasteNote("Couldn't open " + file.name + ": " + (err as Error).message); }
+      }}>
+      {/* drop-to-open overlay */}
+      {dragOver && (
+        <div style={{ position: "fixed", inset: 0, zIndex: 9999, background: "rgba(61,107,95,.12)", backdropFilter: "blur(2px)", display: "grid", placeItems: "center", pointerEvents: "none" }}>
+          <div style={{ background: "var(--panel, #fbfbfa)", border: "2px dashed var(--accent, #3d6b5f)", borderRadius: 16, padding: "28px 40px", fontSize: 16, fontWeight: 600, color: "var(--accent, #3d6b5f)" }}>
+            Drop to open · PDF · Word · Sketch
+          </div>
+        </div>
+      )}
       {/* unified toolbar (Xcode-style): leading identity · flexible space ·
           grouped trailing actions, separated by spacers */}
       <header className="topbar">
