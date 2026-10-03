@@ -6,7 +6,7 @@ import type { ExcalidrawImperativeAPI } from "@excalidraw/excalidraw/types";
 import { AnimatePresence, motion } from "motion/react";
 import {
   PanelLeft, PanelRight, GitBranch, LayoutTemplate, Puzzle,
-  Moon, Sun, Sparkles, Play, History,
+  Moon, Sun, Sparkles, Play, History, Package,
 } from "lucide-react";
 
 import { ExcalidrawCanvas, toElements } from "./canvas/ExcalidrawCanvas";
@@ -29,6 +29,7 @@ import { CodeView } from "./ui/CodeView";
 import { ConsoleView } from "./ui/ConsoleView";
 import { ReviewPanel } from "./ui/ReviewPanel";
 import { FileMenu } from "./ui/FileMenu";
+import { downloadProject } from "./export/project";
 import { PrototypePlay } from "./ui/PrototypePlay";
 import { LayersPanel } from "./ui/LayersPanel";
 import "./App.css";
@@ -48,6 +49,7 @@ export function App() {
   const [pluginsOpen, setPluginsOpen] = useState(false);
   const [templatesOpen, setTemplatesOpen] = useState(false);
   const [playing, setPlaying] = useState(false);
+  const [dotGrid, setDotGrid] = useState(true);
   const [pasteNote, setPasteNote] = useState<string | null>(null);
   // Responsive drawers (below md the rails slide over the canvas — Hick's Law).
   const [leftOpen, setLeftOpen] = useState(false);
@@ -186,6 +188,11 @@ export function App() {
         {/* primary action, trailing-most */}
         <button className="ai-btn" onClick={() => setAiOpen(true)}>
           <Sparkles size={14} /> AI
+        </button>
+        {/* Export — build the runnable app (v2's green Export button) */}
+        <button className="export-btn" title="Export a runnable app (.zip)"
+          onClick={() => { if (canvasReady && excalidrawApi.current) void downloadProject(excalidrawApi.current, doc.name); }}>
+          <Package size={14} /> Export
         </button>
         <button className="rail-toggle" title="Design system" onClick={() => { setRightOpen((v) => !v); setLeftOpen(false); }}><PanelRight size={16} /></button>
       </header>
@@ -346,6 +353,33 @@ export function App() {
           {dsTab === "Design" && (
             <>
               <div className="pane-body">
+                {/* Page (v2) */}
+                <div className="section-title">Page</div>
+                <div style={{ width: "100%", borderRadius: 8, border: "1px solid var(--line, #e7e6e2)", padding: "7px 10px", fontSize: 13, background: "var(--surf, #fff)", color: "var(--t1, #1d1d1b)", marginBottom: 8 }}>
+                  {activeBoard?.name ?? doc.name}
+                </div>
+                <label style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 12.5, cursor: "pointer", marginBottom: 12 }}>
+                  <input type="checkbox" checked={dotGrid} onChange={(e) => { setDotGrid(e.target.checked); excalidrawApi.current?.updateScene({ appState: { ...excalidrawApi.current.getAppState(), gridModeEnabled: e.target.checked } }); }} />
+                  Show dot grid
+                </label>
+
+                {/* Shortcuts (v2) — the real key map */}
+                <div className="section-title">Shortcuts</div>
+                <div style={{ display: "flex", flexDirection: "column", gap: 2, marginBottom: 12 }}>
+                  {([
+                    ["Duplicate", "⌘D"], ["Copy / paste", "⌘C ⌘V"], ["Group / ungroup", "⌘G"],
+                    ["Move", "V"], ["Rectangle", "R"], ["Ellipse", "O"], ["Text", "T"],
+                    ["Pan", "Space"], ["Zoom to fit", "⇧1"], ["Undo / redo", "⌘Z"],
+                  ] as const).map(([label, key]) => (
+                    <div key={label} style={{ display: "flex", justifyContent: "space-between", fontSize: 12.5, padding: "3px 0", color: "var(--t1, #1d1d1b)" }}>
+                      <span>{label}</span>
+                      <span style={{ fontFamily: "var(--font-mono, monospace)", fontSize: 11, color: "var(--text-3, #8e8d88)" }}>{key}</span>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="divider" />
+
                 <div className="ds-name">
                   {doc.designSystem.brand.name}
                   <span className="ver">v0.1</span>

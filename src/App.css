@@ -184,6 +184,15 @@
 .ai-btn:hover {
   background: var(--accent-hover);
 }
+/* Export — v2's solid primary action (the green 'build the app' button) */
+.export-btn {
+  display: inline-flex; align-items: center; gap: 6px; height: 28px;
+  background: var(--accent); color: #fff; border: none; border-radius: 8px;
+  padding: 0 14px; font-size: 13px; font-weight: 600; cursor: pointer;
+  -webkit-app-region: no-drag; transition: background var(--t-fast);
+}
+.export-btn:hover { background: var(--accent-hover); }
+.export-btn svg { stroke-width: 1.5; }
 .ai-btn:active {
   background: var(--accent-down);
 }
