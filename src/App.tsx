@@ -66,6 +66,23 @@ export function App() {
   const excalidrawApi = useRef<ExcalidrawImperativeAPI | null>(null);
   // Flip once the canvas API exists so panels that read it (Inspect) re-render.
   const [canvasReady, setCanvasReady] = useState(false);
+  // Is a layer selected? drives the Sketch-style right panel (inspector when
+  // selected; page + design-system when not).
+  const [hasSelection, setHasSelection] = useState(false);
+  useEffect(() => {
+    if (!canvasReady) return;
+    let t = 0;
+    const tick = () => {
+      try {
+        const api = excalidrawApi.current;
+        if (api) { const st = api.getAppState(); const n = Object.keys(st.selectedElementIds || {}).filter((k) => st.selectedElementIds[k]).length; setHasSelection((v) => (v === n > 0 ? v : n > 0)); }
+      } catch { /* ignore */ }
+      t = window.setTimeout(tick, 300) as unknown as number;
+    };
+    tick();
+    return () => window.clearTimeout(t);
+  }, [canvasReady]);
+
   // Per-page canvas scenes (Sketch-style): each Page has its OWN artboards/layers.
   // Switching pages saves the current scene and loads the target's. Keyed by board id.
   const pageScenes = useRef<Map<string, readonly unknown[]>>(new Map());
@@ -393,10 +410,14 @@ export function App() {
           {dsTab === "Design" && (
             <>
               <div className="pane-body">
-                {/* Inspect — selected layer's properties fold in here (v2 has no
-                    separate Inspect tab). Shows guidance when nothing's selected. */}
+                {/* Sketch-style inspector: when a layer is selected, the panel IS
+                    the inspector (properties + align). When nothing's selected,
+                    show Page + design system below. */}
                 <InspectPanel api={canvasReady ? excalidrawApi.current : null} />
                 <AlignBar api={canvasReady ? excalidrawApi.current : null} />
+
+                {hasSelection ? null : (
+                <>
                 <div className="divider" />
 
                 {/* Page (v2) */}
@@ -483,10 +504,14 @@ export function App() {
                     </button>
                   </div>
                 )}
+                </>
+                )}
               </div>
-              <button className="new-component" onClick={() => { setDsTab("Assistant"); setRightOpen(true); }}>
-                + New component
-              </button>
+              {!hasSelection && (
+                <button className="new-component" onClick={() => { setDsTab("Assistant"); setRightOpen(true); }}>
+                  + New component
+                </button>
+              )}
             </>
           )}
 
