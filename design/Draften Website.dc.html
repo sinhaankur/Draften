@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&amp;family=Geist+Mono:wght@400;500&amp;family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600&amp;display=swap">
+<style>
+html,body{margin:0}
+[data-dt]{--ui:"Geist",system-ui,sans-serif;--serif:"Source Serif 4",Georgia,serif;--mono:"Geist Mono",ui-monospace,Menlo,monospace}
+[data-dt="light"]{--bg:#f6f6f4;--panel:#fbfbfa;--canvas:#efeeeb;--surf:#ffffff;--hover:rgba(30,28,24,.05);--line:#e7e6e2;--line2:#d8d7d2;--t1:#1d1d1b;--t2:#5d5c58;--t3:#8e8d88;--acc:#3d6b5f;--acc-h:#335b50;--acc-soft:#e2ebe7;--on-acc:#ffffff;--shadow:0 1px 2px rgba(20,18,14,.06),0 18px 50px rgba(20,18,14,.12);--shadow-sm:0 1px 2px rgba(20,18,14,.08);color-scheme:light}
+[data-dt="dark"]{--bg:#1a1a19;--panel:#1f1f1e;--canvas:#151514;--surf:#262625;--hover:rgba(255,255,255,.055);--line:#2e2e2c;--line2:#3b3b38;--t1:#ecebe8;--t2:#aaa9a4;--t3:#76756f;--acc:#86b8a8;--acc-h:#9cc7b9;--acc-soft:#24312d;--on-acc:#0f1d19;--shadow:0 1px 2px rgba(0,0,0,.4),0 18px 50px rgba(0,0,0,.5);--shadow-sm:0 1px 2px rgba(0,0,0,.4);color-scheme:dark}
+a{color:var(--acc);text-decoration:none}a:hover{color:var(--acc-h)}
+button,input,textarea,select{font:inherit;color:inherit}
+input::placeholder,textarea::placeholder{color:var(--t3)}
+*:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+</style>
+</helmet>
+<div data-dt="{{ theme }}" style="min-height:100vh;background:var(--bg);color:var(--t1);font-family:var(--ui);font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased">
+
+<header style="position:sticky;top:0;z-index:20;background:var(--bg);border-bottom:1px solid var(--line)">
+  <div style="max-width:1160px;margin:0 auto;padding:0 24px;min-height:60px;display:flex;align-items:center;gap:16px;flex-wrap:wrap">
+    <button onClick="{{ goHome }}" style="display:flex;align-items:center;gap:9px;border:0;background:transparent;cursor:pointer;padding:0"><span style="width:26px;height:26px;border-radius:7px;background:var(--t1);color:var(--bg);display:grid;place-items:center;font-family:var(--serif);font-size:17px;font-weight:600">d</span><span style="font-family:var(--serif);font-size:19px;font-weight:600">Draften</span></button>
+    <nav style="display:flex;gap:2px;flex:1;flex-wrap:wrap;min-width:0">
+      <sc-for list="{{ navItems }}" as="n" hint-placeholder-count="6"><button onClick="{{ n.go }}" style="height:32px;padding:0 11px;border:0;border-radius:8px;background:{{ n.bg }};color:{{ n.fg }};cursor:pointer;font-size:14px;white-space:nowrap" style-hover="background:var(--hover);color:var(--t1)">{{ n.label }}</button></sc-for>
+    </nav>
+    <button onClick="{{ toggleTheme }}" title="Light / dark" style="width:34px;height:34px;border:0;border-radius:9px;background:transparent;color:var(--t2);cursor:pointer;display:grid;place-items:center" style-hover="background:var(--hover)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path></svg></button>
+    <button onClick="{{ goDownload }}" style="height:36px;padding:0 16px;border:0;border-radius:10px;background:var(--acc);color:var(--on-acc);cursor:pointer;font-weight:500;white-space:nowrap" style-hover="background:var(--acc-h)">Download</button>
+  </div>
+</header>
+
+<sc-if value="{{ p.home }}" hint-placeholder-val="{{ true }}">
+<section style="max-width:1160px;margin:0 auto;padding:80px 24px 40px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:22px">
+  <span style="display:flex;align-items:center;gap:8px;padding:4px 12px;border-radius:20px;background:var(--acc-soft);color:var(--acc);font-size:13px;font-weight:500">Free and open source · MIT · v0.4</span>
+  <h1 style="margin:0;font-family:var(--serif);font-weight:500;font-size:clamp(40px,6vw,68px);line-height:1.04;max-width:900px;text-wrap:balance">A free design tool that lives in your git repo</h1>
+  <p style="margin:0;font-size:19px;color:var(--t2);max-width:680px;text-wrap:pretty">Draft screens, sites, decks and documents. Branch, commit and review them like code. Work with your team live, and with an assistant that runs on your own Mac.</p>
+  <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center">
+    <button onClick="{{ goDownload }}" style="height:46px;padding:0 22px;border:0;border-radius:12px;background:var(--acc);color:var(--on-acc);cursor:pointer;font-weight:500;font-size:15.5px" style-hover="background:var(--acc-h)">Download for macOS</button>
+    <button onClick="{{ copyBrew }}" style="height:46px;padding:0 18px;border:1px solid var(--line);border-radius:12px;background:var(--surf);cursor:pointer;font-family:var(--mono);font-size:13.5px;display:flex;align-items:center;gap:10px" style-hover="border-color:var(--line2)"><span style="color:var(--t3)">$</span>brew install --cask draften<span style="font-family:var(--ui);font-size:12px;color:var(--acc)">{{ brewLabel }}</span></button>
+  </div>
+  <span style="font-size:13px;color:var(--t3)">Apple Silicon and Intel · macOS 13 or later · Windows and Linux coming</span>
+</section>
+
+<section style="max-width:1200px;margin:0 auto;padding:0 24px 90px">
+  <div style="border-radius:16px;overflow:hidden;border:1px solid var(--line);box-shadow:var(--shadow);background:var(--panel);font-size:12px">
+    <div style="height:40px;display:flex;align-items:center;gap:10px;padding:0 14px;border-bottom:1px solid var(--line)">
+      <span style="display:flex;gap:7px"><span style="width:11px;height:11px;border-radius:50%;background:#ff5f57"></span><span style="width:11px;height:11px;border-radius:50%;background:#febc2e"></span><span style="width:11px;height:11px;border-radius:50%;background:#28c840"></span></span>
+      <span style="font-family:var(--serif);font-weight:600;font-size:13px;margin-left:6px">Draften</span><span style="color:var(--t3)">app-designs / Onboarding</span>
+      <div style="flex:1"></div>
+      <span style="display:flex;padding:2px;background:var(--hover);border-radius:8px"><span style="padding:2px 10px;border-radius:6px;background:var(--surf);box-shadow:var(--shadow-sm)">Design</span><span style="padding:2px 10px;color:var(--t2)">Split</span><span style="padding:2px 10px;color:var(--t2)">Code</span></span>
+      <div style="flex:1"></div>
+      <span style="display:flex"><span style="width:22px;height:22px;border-radius:50%;background:#d0893a;color:#fff;display:grid;place-items:center;font-size:10px;font-weight:600;box-shadow:0 0 0 2px var(--panel)">J</span><span style="width:22px;height:22px;margin-left:-5px;border-radius:50%;background:#6d7fd6;color:#fff;display:grid;place-items:center;font-size:10px;font-weight:600;box-shadow:0 0 0 2px var(--panel)">P</span></span>
+      <span style="padding:3px 9px;border:1px solid var(--line);border-radius:7px;background:var(--surf);font-family:var(--mono);font-size:11px">feat/onboarding <span style="color:var(--acc)">3</span></span>
+      <span style="padding:4px 10px;border-radius:7px;background:var(--acc);color:var(--on-acc);font-weight:500">Export</span>
+    </div>
+    <div style="display:grid;grid-template-columns:44px 190px minmax(0,1fr) 230px;height:470px">
+      <div style="border-right:1px solid var(--line);display:flex;flex-direction:column;align-items:center;gap:6px;padding-top:10px"><sc-for list="{{ railDots }}" as="r"><span style="width:28px;height:28px;border-radius:8px;background:{{ r }}"></span></sc-for></div>
+      <div style="border-right:1px solid var(--line);padding:12px 8px;display:flex;flex-direction:column;gap:2px;overflow:hidden">
+        <span style="font-family:var(--serif);font-size:13px;padding:0 6px 8px">Artboards &amp; layers</span>
+        <sc-for list="{{ mockLayers }}" as="l"><span style="display:flex;align-items:center;gap:6px;height:24px;padding-left:{{ l.pad }}px;border-radius:6px;background:{{ l.bg }};color:{{ l.fg }};font-weight:{{ l.fw }}"><span style="width:10px;height:10px;border:1.3px solid var(--t3);border-radius:{{ l.r }}"></span>{{ l.n }}</span></sc-for>
+      </div>
+      <div style="position:relative;background:var(--canvas);background-image:radial-gradient(circle, var(--line2) 1px, transparent 1.2px);background-size:20px 20px;overflow:hidden">
+        <div style="position:absolute;left:8%;top:38px;display:flex;gap:38px">
+          <div style="display:flex;flex-direction:column;gap:6px"><span style="font-size:10.5px;color:var(--t2)">Welcome <span style="color:var(--t3);font-family:var(--mono)">393×852</span></span>
+            <div style="width:180px;height:390px;background:#fff;box-shadow:0 1px 3px rgba(20,18,14,.08),0 8px 30px rgba(20,18,14,.06);position:relative;color:#1d1d1b">
+              <div style="position:absolute;left:11px;top:40px;width:158px;height:146px;border-radius:10px;background:#f4f3ef"></div>
+              <div style="position:absolute;left:75px;top:98px;width:30px;height:30px;border-radius:50%;background:#e2ebe7"></div>
+              <div style="position:absolute;left:11px;top:205px;width:158px;font-family:var(--serif);font-size:16px;line-height:1.15;font-weight:500;outline:1.5px solid #3d6b5f;outline-offset:2px">Your designs, in your repo</div>
+              <div style="position:absolute;left:11px;top:252px;width:158px;font-size:8px;color:#6b6a65;line-height:1.4">Branch, commit and review boards the same way your team ships code.</div>
+              <div style="position:absolute;left:11px;top:346px;width:158px;height:25px;border-radius:7px;background:#3d6b5f;color:#fff;display:grid;place-items:center;font-size:8px;font-weight:500">Get started</div>
+            </div></div>
+          <div style="display:flex;flex-direction:column;gap:6px"><span style="font-size:10.5px;color:var(--t2)">Create account <span style="color:var(--t3);font-family:var(--mono)">393×852</span></span>
+            <div style="width:180px;height:390px;background:#fff;box-shadow:0 1px 3px rgba(20,18,14,.08),0 8px 30px rgba(20,18,14,.06);position:relative;color:#1d1d1b">
+              <div style="position:absolute;left:11px;top:44px;font-family:var(--serif);font-size:15px;font-weight:500">Create account</div>
+              <div style="position:absolute;left:11px;top:82px;font-size:7px;color:#6b6a65">Email</div><div style="position:absolute;left:11px;top:93px;width:158px;height:23px;border-radius:6px;border:1px solid #e7e6e1;font-size:7.5px;display:flex;align-items:center;padding-left:7px;box-sizing:border-box">maya@studio.dev</div>
+              <div style="position:absolute;left:11px;top:126px;font-size:7px;color:#6b6a65">Password</div><div style="position:absolute;left:11px;top:137px;width:158px;height:23px;border-radius:6px;border:1px solid #e7e6e1;font-size:7.5px;display:flex;align-items:center;padding-left:7px;box-sizing:border-box">••••••••</div>
+              <div style="position:absolute;left:11px;top:346px;width:158px;height:25px;border-radius:7px;background:#3d6b5f;color:#fff;display:grid;place-items:center;font-size:8px;font-weight:500">Continue</div>
+              <div style="position:absolute;left:96px;top:140px;display:flex;flex-direction:column"><svg width="14" height="14" viewBox="0 0 24 24" fill="#d0893a" stroke="#fff" stroke-width="1.5"><path d="M4.04 4.69a.5.5 0 0 1 .65-.65l16 6.5a.5.5 0 0 1-.06.95l-6.13 1.58a2 2 0 0 0-1.43 1.43l-1.58 6.13a.5.5 0 0 1-.95.06z"></path></svg><span style="margin-left:10px;padding:1px 6px;border-radius:5px;background:#d0893a;color:#fff;font-size:9px">Jonas</span></div>
+            </div></div>
+        </div>
+        <div style="position:absolute;left:50%;bottom:14px;transform:translateX(-50%);display:flex;gap:2px;padding:4px;border-radius:12px;background:var(--surf);border:1px solid var(--line);box-shadow:var(--shadow-sm)"><sc-for list="{{ toolDots }}" as="t"><span style="width:26px;height:26px;border-radius:8px;background:{{ t }}"></span></sc-for></div>
+      </div>
+      <div style="border-left:1px solid var(--line);display:flex;flex-direction:column">
+        <div style="display:flex;gap:2px;padding:8px;border-bottom:1px solid var(--line)"><span style="padding:3px 9px;border-radius:7px;color:var(--t3)">Design</span><span style="padding:3px 9px;border-radius:7px;color:var(--t3)">Prototype</span><span style="padding:3px 9px;border-radius:7px;background:var(--hover)">Assistant</span></div>
+        <div style="padding:12px;display:flex;flex-direction:column;gap:10px;flex:1">
+          <span style="font-size:10.5px;color:var(--t3)">Qwen3 14B · LM Studio · local</span>
+          <span style="align-self:flex-end;padding:6px 10px;border-radius:12px;background:var(--hover)">Tighten the title copy</span>
+          <span style="font-size:10.5px;color:var(--t3)">Thought for 1s ›</span>
+          <span style="font-family:var(--serif);font-size:13px;line-height:1.5">A tighter title for Welcome: "Design, versioned". It keeps the meaning and fits on one line.</span>
+          <div style="padding:8px;border:1px solid var(--line);border-radius:9px;background:var(--surf);display:flex;flex-direction:column;gap:6px"><span style="color:var(--t2)">Change "Title" to "Design, versioned"</span><span style="display:flex;gap:5px"><span style="padding:3px 9px;border-radius:6px;background:var(--acc);color:var(--on-acc)">Apply</span><span style="padding:3px 9px;border-radius:6px;border:1px solid var(--line)">Dismiss</span></span></div>
+          <span style="font-family:var(--mono);font-size:9.5px;color:var(--t3)">41.8 tok/s · 62 tokens</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section style="max-width:1160px;margin:0 auto;padding:0 24px 90px;display:flex;flex-direction:column;gap:30px">
+  <h2 style="margin:0;font-family:var(--serif);font-weight:500;font-size:clamp(28px,3.4vw,40px);line-height:1.15;max-width:720px;text-wrap:balance">What paid design tools charge for, free</h2>
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:16px;overflow:hidden">
+    <sc-for list="{{ features }}" as="f" hint-placeholder-count="9"><div style="padding:22px;background:var(--surf);display:flex;flex-direction:column;gap:6px"><span style="font-weight:500;font-size:16px">{{ f.t }}</span><span style="font-size:14px;color:var(--t2);text-wrap:pretty">{{ f.d }}</span></div></sc-for>
+  </div>
+</section>
+
+<section style="max-width:1160px;margin:0 auto;padding:0 24px 90px;display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:40px;align-items:center">
+  <div style="display:flex;flex-direction:column;gap:14px"><span style="font-size:13px;font-weight:500;color:var(--acc)">Git-native</span><h2 style="margin:0;font-family:var(--serif);font-weight:500;font-size:34px;line-height:1.15">Every change is a commit you can read</h2><p style="margin:0;color:var(--t2);text-wrap:pretty">Files are plain JSON in your repo. The change list names layers, not lines. Visual diffs, pull requests with comments pinned to layers, and a merge that resolves property by property. Works with GitHub, GitLab, Bitbucket, Gitea or any git URL.</p></div>
+  <div style="padding:18px;border:1px solid var(--line);border-radius:16px;background:var(--surf);box-shadow:var(--shadow-sm);display:flex;flex-direction:column;gap:12px;font-size:13.5px">
+    <sc-for list="{{ commits }}" as="c"><div style="display:grid;grid-template-columns:14px minmax(0,1fr);gap:10px"><span style="width:9px;height:9px;margin-top:6px;border-radius:50%;background:var(--acc)"></span><div style="display:flex;flex-direction:column"><span>{{ c.m }}</span><span style="font-size:12px;color:var(--t3)"><span style="font-family:var(--mono)">{{ c.s }}</span> · {{ c.a }}</span></div></div></sc-for>
+    <div style="display:flex;flex-direction:column;gap:2px;padding-top:10px;border-top:1px solid var(--line);font-size:13px"><sc-for list="{{ changes }}" as="c"><div style="display:flex;gap:10px"><span style="width:14px;font-family:var(--mono);font-weight:600;color:{{ c.col }}">{{ c.k }}</span><span style="flex:1">{{ c.n }}</span><span style="color:var(--t3)">{{ c.w }}</span></div></sc-for></div>
+  </div>
+</section>
+
+<section style="max-width:1160px;margin:0 auto;padding:0 24px 90px;display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:40px;align-items:center">
+  <div style="padding:18px;border:1px solid var(--line);border-radius:16px;background:var(--surf);box-shadow:var(--shadow-sm);display:flex;flex-direction:column;gap:8px;font-size:13.5px">
+    <sc-for list="{{ backends }}" as="b"><div style="display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:10px;background:var(--bg)"><span style="width:8px;height:8px;border-radius:50%;background:{{ b.dot }}"></span><span style="flex:1;font-weight:500">{{ b.n }}</span><span style="font-family:var(--mono);font-size:12px;color:var(--t3)">{{ b.u }}</span></div></sc-for>
+  </div>
+  <div style="display:flex;flex-direction:column;gap:14px"><span style="font-size:13px;font-weight:500;color:var(--acc)">Private assistant</span><h2 style="margin:0;font-family:var(--serif);font-weight:500;font-size:34px;line-height:1.15">An assistant that never leaves your Mac</h2><p style="margin:0;color:var(--t2);text-wrap:pretty">Connect LM Studio, Ollama, llama.cpp or any OpenAI-compatible server. The assistant sees your selection, proposes edits, and every applied edit lands in the change log so you can review or undo it. Cloud models are optional and can be blocked per project.</p></div>
+</section>
+
+<section style="max-width:1160px;margin:0 auto;padding:0 24px 90px">
+  <div style="padding:40px;border-radius:20px;background:var(--acc-soft);display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:30px;align-items:center">
+    <div style="display:flex;flex-direction:column;gap:12px"><h2 style="margin:0;font-family:var(--serif);font-weight:500;font-size:32px;line-height:1.15">Built in the open. Shaped by the people who use it.</h2><p style="margin:0;color:var(--t2);text-wrap:pretty">Found a bug or missing a feature? Report it from inside the app with one click, or on GitHub. Every issue is public, labeled and answered.</p></div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap"><button onClick="{{ goIssues }}" style="height:44px;padding:0 20px;border:0;border-radius:12px;background:var(--acc);color:var(--on-acc);cursor:pointer;font-weight:500">Report an issue</button><button onClick="{{ goSupport }}" style="height:44px;padding:0 20px;border:1px solid var(--line2);border-radius:12px;background:var(--surf);cursor:pointer">Support the project</button></div>
+  </div>
+</section>
+</sc-if>
+
+<sc-if value="{{ p.download }}" hint-placeholder-val="{{ false }}">
+<section style="max-width:960px;margin:0 auto;padding:64px 24px 90px;display:flex;flex-direction:column;gap:30px">
+  <div style="display:flex;flex-direction:column;gap:10px"><h1 style="margin:0;font-family:var(--serif);font-weight:500;font-size:46px;line-height:1.1">Download Draften</h1><p style="margin:0;color:var(--t2)">Version 0.4.0 · released October 3, 2026 · free forever, no account needed.</p></div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px">
+    <sc-for list="{{ dlMain }}" as="d"><div style="padding:22px;border:1px solid {{ d.bd }};border-radius:16px;background:var(--surf);display:flex;flex-direction:column;gap:12px">
+      <div style="display:flex;align-items:baseline;gap:8px"><span style="font-family:var(--serif);font-size:22px;flex:1">{{ d.n }}</span><sc-if value="{{ d.rec }}"><span style="padding:1px 8px;border-radius:6px;background:var(--acc-soft);color:var(--acc);font-size:12px;font-weight:500">Recommended</span></sc-if></div>
+      <span style="font-size:13.5px;color:var(--t2)">{{ d.d }}</span>
+      <button onClick="{{ d.dl }}" style="height:42px;border:0;border-radius:11px;background:var(--acc);color:var(--on-acc);cursor:pointer;font-weight:500">Download .dmg · {{ d.size }}</button>
+      <div style="display:flex;flex-direction:column;gap:4px"><span style="font-size:11.5px;color:var(--t3)">SHA-256</span><button onClick="{{ d.copy }}" title="Copy checksum" style="text-align:left;border:1px solid var(--line);border-radius:8px;background:var(--bg);padding:6px 8px;cursor:pointer;font-family:var(--mono);font-size:11px;word-break:break-all;color:var(--t2)">{{ d.sha }}</button></div>
+    </div></sc-for>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px">
+    <sc-for list="{{ dlCmds }}" as="d"><div style="padding:18px;border:1px solid var(--line);border-radius:14px;background:var(--surf);display:flex;flex-direction:column;gap:10px"><span style="font-weight:500">{{ d.n }}</span><button onClick="{{ d.copy }}" style="display:flex;align-items:center;gap:10px;text-align:left;border:1px solid var(--line);border-radius:9px;background:var(--bg);padding:9px 12px;cursor:pointer;font-family:var(--mono);font-size:12.5px"><span style="color:var(--t3)">$</span><span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ d.c }}</span><span style="font-family:var(--ui);font-size:11.5px;color:var(--acc)">Copy</span></button><span style="font-size:12.5px;color:var(--t3)">{{ d.d }}</span></div></sc-for>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px">
+    <sc-for list="{{ dlSoon }}" as="d"><div style="padding:18px;border:1.5px dashed var(--line2);border-radius:14px;display:flex;flex-direction:column;gap:6px"><div style="display:flex;align-items:center;gap:8px"><span style="font-weight:500;flex:1">{{ d.n }}</span><span style="padding:1px 8px;border-radius:6px;background:var(--hover);font-size:12px;color:var(--t2)">Coming soon</span></div><span style="font-size:13px;color:var(--t2)">{{ d.d }}</span><a href="https://github.com/ankursinha/draften/issues" style="font-size:13px">Follow progress on GitHub</a></div></sc-for>
+  </div>
+  <div style="display:flex;flex-direction:column;gap:10px"><h2 style="margin:0;font-family:var(--serif);font-weight:500;font-size:24px">System requirements</h2>
+    <div style="border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--surf)"><sc-for list="{{ reqs }}" as="r"><div style="display:grid;grid-template-columns:180px minmax(0,1fr) minmax(0,1fr);gap:14px;padding:10px 16px;border-bottom:1px solid var(--line);font-size:14px"><span style="font-weight:500">{{ r.a }}</span><span style="color:var(--t2)">{{ r.b }}</span><span style="color:var(--t3)">{{ r.c }}</span></div></sc-for></div></div>
+  <div style="display:flex;flex-direction:column;gap:10px"><h2 style="margin:0;font-family:var(--serif);font-weight:500;font-size:24px">Verify your download</h2><pre style="margin:0;padding:16px;border:1px solid var(--line);border-radius:12px;background:var(--surf);font-family:var(--mono);font-size:12.5px;line-height:1.7;overflow-x:auto">shasum -a 256 ~/Downloads/Draften-0.4.0-arm64.dmg
+# compare with the SHA-256 above
+
+spctl -a -vv /Applications/Draften.app
+# accepted · source=Notarized Developer ID · origin=Ankur Sinha</pre></div>
+</section>
+</sc-if>
+
+<sc-if value="{{ p.changelog }}" hint-placeholder-val="{{ false }}">
+<section style="max-width:820px;margin:0 auto;padding:64px 24px 90px;display:flex;flex-direction:column;gap:36px">
+  <div style="display:flex;flex-direction:column;gap:10px"><h1 style="margin:0;font-family:var(--serif);font-weight:500;font-size:46px;line-height:1.1">Changelog</h1><p style="margin:0;color:var(--t2)">Every release, in plain language. Full history on GitHub Releases.</p></div>
+  <sc-for list="{{ releases }}" as="r"><article style="display:grid;grid-template-columns:150px minmax(0,1fr);gap:24px;padding-top:24px;border-top:1px solid var(--line)">
+    <div style="display:flex;flex-direction:column;gap:2px"><span style="font-family:var(--mono);font-weight:500">{{ r.v }}</span><span style="font-size:13px;color:var(--t3)">{{ r.d }}</span></div>
+    <div style="display:flex;flex-direction:column;gap:12px"><span style="font-family:var(--serif);font-size:22px;line-height:1.25">{{ r.t }}</span>
+      <sc-for list="{{ r.groups }}" as="g"><div style="display:flex;flex-direction:column;gap:4px"><span style="font-size:12.5px;font-weight:600;color:{{ g.c }}">{{ g.k }}</span><sc-for list="{{ g.items }}" as="i"><span style="font-size:14px;color:var(--t2);padding-left:14px;text-indent:-14px">– {{ i }}</span></sc-for></div></sc-for>
+    </div></article></sc-for>
+</section>
+</sc-if>
+
+<sc-if value="{{ p.docs }}" hint-placeholder-val="{{ false }}">
+<section style="max-width:1160px;margin:0 auto;padding:40px 24px 90px;display:grid;grid-template-columns:220px minmax(0,1fr);gap:40px">
+  <nav style="display:flex;flex-direction:column;gap:14px;position:sticky;top:80px;align-self:start"><sc-for list="{{ docNav }}" as="g"><div style="display:flex;flex-direction:column;gap:1px"><span style="font-size:12px;font-weight:500;color:var(--t3);padding:0 8px 4px">{{ g.l }}</span><sc-for list="{{ g.items }}" as="d"><button onClick="{{ d.go }}" style="text-align:left;padding:5px 8px;border:0;border-radius:7px;background:{{ d.bg }};cursor:pointer;font-size:14px;color:{{ d.fg }}" style-hover="background:var(--hover)">{{ d.t }}</button></sc-for></div></sc-for></nav>
+  <article style="display:flex;flex-direction:column;gap:18px;max-width:720px">
+    <span style="font-size:13px;color:var(--t3)">{{ doc.g }}</span>
+    <h1 style="margin:0;font-family:var(--serif);font-weight:500;font-size:40px;line-height:1.1">{{ doc.t }}</h1>
+    <p style="margin:0;font-size:16.5px;color:var(--t2);text-wrap:pretty">{{ doc.lead }}</p>
+    <sc-for list="{{ doc.steps }}" as="s"><div style="display:grid;grid-template-columns:32px minmax(0,1fr);gap:14px"><span style="width:28px;height:28px;border-radius:50%;background:var(--acc-soft);color:var(--acc);display:grid;place-items:center;font-size:13px;font-weight:600">{{ s.n }}</span><div style="display:flex;flex-direction:column;gap:6px"><span style="font-weight:500">{{ s.h }}</span><span style="color:var(--t2);text-wrap:pretty">{{ s.p }}</span><sc-if value="{{ s.hasCode }}"><pre style="margin:0;padding:12px 14px;border:1px solid var(--line);border-radius:10px;background:var(--surf);font-family:var(--mono);font-size:12.5px;line-height:1.6;overflow-x:auto">{{ s.code }}</pre></sc-if></div></div></sc-for>
+  </article>
+</section>
+</sc-if>
+
+<sc-if value="{{ p.developers }}" hint-placeholder-val="{{ false }}">
+<section style="max-width:960px;margin:0 auto;padding:64px 24px 90px;display:flex;flex-direction:column;gap:32px">
+  <div style="display:flex;flex-direction:column;gap:10px"><h1 style="margin:0;font-family:var(--serif);font-weight:500;font-size:46px;line-height:1.1">Build on Draften</h1><p style="margin:0;color:var(--t2);max-width:680px;text-wrap:pretty">Three ways in: typed plugins that run sandboxed inside the app, an MCP server that lets other agents read and edit designs, and an open file format you can generate from anywhere.</p></div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:10px"><sc-for list="{{ plTypes }}" as="t"><div style="padding:14px;border:1px solid var(--line);border-radius:12px;background:var(--surf);display:flex;flex-direction:column;gap:4px"><span style="font-weight:500">{{ t.n }}</span><span style="font-size:13px;color:var(--t2)">{{ t.d }}</span></div></sc-for></div>
+  <sc-for list="{{ devBlocks }}" as="b"><div style="display:flex;flex-direction:column;gap:10px"><h2 style="margin:0;font-family:var(--serif);font-weight:500;font-size:24px">{{ b.t }}</h2><p style="margin:0;color:var(--t2)">{{ b.p }}</p><pre style="margin:0;padding:16px;border:1px solid var(--line);border-radius:12px;background:var(--surf);font-family:var(--mono);font-size:12.5px;line-height:1.65;overflow-x:auto">{{ b.code }}</pre></div></sc-for>
+</section>
+</sc-if>
+
+<sc-if value="{{ p.community }}" hint-placeholder-val="{{ false }}">
+<section style="max-width:1060px;margin:0 auto;padding:64px 24px 90px;display:flex;flex-direction:column;gap:34px">
+  <div style="display:flex;flex-direction:column;gap:10px"><h1 style="margin:0;font-family:var(--serif);font-weight:500;font-size:46px;line-height:1.1">Report an issue</h1><p style="margin:0;color:var(--t2);max-width:680px;text-wrap:pretty">Issues live on GitHub so everyone can see them. Fill this in and we'll open a ready-to-submit issue for you. In the app, Help › Report an issue does the same with diagnostics attached.</p></div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:24px;align-items:start">
+    <div style="padding:22px;border:1px solid var(--line);border-radius:16px;background:var(--surf);display:flex;flex-direction:column;gap:14px">
+      <div style="display:flex;padding:2px;background:var(--hover);border-radius:10px"><sc-for list="{{ issueTypes }}" as="t"><button onClick="{{ t.pick }}" style="flex:1;height:32px;border:0;border-radius:8px;background:{{ t.bg }};box-shadow:{{ t.sh }};cursor:pointer;font-size:13px">{{ t.label }}</button></sc-for></div>
+      <label style="display:flex;flex-direction:column;gap:5px;font-size:13px;color:var(--t2)">Title<input value="{{ iTitle }}" onChange="{{ onITitle }}" placeholder="{{ iTitlePh }}" style="height:38px;padding:0 12px;border:1px solid var(--line);border-radius:9px;background:var(--bg);outline:none;color:var(--t1)"></label>
+      <label style="display:flex;flex-direction:column;gap:5px;font-size:13px;color:var(--t2)">{{ iBodyLabel }}<textarea value="{{ iBody }}" onChange="{{ onIBody }}" placeholder="{{ iBodyPh }}" style="min-height:120px;padding:10px 12px;border:1px solid var(--line);border-radius:9px;background:var(--bg);outline:none;resize:vertical;color:var(--t1)"></textarea></label>
+      <sc-if value="{{ isBug }}"><label style="display:flex;flex-direction:column;gap:5px;font-size:13px;color:var(--t2)">Version<select value="{{ iVer }}" onChange="{{ onIVer }}" style="height:36px;padding:0 10px;border:1px solid var(--line);border-radius:9px;background:var(--bg);color:var(--t1)"><option>0.4.0</option><option>0.3.2</option><option>0.3.1</option><option>main (built from source)</option></select></label></sc-if>
+      <div style="display:flex;flex-wrap:wrap;gap:6px"><span style="font-size:12.5px;color:var(--t3);width:100%">Area</span><sc-for list="{{ areas }}" as="a"><button onClick="{{ a.pick }}" style="height:28px;padding:0 10px;border:1px solid {{ a.bd }};border-radius:8px;background:{{ a.bg }};cursor:pointer;font-size:12.5px">{{ a.l }}</button></sc-for></div>
+      <a href="{{ issueUrl }}" target="_blank" style="height:42px;border-radius:11px;background:var(--acc);color:var(--on-acc);display:grid;place-items:center;font-weight:500">Open on GitHub</a>
+      <span style="font-size:12px;color:var(--t3)">Opens github.com/ankursinha/draften/issues/new with this filled in. You need a free GitHub account to submit.</span>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:10px"><span style="font-size:12.5px;font-weight:500;color:var(--t3)">Preview</span><pre style="margin:0;padding:16px;border:1px solid var(--line);border-radius:14px;background:var(--surf);font-family:var(--mono);font-size:12px;line-height:1.65;white-space:pre-wrap;word-break:break-word">{{ issuePreview }}</pre></div>
+  </div>
+  <div style="display:flex;flex-direction:column;gap:12px"><h2 style="margin:0;font-family:var(--serif);font-weight:500;font-size:26px">Known issues</h2>
+    <div style="border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--surf)"><sc-for list="{{ known }}" as="k"><div style="display:grid;grid-template-columns:64px minmax(0,1fr) 120px;gap:14px;padding:10px 16px;border-bottom:1px solid var(--line);font-size:14px;align-items:baseline"><span style="font-family:var(--mono);font-size:12.5px;color:var(--t3)">#{{ k.n }}</span><span style="display:flex;flex-direction:column"><span>{{ k.t }}</span><span style="font-size:12px;color:var(--t3)">{{ k.l }}</span></span><span style="font-size:12.5px;color:{{ k.c }}">{{ k.s }}</span></div></sc-for></div></div>
+  <div style="display:flex;flex-direction:column;gap:12px"><h2 style="margin:0;font-family:var(--serif);font-weight:500;font-size:26px">Most requested</h2><p style="margin:0;color:var(--t2);font-size:14px">Vote with a thumbs-up on the GitHub issue. We plan each release from this list.</p>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:10px"><sc-for list="{{ requests }}" as="r"><div style="display:flex;align-items:center;gap:12px;padding:12px 14px;border:1px solid var(--line);border-radius:12px;background:var(--surf)"><button onClick="{{ r.vote }}" style="width:52px;height:44px;border:1px solid {{ r.bd }};border-radius:10px;background:{{ r.bg }};cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.1;flex:none"><span style="font-size:11px">▲</span><span style="font-size:13px;font-weight:600">{{ r.v }}</span></button><span style="display:flex;flex-direction:column;min-width:0"><span style="font-weight:500">{{ r.t }}</span><span style="font-size:12px;color:var(--t3)">{{ r.s }}</span></span></div></sc-for></div></div>
+  <div id="support" style="padding:28px;border-radius:18px;background:var(--acc-soft);display:flex;flex-direction:column;gap:14px"><h2 style="margin:0;font-family:var(--serif);font-weight:500;font-size:26px">Support the project</h2><p style="margin:0;color:var(--t2);max-width:640px">Draften is free for everyone and always will be. Donations pay for code-signing, the live-session relay and time spent on issues.</p>
+    <div style="display:flex;gap:10px;flex-wrap:wrap"><a href="https://github.com/sponsors/ankursinha" style="height:40px;padding:0 18px;border-radius:11px;background:var(--acc);color:var(--on-acc);display:grid;place-items:center;font-weight:500">GitHub Sponsors</a><a href="https://opencollective.com/draften" style="height:40px;padding:0 18px;border-radius:11px;border:1px solid var(--line2);background:var(--surf);color:var(--t1);display:grid;place-items:center">Open Collective</a><a href="https://github.com/ankursinha/draften" style="height:40px;padding:0 18px;border-radius:11px;border:1px solid var(--line2);background:var(--surf);color:var(--t1);display:grid;place-items:center">Star on GitHub</a></div></div>
+</section>
+</sc-if>
+
+<sc-if value="{{ p.press }}" hint-placeholder-val="{{ false }}">
+<section style="max-width:1000px;margin:0 auto;padding:64px 24px 90px;display:flex;flex-direction:column;gap:32px">
+  <div style="display:flex;flex-direction:column;gap:10px"><h1 style="margin:0;font-family:var(--serif);font-weight:500;font-size:46px;line-height:1.1">Press kit</h1><p style="margin:0;color:var(--t2)">Logos, facts and copy you can use when writing about Draften.</p></div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px">
+    <div style="height:170px;border-radius:16px;background:#f6f6f4;border:1px solid var(--line);display:grid;place-items:center"><span style="display:flex;align-items:center;gap:12px"><span style="width:46px;height:46px;border-radius:12px;background:#1d1d1b;color:#f6f6f4;display:grid;place-items:center;font-family:var(--serif);font-size:30px;font-weight:600">d</span><span style="font-family:var(--serif);font-size:30px;font-weight:600;color:#1d1d1b">Draften</span></span></div>
+    <div style="height:170px;border-radius:16px;background:#1a1a19;display:grid;place-items:center"><span style="display:flex;align-items:center;gap:12px"><span style="width:46px;height:46px;border-radius:12px;background:#ecebe8;color:#1a1a19;display:grid;place-items:center;font-family:var(--serif);font-size:30px;font-weight:600">d</span><span style="font-family:var(--serif);font-size:30px;font-weight:600;color:#ecebe8">Draften</span></span></div>
+    <div style="height:170px;border-radius:16px;background:#3d6b5f;display:grid;place-items:center"><span style="width:84px;height:84px;border-radius:22px;background:#f6f6f4;color:#3d6b5f;display:grid;place-items:center;font-family:var(--serif);font-size:54px;font-weight:600">d</span></div>
+  </div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap"><sc-for list="{{ pressFiles }}" as="f"><span style="padding:6px 12px;border:1px solid var(--line);border-radius:9px;background:var(--surf);font-size:13px"><span style="font-family:var(--mono)">{{ f }}</span></span></sc-for></div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:24px">
+    <div style="display:flex;flex-direction:column;gap:10px"><h2 style="margin:0;font-family:var(--serif);font-weight:500;font-size:24px">Boilerplate</h2><p style="margin:0;color:var(--t2);text-wrap:pretty">Draften is a free, open-source design tool for macOS created by Ankur Sinha. Designs are stored as plain files in a git repository, so teams branch, commit, review and merge design work the same way they ship code. Draften includes live co-editing, interactive prototypes, and an assistant that runs on local models through LM Studio, Ollama or llama.cpp. It is released under the MIT license.</p>
+      <h3 style="margin:8px 0 0;font-size:15px;font-weight:500">One line</h3><p style="margin:0;color:var(--t2)">Draften is a free design tool that lives in your git repo.</p></div>
+    <div style="display:flex;flex-direction:column;gap:10px"><h2 style="margin:0;font-family:var(--serif);font-weight:500;font-size:24px">Facts</h2><div style="border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--surf)"><sc-for list="{{ facts }}" as="f"><div style="display:grid;grid-template-columns:130px minmax(0,1fr);gap:12px;padding:9px 14px;border-bottom:1px solid var(--line);font-size:14px"><span style="color:var(--t3)">{{ f.a }}</span><span>{{ f.b }}</span></div></sc-for></div></div>
+  </div>
+  <div style="display:flex;flex-direction:column;gap:10px"><h2 style="margin:0;font-family:var(--serif);font-weight:500;font-size:24px">Colors</h2><div style="display:flex;gap:10px;flex-wrap:wrap"><sc-for list="{{ brandColors }}" as="c"><div style="display:flex;flex-direction:column;gap:6px"><span style="width:110px;height:64px;border-radius:12px;background:{{ c.h }};box-shadow:inset 0 0 0 1px var(--line)"></span><span style="font-size:13px">{{ c.n }}</span><span style="font-family:var(--mono);font-size:11.5px;color:var(--t3)">{{ c.h }}</span></div></sc-for></div><span style="font-size:13px;color:var(--t3)">Use the mark on light or dark grounds with at least half its width as clear space. Don't recolor, stretch or add effects.</span></div>
+</section>
+</sc-if>
+
+<sc-if value="{{ p.legal }}" hint-placeholder-val="{{ false }}">
+<section style="max-width:780px;margin:0 auto;padding:64px 24px 90px;display:flex;flex-direction:column;gap:22px">
+  <div style="display:flex;padding:2px;background:var(--hover);border-radius:10px;align-self:flex-start"><sc-for list="{{ legalTabs }}" as="t"><button onClick="{{ t.pick }}" style="height:32px;padding:0 14px;border:0;border-radius:8px;background:{{ t.bg }};box-shadow:{{ t.sh }};cursor:pointer;font-size:13.5px">{{ t.label }}</button></sc-for></div>
+  <h1 style="margin:0;font-family:var(--serif);font-weight:500;font-size:42px;line-height:1.1">{{ legal.t }}</h1>
+  <span style="font-size:13px;color:var(--t3)">Effective October 3, 2026 · Ankur Sinha</span>
+  <sc-for list="{{ legal.sections }}" as="s"><div style="display:flex;flex-direction:column;gap:6px"><h2 style="margin:0;font-size:17px;font-weight:600">{{ s.h }}</h2><p style="margin:0;color:var(--t2);text-wrap:pretty;white-space:pre-line">{{ s.p }}</p></div></sc-for>
+  <sc-if value="{{ legal.hasLicense }}"><pre style="margin:0;padding:18px;border:1px solid var(--line);border-radius:12px;background:var(--surf);font-family:var(--mono);font-size:12px;line-height:1.65;white-space:pre-wrap">{{ license }}</pre></sc-if>
+  <span style="font-size:12.5px;color:var(--t3)">This is a plain-language template, not legal advice. Have it reviewed before publishing.</span>
+</section>
+</sc-if>
+
+<sc-if value="{{ p.readme }}" hint-placeholder-val="{{ false }}">
+<section style="max-width:920px;margin:0 auto;padding:48px 24px 90px;display:flex;flex-direction:column;gap:16px">
+  <div style="display:flex;align-items:center;gap:10px"><span style="font-family:var(--mono);font-size:13px;color:var(--t2);flex:1">ankursinha/draften · README.md</span><div style="display:flex;padding:2px;background:var(--hover);border-radius:9px"><sc-for list="{{ readmeTabs }}" as="t"><button onClick="{{ t.pick }}" style="height:28px;padding:0 12px;border:0;border-radius:7px;background:{{ t.bg }};box-shadow:{{ t.sh }};cursor:pointer;font-size:12.5px">{{ t.label }}</button></sc-for></div><button onClick="{{ copyReadme }}" style="height:32px;padding:0 12px;border:1px solid var(--line);border-radius:8px;background:var(--surf);cursor:pointer;font-size:13px">{{ readmeCopyLabel }}</button></div>
+  <sc-if value="{{ readmeRaw }}"><pre style="margin:0;padding:20px;border:1px solid var(--line);border-radius:12px;background:var(--surf);font-family:var(--mono);font-size:12.5px;line-height:1.65;white-space:pre-wrap;overflow-x:auto">{{ readme }}</pre></sc-if>
+  <sc-if value="{{ readmeRendered }}"><div style="padding:28px 32px;border:1px solid var(--line);border-radius:12px;background:var(--surf);display:flex;flex-direction:column;gap:10px"><sc-for list="{{ readmeBlocks }}" as="b"><sc-if value="{{ b.h1 }}"><h1 style="margin:0 0 4px;font-size:30px;font-weight:600;padding-bottom:8px;border-bottom:1px solid var(--line)">{{ b.t }}</h1></sc-if><sc-if value="{{ b.h2 }}"><h2 style="margin:14px 0 0;font-size:21px;font-weight:600;padding-bottom:6px;border-bottom:1px solid var(--line)">{{ b.t }}</h2></sc-if><sc-if value="{{ b.p }}"><p style="margin:0;color:var(--t2)">{{ b.t }}</p></sc-if><sc-if value="{{ b.li }}"><div style="display:flex;gap:8px;color:var(--t2)"><span>•</span><span>{{ b.t }}</span></div></sc-if><sc-if value="{{ b.code }}"><pre style="margin:0;padding:12px 14px;border-radius:8px;background:var(--bg);font-family:var(--mono);font-size:12.5px;overflow-x:auto">{{ b.t }}</pre></sc-if><sc-if value="{{ b.badges }}"><div style="display:flex;gap:6px;flex-wrap:wrap"><sc-for list="{{ badges }}" as="x"><span style="display:flex;font-family:var(--mono);font-size:11px;border-radius:4px;overflow:hidden"><span style="padding:2px 6px;background:#555;color:#fff">{{ x.a }}</span><span style="padding:2px 6px;background:{{ x.c }};color:#fff">{{ x.b }}</span></span></sc-for></div></sc-if></sc-for></div></sc-if>
+</section>
+</sc-if>
+
+<sc-if value="{{ p.social }}" hint-placeholder-val="{{ false }}">
+<section style="max-width:1100px;margin:0 auto;padding:64px 24px 90px;display:flex;flex-direction:column;gap:28px">
+  <div style="display:flex;flex-direction:column;gap:10px"><h1 style="margin:0;font-family:var(--serif);font-weight:500;font-size:46px;line-height:1.1">Launch posts</h1><p style="margin:0;color:var(--t2)">Ready-to-post copy for launch day. Character counts are checked against each platform's limit.</p></div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px">
+    <sc-for list="{{ posts }}" as="s"><div style="padding:18px;border:1px solid var(--line);border-radius:16px;background:var(--surf);display:flex;flex-direction:column;gap:12px">
+      <div style="display:flex;align-items:center;gap:10px"><span style="width:36px;height:36px;border-radius:50%;background:var(--t1);color:var(--bg);display:grid;place-items:center;font-family:var(--serif);font-size:20px;font-weight:600">d</span><span style="display:flex;flex-direction:column;line-height:1.25;flex:1"><span style="font-weight:600;font-size:14px">Ankur Sinha</span><span style="font-size:12px;color:var(--t3)">{{ s.handle }}</span></span><span style="padding:2px 8px;border-radius:6px;background:var(--hover);font-size:12px;color:var(--t2)">{{ s.net }}</span></div>
+      <p style="margin:0;font-size:14px;white-space:pre-line;text-wrap:pretty">{{ s.text }}</p>
+      <div style="height:150px;border-radius:12px;background:var(--canvas);display:flex;align-items:center;justify-content:center;gap:10px;overflow:hidden"><span style="width:62px;height:124px;border-radius:6px;background:#fff;box-shadow:var(--shadow-sm);display:flex;flex-direction:column;gap:4px;padding:8px 6px;box-sizing:border-box"><span style="height:44px;border-radius:4px;background:#f4f3ef"></span><span style="height:5px;width:80%;border-radius:2px;background:#1d1d1b"></span><span style="height:3px;width:60%;border-radius:2px;background:#8e8d88"></span><span style="margin-top:auto;height:9px;border-radius:3px;background:#3d6b5f"></span></span><span style="width:62px;height:124px;border-radius:6px;background:#fff;box-shadow:var(--shadow-sm);display:flex;flex-direction:column;gap:4px;padding:8px 6px;box-sizing:border-box"><span style="height:5px;width:70%;border-radius:2px;background:#1d1d1b"></span><span style="height:10px;border-radius:3px;border:1px solid #e7e6e1"></span><span style="height:10px;border-radius:3px;border:1px solid #e7e6e1"></span><span style="margin-top:auto;height:9px;border-radius:3px;background:#3d6b5f"></span></span></div>
+      <div style="display:flex;align-items:center;gap:10px"><span style="font-family:var(--mono);font-size:12px;color:{{ s.cc }}">{{ s.count }}</span><div style="flex:1"></div><button onClick="{{ s.copy }}" style="height:30px;padding:0 12px;border:1px solid var(--line);border-radius:8px;background:var(--bg);cursor:pointer;font-size:12.5px">Copy text</button></div>
+    </div></sc-for>
+  </div>
+</section>
+</sc-if>
+
+<footer style="border-top:1px solid var(--line);background:var(--panel)">
+  <div style="max-width:1160px;margin:0 auto;padding:40px 24px;display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:24px;font-size:14px">
+    <div style="display:flex;flex-direction:column;gap:8px"><span style="display:flex;align-items:center;gap:8px"><span style="width:22px;height:22px;border-radius:6px;background:var(--t1);color:var(--bg);display:grid;place-items:center;font-family:var(--serif);font-size:14px;font-weight:600">d</span><span style="font-family:var(--serif);font-weight:600">Draften</span></span><span style="color:var(--t3);font-size:13px">Free and open source. MIT license. © 2026 Ankur Sinha.</span></div>
+    <sc-for list="{{ footCols }}" as="c"><div style="display:flex;flex-direction:column;gap:6px"><span style="font-weight:500">{{ c.h }}</span><sc-for list="{{ c.items }}" as="i"><button onClick="{{ i.go }}" style="border:0;background:transparent;padding:0;text-align:left;cursor:pointer;color:var(--t2);font-size:14px" style-hover="color:var(--t1)">{{ i.l }}</button></sc-for></div></sc-for>
+  </div>
+</footer>
+
+<sc-if value="{{ hasToast }}" hint-placeholder-val="{{ false }}"><div style="position:fixed;left:50%;bottom:28px;transform:translateX(-50%);z-index:50;padding:10px 16px;border-radius:11px;background:var(--t1);color:var(--bg);font-size:13.5px;box-shadow:var(--shadow)">{{ toast }}</div></sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;theme&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;light&quot;,&quot;dark&quot;],&quot;default&quot;:&quot;light&quot;,&quot;tsType&quot;:&quot;'light'|'dark'&quot;}}">
+class Component extends DCLogic {
+  state = { theme: this.props.theme || 'light', page: 'home', doc: 'start', itype: 'Bug', iTitle: '', iBody: '', iVer: '0.4.0', area: 'Canvas', votes: {}, legal: 'privacy', rm: 'rendered', toast: '' };
+  REPO = 'https://github.com/ankursinha/draften';
+  componentDidUpdate(pp, ps) { if (pp.theme !== this.props.theme && this.props.theme) this.setState({ theme: this.props.theme }); if (ps.page !== this.state.page || ps.doc !== this.state.doc) window.scrollTo(0, 0); }
+  toastMsg(t) { clearTimeout(this.tt); this.setState({ toast: t }); this.tt = setTimeout(() => this.setState({ toast: '' }), 2200); }
+  copy(text, label) { navigator.clipboard && navigator.clipboard.writeText(text); this.toastMsg(label || 'Copied'); }
+  README = `# Draften
+
+A free, open-source design tool that lives in your git repo.
+
+[![MIT](https://img.shields.io/badge/license-MIT-3d6b5f)](LICENSE) ![macOS](https://img.shields.io/badge/macOS-13%2B-555) ![release](https://img.shields.io/badge/release-0.4.0-3d6b5f)
+
+Draften stores boards, components and tokens as plain JSON in a git repository. Branch, commit, review and merge design work the way you ship code. Co-edit live with your team, prototype with smart animate, and use an assistant that runs on local models.
+
+## Install
+
+\`\`\`
+brew install --cask draften
+\`\`\`
+
+Or download the .dmg from https://draften.app/download
+
+## Features
+
+- Artboards for mobile, web, presentations, documents and RFPs, social, print, email, dashboards and icons
+- Components, color and text styles, groups, variants
+- Git: branches, layer-level changes, visual diff, pull requests, layer-aware merge
+- Live co-editing with presence, cursors and follow mode
+- Prototypes with triggers, transitions, easing and micro-interactions
+- Assistant on LM Studio, Ollama, llama.cpp or any OpenAI-compatible server
+- MCP server and client, VS Code extension, console mode
+- Design lint with one-click fixes
+
+## Build from source
+
+\`\`\`
+git clone https://github.com/ankursinha/draften
+cd draften
+pnpm install
+pnpm tauri dev
+\`\`\`
+
+Requires Rust 1.81+, Node 20+ and Xcode Command Line Tools.
+
+## Report an issue
+
+Use Help › Report an issue in the app, or open one at https://github.com/ankursinha/draften/issues. Please include your version and macOS version.
+
+## Contributing
+
+Read CONTRIBUTING.md. Good first issues are labeled good-first-issue. Every pull request runs lint, unit tests and golden-file exports.
+
+## License
+
+MIT © 2026 Ankur Sinha`;
+  LICENSE = `MIT License
+
+Copyright (c) 2026 Ankur Sinha
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.`;
+  DOCS = [
+    ['Start', 'start', 'Install and first project', 'Get Draften running and make your first commit in about five minutes.', [['Install', 'Download the .dmg for your Mac, or use Homebrew. Drag Draften to Applications and open it.', 'brew install --cask draften'], ['Create or open a project', 'Choose New project to start an empty repo, Open folder for an existing one, or Clone repository to pull from GitHub or any git URL.', ''], ['Add an artboard', 'Press A or click + next to Artboards. Pick an asset type such as Mobile, Website, Presentation or RFP, and start blank or with a starter layout.', ''], ['Commit', 'Open Source control in the left rail. Your edits are listed by layer. Write a message, or press Draft to have the assistant write one, then Commit.', 'git log --oneline\n# a41c9e2 Onboarding: first pass on three screens']]],
+    ['Start', 'assistant', 'Connect a local model', 'Use LM Studio, Ollama or llama.cpp so the assistant runs on your Mac.', [['Start a server', 'In LM Studio, load a model and start the local server. In Ollama, run a model once so it is available.', 'ollama run llama3.1:8b'], ['Check the connection', 'Open Models in the left rail. Detected servers show as Connected. Press Test to check one.', ''], ['Pick a model', 'In the Assistant tab, choose a model from the list. The status line shows whether it is local or cloud.', ''], ['Ask for a change', 'Select a layer and describe the change. The assistant replies with a proposal; press Apply to make it, or undo with ⌘Z.', '']]],
+    ['Design', 'groups', 'Groups, components and styles', 'Organise layers and keep your design consistent.', [['Group', 'Select two or more layers and press ⌘G. Click selects the group; double-click selects a layer inside it. ⇧⌘G ungroups.', ''], ['Make a component', 'Select a layer or group and choose Create component. Insert it from Assets. After editing one instance, press Update component to change all of them.', ''], ['Edit styles', 'In Assets, press Edit beside Color styles or Text styles. Changing a style updates every layer that uses it.', '']]],
+    ['Design', 'proto', 'Prototypes and motion', 'Link artboards and preview them with real transitions.', [['Add an interaction', 'Select a layer, open the Prototype tab and press Add interaction. Choose a trigger and a destination artboard.', ''], ['Choose motion', 'Pick a transition such as Smart animate or Push, an easing curve and a duration. Click the preview bar to see the timing.', ''], ['Play', 'Press ▶ in the header. Click hotspots to navigate, ← to go back, Esc to close.', '']]],
+    ['Collaborate', 'git', 'Branches, reviews and merges', 'Work on design changes the way your team works on code.', [['Branch', 'Create a branch from the branch chip in the header or with the console.', 'git branch feat/settings'], ['Open a pull request', 'Push your branch, then press Open PR in Source control. Reviewers can comment on specific layers.', ''], ['Resolve conflicts', 'If two people changed the same property, Draften shows both values side by side. Pick one per property and complete the merge.', '']]],
+    ['Collaborate', 'live', 'Live sessions', 'Edit the same branch together in real time.', [['Share', 'Press Share in the header and invite people by their GitHub username. Their repo permission decides whether they can edit.', ''], ['Follow', 'Click someone\'s avatar to follow their view. Click again to stop.', ''], ['Saving', 'Live edits are saved as co-authored commits every five minutes and when the last person leaves.', '']]],
+    ['Help', 'issues', 'Reporting issues', 'Tell us what is broken or missing.', [['From the app', 'Choose Help › Report an issue. Draften fills in your version, macOS version and recent log lines, and opens a GitHub issue for you to review and submit.', ''], ['From the website', 'Use the Report an issue page to draft a bug report or feature request.', ''], ['What helps', 'Steps to reproduce, what you expected, what happened, and a screenshot or exported artboard if it is visual.', '']]]
+  ];
+  renderVals() {
+    const s = this.state; const tab = (cur, v) => ({ bg: cur === v ? 'var(--surf)' : 'transparent', sh: cur === v ? 'var(--shadow-sm)' : 'none' });
+    const go = (pg, extra) => () => this.setState({ page: pg, ...(extra || {}) });
+    const pages = ['home', 'download', 'changelog', 'docs', 'developers', 'community', 'press', 'legal', 'readme', 'social'];
+    const doc = this.DOCS.find(d => d[1] === s.doc) || this.DOCS[0];
+    const bug = s.itype === 'Bug'; const feat = s.itype === 'Feature';
+    const body = bug ? `### What happened\n${s.iBody || '<describe the problem>'}\n\n### Steps to reproduce\n1. \n2. \n\n### Expected\n\n### Environment\n- Draften ${s.iVer}\n- macOS <version>\n- Area: ${s.area}` : feat ? `### What would you like?\n${s.iBody || '<describe the feature>'}\n\n### Why it matters\n\n### Area\n${s.area}` : `### Question\n${s.iBody || '<your question>'}\n\n### Area\n${s.area}`;
+    const title = s.iTitle || (bug ? 'Bug: ' : feat ? 'Feature: ' : 'Question: ') + '…';
+    const label = bug ? 'bug' : feat ? 'enhancement' : 'question';
+    const url = `${this.REPO}/issues/new?title=${encodeURIComponent(s.iTitle || '')}&labels=${label},${encodeURIComponent('area:' + s.area.toLowerCase())}&body=${encodeURIComponent(body)}`;
+    const legal = s.legal === 'privacy' ? { t: 'Privacy policy', hasLicense: false, sections: [['The short version', 'Draften runs on your Mac. Your designs stay in your folders and your git repositories. We do not have servers that store your work.'], ['What we collect', 'Nothing by default. There is no account and no analytics.\nIf you turn on crash reports in Settings, Draften sends the crash log, app version and macOS version. Crash reports never include your files, layer names or assistant prompts.'], ['The assistant', 'Local models run on your Mac and nothing is sent anywhere. If you add a cloud provider such as OpenAI or Anthropic, your prompts and the selected design context go to that provider under their terms. Local-only mode blocks this for a project.'], ['Live sessions', 'Live edits travel through a relay as end-to-end encrypted updates. The relay cannot read them and keeps nothing after the session ends. You can host your own relay.'], ['Git hosts', 'When you connect GitHub or another host, Draften talks to it directly from your Mac. Tokens are stored in the macOS Keychain.'], ['Issue reports', 'Reports go to the public GitHub issue tracker. You see the full text, including diagnostics, before anything is submitted.'], ['This website', 'Served as static pages. No cookies, no tracking scripts. The host may keep standard request logs for up to 14 days.'], ['Contact', 'Questions about privacy: open an issue labeled privacy, or email privacy@draften.app.']] } : s.legal === 'terms' ? { t: 'Terms of use', hasLicense: false, sections: [['Free to use', 'Draften is free for personal and commercial use. You may use it, copy it, modify it and share it under the MIT license.'], ['Your work is yours', 'Everything you make with Draften belongs to you. We claim no rights to your designs, files or content.'], ['No warranty', 'Draften is provided as is. Keep your work in git and back it up. We are not liable for lost work or damages, as stated in the license.'], ['Acceptable use', 'Do not use the hosted live-session relay to distribute malware, attack other systems or harass people. We may block relay access for abuse.'], ['Third-party services', 'Git hosts, model providers and MCP servers you connect have their own terms. Draften only connects to them when you ask it to.'], ['Name and logo', 'The Draften name and logo identify the official project by Ankur Sinha. Forks are welcome under a different name.'], ['Changes', 'If these terms change, the changelog will say so and the date at the top will update.']] } : { t: 'License', hasLicense: true, sections: [['MIT', 'Draften\'s source code is released under the MIT license. Third-party components keep their own licenses, listed in THIRD_PARTY_NOTICES in the app bundle.']] };
+    const rmBlocks = this.README.split('\n\n').flatMap(b => { if (b.startsWith('```')) return [{ code: true, t: b.replace(/```\n?/g, '').trim() }]; if (b.startsWith('# ')) return [{ h1: true, t: b.slice(2) }]; if (b.startsWith('## ')) return [{ h2: true, t: b.slice(3) }]; if (b.startsWith('[![')) return [{ badges: true }]; if (b.startsWith('- ')) return b.split('\n').map(l => ({ li: true, t: l.slice(2) })); return [{ p: true, t: b.replace(/`/g, '') }]; });
+    const posts = [['X', '@ankursinha', 280, 'Draften is out: a free, open-source design tool that lives in your git repo.\n\nBranch and review designs like code, co-edit live, and use an assistant on your own local model.\n\nmacOS today. Free forever.\ndraften.app'], ['Bluesky', '@ankursinha.bsky.social', 300, 'I built a design tool where every board is a file in git.\n\nDraften is free and MIT-licensed: artboards for apps, sites, decks and RFPs, live co-editing, prototypes with smart animate, and an assistant on LM Studio or Ollama.\n\ndraften.app'], ['Mastodon', '@ankur@hachyderm.io', 500, 'Releasing Draften 0.4, a free and open-source design tool for macOS.\n\n• Designs are plain JSON in your repo\n• Pull requests with comments pinned to layers\n• Layer-aware merges\n• Live co-editing\n• Assistant on local models, nothing leaves your Mac\n\nBug reports and ideas welcome on GitHub.\n#design #opensource #macOS'], ['LinkedIn', 'Ankur Sinha', 3000, 'Today I\'m releasing Draften, a free design tool for teams that ship from git.\n\nDesign files usually live outside the repository, so they drift from the code and reviews happen on screenshots. In Draften, a design change is a commit, a review is a pull request with visual diffs, and a design-system release is a git tag.\n\nIt also includes live co-editing, interactive prototypes and an assistant that runs on local models. It is MIT-licensed and free for everyone.\n\nI\'d love your feedback, especially bug reports: draften.app/community'], ['Product Hunt', 'Draften', 260, 'Draften: the free design tool that lives in your git repo. Artboards for apps, sites, decks and RFPs; branches, PRs and visual diffs; live co-editing; prototypes; a private assistant on local models. Open source, macOS.']];
+    const RQ = [['Windows build', 'Platform · #212', 412], ['Linux build', 'Platform · #213', 298], ['Auto layout', 'Canvas · #88', 276], ['Figma import', 'Import · #41', 251], ['Read-only web viewer', 'Sharing · #160', 187], ['SwiftUI export', 'Code · #134', 142]];
+    return {
+      theme: s.theme, toggleTheme: () => this.setState(st => ({ theme: st.theme === 'dark' ? 'light' : 'dark' })),
+      p: Object.fromEntries(pages.map(x => [x, s.page === x])), goHome: go('home'), goDownload: go('download'), goIssues: go('community'), goSupport: go('community'),
+      navItems: [['download', 'Download'], ['docs', 'Docs'], ['developers', 'Developers'], ['changelog', 'Changelog'], ['community', 'Report an issue'], ['press', 'Press']].map(([k, l]) => ({ label: l, go: go(k), bg: s.page === k ? 'var(--hover)' : 'transparent', fg: s.page === k ? 'var(--t1)' : 'var(--t2)' })),
+      brewLabel: 'Copy', copyBrew: () => this.copy('brew install --cask draften', 'Copied Homebrew command'),
+      railDots: ['var(--hover)', 'transparent', 'transparent', 'transparent', 'transparent'], toolDots: ['var(--acc-soft)', 'transparent', 'transparent', 'transparent', 'transparent', 'transparent'],
+      mockLayers: [['Pages', 0, 0, ''], ['Onboarding', 6, 1, ''], ['Settings', 6, 0, ''], ['Welcome', 6, 0, 'f'], ['Primary button', 22, 0, ''], ['Body', 22, 0, ''], ['Title', 22, 2, ''], ['Hero image', 22, 0, ''], ['Create account', 6, 0, 'f'], ['Connect repository', 6, 0, 'f']].map(([n, pad, st, f]) => ({ n, pad, bg: st === 2 ? 'var(--acc-soft)' : st === 1 ? 'var(--hover)' : 'transparent', fg: st === 2 ? 'var(--acc)' : n === 'Pages' ? 'var(--t3)' : 'var(--t1)', fw: f || st === 1 ? 500 : 400, r: f ? '2px' : '3px' })),
+      features: [['Artboards for anything', 'Mobile, web, presentations, documents and RFPs, social, print, email, dashboards and icons, with 37 sizes and starters.'], ['Components and styles', 'Groups, components with instances, color and text styles you can edit in one place.'], ['Prototypes and motion', 'Triggers, smart animate, easing curves and micro-interactions, with a fullscreen player.'], ['Git built in', 'Branches, commits, history, visual diff, pull requests and layer-aware merges.'], ['Live co-editing', 'See teammates\' cursors and selections, follow their view, and save as co-authored commits.'], ['Private assistant', 'Local models through LM Studio, Ollama or llama.cpp. Every edit is a proposal you approve.'], ['Design lint', 'Contrast, clipped text, off-grid and unstyled colors, each with a one-click fix.'], ['Code and console', 'Split view with React and CSS tokens, and a console for everything from select to git commit.'], ['Open by design', 'MCP server and client, a VS Code extension, typed plugins and an open file format.']].map(([t, d]) => ({ t, d })),
+      commits: [['Onboarding: restyle primary buttons', 'e93b0c4', 'Ankur · 12m ago'], ['Create account: add password field', '58d21aa', 'Jonas · 1h ago'], ['Tokens: add Night color', '7d02b1f', 'Priya · yesterday']].map(([m, sh, a]) => ({ m, s: sh, a })),
+      changes: [['M', 'Primary button', 'Welcome', '#b08a2e'], ['A', 'Secondary button', 'Welcome', 'var(--acc)'], ['D', 'Old banner', 'Settings', '#c0574a']].map(([k, n, w, col]) => ({ k, n, w, col })),
+      backends: [['LM Studio', 'localhost:1234', '#3f9a6e'], ['Ollama', 'localhost:11434', '#3f9a6e'], ['llama.cpp server', 'localhost:8080', '#c9a43a'], ['OpenAI-compatible', 'any URL', 'var(--line2)']].map(([n, u, dot]) => ({ n, u, dot })),
+      dlMain: [['Apple Silicon', 'For Macs with M1, M2, M3 or M4 chips.', '118 MB', 'Draften-0.4.0-arm64.dmg', '9f2c4e7a1b6d3085c4e1f9a27b5d0c63e8f14a92d7b06c35e1f8a4d29c7b3e016', true], ['Intel', 'For Macs with Intel processors.', '126 MB', 'Draften-0.4.0-x64.dmg', '4b8e1d63f0a2c975e3d18b4f6a7c02e9d51b3f8a6c4e7d290b5a1f3e8c6d4a27', false]].map(([n, d, size, file, sha, rec]) => ({ n, d, size, sha, rec, bd: rec ? 'var(--acc)' : 'var(--line)', dl: () => this.toastMsg('Downloading ' + file), copy: () => this.copy(sha, 'Copied SHA-256') })),
+      dlCmds: [['Homebrew', 'brew install --cask draften', 'Updates with brew upgrade.'], ['VS Code extension', 'code --install-extension ankursinha.draften', 'Also works in Cursor. Open boards and sync tokens from your editor.'], ['Command line', 'brew install draften-cli', 'draften mcp --stdio, draften export, draften lint for CI.']].map(([n, c, d]) => ({ n, c, d, copy: () => this.copy(c, 'Copied') })),
+      dlSoon: [['Windows', 'Windows 11 on x64 and ARM. Tracking issue #212.'], ['Linux', 'AppImage and Flatpak for x64. Tracking issue #213.']].map(([n, d]) => ({ n, d })),
+      reqs: [['Operating system', 'macOS 13 Ventura or later', 'macOS 14+ recommended'], ['Processor', 'Apple Silicon or Intel', 'Apple Silicon recommended for local models'], ['Memory', '8 GB', '16 GB+ to run a local model alongside'], ['Disk', '400 MB for the app', 'Local models need 4–20 GB each'], ['Git', 'Bundled', 'Uses your system git config and SSH keys'], ['Graphics', 'Metal-capable GPU', 'WebGPU canvas with Canvas 2D fallback']].map(([a, b, c]) => ({ a, b, c })),
+      releases: [['0.4.0', 'Oct 3, 2026', 'Groups, editable assets, console mode and in-app issue reporting', [['New', ['Group layers with ⌘G; groups move, resize and duplicate as one', 'Edit color styles, text styles and components from Assets; changes reach every use', 'Create a component from any layer or group, with Update component and Detach', 'Console mode with commands for layers, lint, git, export and MCP', 'Help › Report an issue opens a pre-filled GitHub issue with diagnostics', 'Nine asset types with 37 sizes and starter layouts']], ['Improved', ['Issues navigator checks contrast, clipped text and off-grid layers', 'Activity viewer and jump bar in the header']], ['Fixed', ['Zoom control no longer overlaps the toolbar on narrow windows', 'Text in left-aligned fields kept its padding after export']]]], ['0.3.0', 'Aug 21, 2026', 'Prototypes, live sessions and templates', [['New', ['Prototype tab with triggers, transitions, easing and micro-interactions', 'Fullscreen prototype player with hotspots', 'Live sessions with presence, cursors and follow mode', 'Template gallery: onboarding, landing page, pitch deck, RFP and more']], ['Fixed', ['Merge dialog showed stale values after switching branches']]]], ['0.2.0', 'Jun 30, 2026', 'Git and the assistant', [['New', ['Source control panel with layer-level changes, commit, pull and push', 'Visual diff and history with restore', 'Assistant on LM Studio, Ollama and llama.cpp with proposals']]]], ['0.1.0', 'May 2, 2026', 'First public preview', [['New', ['Canvas, artboards, rectangles, ellipses and text', 'Layers, inspector and PNG/SVG export']]]]].map(([v, d, t, gs]) => ({ v, d, t, groups: gs.map(([k, items]) => ({ k, items, c: k === 'New' ? 'var(--acc)' : k === 'Fixed' ? '#c0574a' : '#b08a2e' })) })),
+      docNav: [...new Set(this.DOCS.map(d => d[0]))].map(g => ({ l: g, items: this.DOCS.filter(d => d[0] === g).map(d => ({ t: d[2], go: () => this.setState({ doc: d[1] }), bg: s.doc === d[1] ? 'var(--hover)' : 'transparent', fg: s.doc === d[1] ? 'var(--t1)' : 'var(--t2)' })) })),
+      doc: { g: doc[0], t: doc[2], lead: doc[3], steps: doc[4].map(([h, p2, code], i) => ({ n: i + 1, h, p: p2, code, hasCode: !!code })) },
+      plTypes: [['Importer', 'Files to artboards'], ['Exporter', 'Artboards or tokens to files'], ['Linter', 'Issues with fixes'], ['Generator', 'Content into a selection'], ['Assistant tool', 'A tool the assistant can call']].map(([n, d]) => ({ n, d })),
+      devBlocks: [['Plugin manifest', 'Plugins declare one type and the permissions they need. Users see the list before installing.', '{\n  "id": "com.example.contrast",\n  "name": "Contrast checker",\n  "version": "1.0.0",\n  "type": "linter",\n  "entry": "dist/index.js",\n  "permissions": ["document:read"],\n  "draften": ">=0.4 <2"\n}'], ['A linter in 20 lines', 'Plugins run in a Web Worker and get a typed API for their type only.', 'import { defineLinter } from "@draften/plugin";\n\nexport default defineLinter({\n  name: "Contrast checker",\n  run({ layers, contrast }) {\n    return layers\n      .filter(l => l.type === "text")\n      .filter(l => contrast(l.color, l.background) < 4.5)\n      .map(l => ({\n        layer: l.id,\n        severity: "error",\n        message: "Text contrast below 4.5:1",\n        fix: { color: "{color.ink}" }\n      }));\n  }\n});'], ['Connect an agent over MCP', 'Draften exposes ten tools. Writes appear in the change log and need approval before they can be committed.', '// claude_desktop_config.json or .cursor/mcp.json\n{\n  "mcpServers": {\n    "draften": { "command": "draften", "args": ["mcp", "--stdio"] }\n  }\n}\n\n// tools: list_pages, list_artboards, get_layer, set_properties,\n// insert_component, get_tokens, export_artboard, lint, git_status, commit'], ['File format', 'One JSON file per board and top-level frame, with stable ids and sorted keys so diffs stay small.', '{\n  "format": "draften/1",\n  "id": "brd_7Qx2",\n  "name": "Welcome",\n  "size": [393, 852],\n  "fill": "{color.surface}",\n  "layers": ["lyr_hero", "lyr_title", "lyr_cta"]\n}'], ['CLI in CI', 'Lint and export designs in pull requests.', '- run: brew install draften-cli\n- run: draften lint boards/ --fail-on error\n- run: draften export boards/onboarding --format png --scale 2 --out exports/']].map(([t, p2, code]) => ({ t, p: p2, code })),
+      issueTypes: ['Bug', 'Feature', 'Question'].map(t => ({ label: t === 'Bug' ? 'Bug report' : t === 'Feature' ? 'Feature request' : 'Question', ...tab(s.itype, t), pick: () => this.setState({ itype: t }) })),
+      iTitle: s.iTitle, onITitle: (e) => this.setState({ iTitle: e.target.value }), iBody: s.iBody, onIBody: (e) => this.setState({ iBody: e.target.value }), iVer: s.iVer, onIVer: (e) => this.setState({ iVer: e.target.value }), isBug: bug,
+      iTitlePh: bug ? 'Export drops text padding in left-aligned fields' : feat ? 'Auto layout for groups' : 'How do I use a shared component library?',
+      iBodyLabel: bug ? 'What happened?' : feat ? 'What would you like?' : 'Your question', iBodyPh: bug ? 'What you did, what you expected, and what happened instead.' : feat ? 'Describe the problem it solves for you.' : 'Ask anything about using Draften.',
+      areas: ['Canvas', 'Assets', 'Prototype', 'Git', 'Live session', 'Assistant', 'Import/Export', 'Plugins', 'Install'].map(a => ({ l: a, bd: s.area === a ? 'var(--acc)' : 'var(--line)', bg: s.area === a ? 'var(--acc-soft)' : 'transparent', pick: () => this.setState({ area: a }) })),
+      issueUrl: url, issuePreview: `${title}\nlabels: ${label}, area:${s.area.toLowerCase()}\n\n${body}`,
+      known: [[241, 'Smart animate skips layers renamed during a live session', 'Prototype · 0.4.0', 'Fix in 0.4.1', '#b08a2e'], [238, 'Homebrew cask shows the previous version for up to an hour after release', 'Install', 'Investigating', 'var(--t3)'], [233, 'Ollama models with long names truncate in the model picker', 'Assistant', 'Fixed in main', 'var(--acc)'], [229, 'Intel Macs: canvas falls back to Canvas 2D on some GPUs', 'Canvas · Intel', 'Workaround in docs', 'var(--t3)']].map(([n, t, l, st, c]) => ({ n, t, l, s: st, c })),
+      requests: RQ.map(([t, st, v]) => { const on = !!s.votes[t]; return { t, s: st, v: v + (on ? 1 : 0), bd: on ? 'var(--acc)' : 'var(--line)', bg: on ? 'var(--acc-soft)' : 'transparent', vote: () => this.setState(x => ({ votes: { ...x.votes, [t]: !x.votes[t] } })) }; }),
+      pressFiles: ['draften-logo.svg', 'draften-logo-dark.svg', 'draften-mark.svg', 'app-icon-1024.png', 'screenshot-canvas.png', 'screenshot-git.png', 'screenshot-assistant.png'],
+      facts: [['Creator', 'Ankur Sinha'], ['First release', 'May 2, 2026'], ['Current version', '0.4.0'], ['Platform', 'macOS 13+; Windows and Linux in progress'], ['Price', 'Free'], ['License', 'MIT'], ['Source', 'github.com/ankursinha/draften'], ['Contact', 'press@draften.app']].map(([a, b]) => ({ a, b })),
+      brandColors: [['Ink', '#1d1d1b'], ['Paper', '#f6f6f4'], ['Moss', '#3d6b5f'], ['Moss soft', '#e2ebe7'], ['Night', '#1a1a19']].map(([n, h]) => ({ n, h })),
+      legalTabs: [['privacy', 'Privacy'], ['terms', 'Terms'], ['license', 'License']].map(([k, l]) => ({ label: l, ...tab(s.legal, k), pick: () => this.setState({ legal: k }) })),
+      legal: { ...legal, sections: legal.sections.map(([h, p2]) => ({ h, p: p2 })) }, license: this.LICENSE,
+      readme: this.README, readmeRaw: s.rm === 'raw', readmeRendered: s.rm === 'rendered', readmeTabs: [['rendered', 'Preview'], ['raw', 'Markdown']].map(([k, l]) => ({ label: l, ...tab(s.rm, k), pick: () => this.setState({ rm: k }) })),
+      readmeCopyLabel: 'Copy markdown', copyReadme: () => this.copy(this.README, 'Copied README.md'), readmeBlocks: rmBlocks.map(b => ({ h1: !!b.h1, h2: !!b.h2, p: !!b.p, li: !!b.li, code: !!b.code, badges: !!b.badges, t: b.t || '' })),
+      badges: [['license', 'MIT', '#3d6b5f'], ['macOS', '13+', '#555'], ['release', '0.4.0', '#3d6b5f']].map(([a, b, c]) => ({ a, b, c })),
+      posts: posts.map(([net, handle, max, text]) => ({ net, handle, text, count: text.length + ' / ' + max, cc: text.length > max ? '#c0574a' : 'var(--t3)', copy: () => this.copy(text, 'Copied ' + net + ' post') })),
+      footCols: [['Product', [['Download', 'download'], ['Changelog', 'changelog'], ['Docs', 'docs']]], ['Build', [['Developers', 'developers'], ['README', 'readme'], ['GitHub', 'gh']]], ['Community', [['Report an issue', 'community'], ['Support the project', 'community'], ['Launch posts', 'social']]], ['About', [['Press kit', 'press'], ['Privacy', 'legal:privacy'], ['Terms', 'legal:terms'], ['License', 'legal:license']]]].map(([h, items]) => ({ h, items: items.map(([l, k]) => ({ l, go: () => { if (k === 'gh') { window.open(this.REPO, '_blank'); return; } const [pg, lg] = k.split(':'); this.setState({ page: pg, ...(lg ? { legal: lg } : {}) }); } })) })),
+      hasToast: !!s.toast, toast: s.toast
+    };
+  }
+}
+</script>
+</body>
+</html>
