@@ -95,9 +95,40 @@ const COMMANDS: Command[] = [
       return { skeleton: sk, summary: `Generated a nav bar with ${links.length} links` };
     },
   },
+  // ── Flowchart / flow: boxes connected by arrows (the OmniGraffle sweet spot) ─
+  {
+    test: (p) => /flow ?chart|flow diagram|flow of|process flow|pipeline|a flow\b|steps? (?:diagram|flow)|→|->/i.test(p),
+    run: (p) => {
+      // split on arrows first, else on the usual separators
+      let steps = p.includes("→") || p.includes("->")
+        ? p.replace(/^.*?(?:of|:|for)\s+/i, "").split(/→|->/).map((s) => s.trim()).filter(Boolean)
+        : items(p);
+      if (steps.length < 2) steps = ["Start", "Process", "Decision", "End"];
+      steps = steps.slice(0, 8);
+      const sk: Skeleton = [];
+      const BW = 170, BH = 64, GAP = 60;
+      steps.forEach((s, i) => {
+        const x = 80 + i * (BW + GAP), y = 120;
+        const last = i === steps.length - 1;
+        const isDecision = /decision|\?|choose|if\b/i.test(s);
+        if (isDecision) {
+          sk.push({ ...base, type: "diamond", x, y: y - 8, width: BW, height: BH + 16, strokeColor: ACC, backgroundColor: "#eaf1ee", roundness: null });
+        } else {
+          sk.push(rect(x, y, BW, BH, { strokeColor: i === 0 || last ? ACC : LINE, backgroundColor: i === 0 || last ? "#eaf1ee" : SURF }));
+        }
+        sk.push(txt(x + 14, y + 22, s.slice(0, 22), 13, INK));
+        // arrow to the next box
+        if (!last) {
+          const ax = x + BW, ay = y + BH / 2;
+          sk.push({ ...base, type: "arrow", x: ax, y: ay, width: GAP, height: 0, points: [[0, 0], [GAP, 0]], strokeColor: MUTED, endArrowhead: "arrow" });
+        }
+      });
+      return { skeleton: sk, summary: `Generated a flowchart with ${steps.length} steps` };
+    },
+  },
   // ── Stack a list vertically (steps / checklist / menu) ───────────────────
   {
-    test: (p) => /stack|list of|steps|checklist|vertical list|bullet|menu of/i.test(p),
+    test: (p) => /stack|list of|checklist|vertical list|bullet|menu of/i.test(p),
     run: (p) => {
       const list = items(p).length ? items(p) : ["First item", "Second item", "Third item"];
       const sk: Skeleton = [];
@@ -126,6 +157,7 @@ export function automate(prompt: string): AutomationResult {
 /** The commands we can run keyless — surfaced as suggestions in the UI. */
 export const AUTOMATIONS = [
   "A table of contents for: Intro, Setup, Usage, API, FAQ",
+  "A flowchart: Idea → Design → Build → Review → Ship",
   "A 3×3 grid of cards",
   "A nav bar: Home, Features, Pricing, Docs",
   "A checklist of: Research, Design, Build, Ship",

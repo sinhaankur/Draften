@@ -42,6 +42,23 @@ describe("automate — keyless design scripts (the OmniGraffle automation)", () 
     expect(texts).toContain("Ship");
   });
 
+  it("builds a flowchart from arrow-separated steps", () => {
+    const r = automate("A flowchart: Idea → Design → Build → Ship");
+    expect(r).not.toBeNull();
+    const arrows = r!.skeleton.filter((s) => s.type === "arrow");
+    expect(arrows.length).toBe(3); // 4 boxes → 3 connectors
+    const texts = r!.skeleton.filter((s) => s.type === "text").map((s) => String((s as { text: string }).text));
+    expect(texts).toContain("Idea");
+    expect(texts).toContain("Ship");
+    expect(r!.summary).toMatch(/4 steps/);
+  });
+
+  it("renders a decision step as a diamond", () => {
+    const r = automate("flowchart: Start -> Decision? -> End");
+    expect(r).not.toBeNull();
+    expect(r!.skeleton.some((s) => s.type === "diamond")).toBe(true);
+  });
+
   it("returns null for a prompt no command matches (→ falls through to the LLM)", () => {
     expect(automate("explain the theory of relativity")).toBeNull();
   });
