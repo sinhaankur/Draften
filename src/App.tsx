@@ -393,9 +393,15 @@ export function App() {
 
                 <div className="divider" />
 
-                <div className="ds-name">
-                  {doc.designSystem.brand.name}
-                  <span className="ver">v0.1</span>
+                <div className="section-title">Design system</div>
+                <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 8 }}>
+                  <input
+                    value={doc.designSystem.brand.name}
+                    onChange={(e) => setDesignSystem({ ...doc.designSystem, brand: { ...doc.designSystem.brand, name: e.target.value } })}
+                    placeholder="Brand name"
+                    style={{ flex: 1, minWidth: 0, borderRadius: 8, border: "1px solid var(--line, #e7e6e2)", padding: "7px 10px", fontSize: 14, fontWeight: 600, background: "var(--surf, #fff)", color: "var(--t1, #1d1d1b)" }}
+                  />
+                  <span className="ver" style={{ flex: "none" }}>v0.1</span>
                 </div>
 
                 <div className="section-title">Brand Kit</div>
