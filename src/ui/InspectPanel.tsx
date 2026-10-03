@@ -59,7 +59,7 @@ export function InspectPanel({ api }: Props) {
   if (sel.length > 1) {
     return (
       <div style={pane}>
-        <Row label="Selected">{sel.length} layers</Row>
+        <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13 }}><span style={{ color: "var(--text-3, #8e8d88)" }}>Selected</span><span style={{ fontWeight: 600 }}>{sel.length} layers</span></div>
         <p style={{ fontSize: 12, color: "var(--text-3, #8e8d88)", marginTop: 8 }}>
           Multi-select. Pick a single layer to edit its properties, or move/align them together on the canvas.
         </p>
@@ -93,39 +93,52 @@ export function InspectPanel({ api }: Props) {
         </span>
       </div>
 
-      {/* position + size */}
-      <Group title="Position & size">
+      {/* Position (Figma): X · Y · rotation */}
+      <Section title="Position">
         <div style={grid2}>
-          <Num label="X" value={el.x} onChange={(v) => patch({ x: v })} />
-          <Num label="Y" value={el.y} onChange={(v) => patch({ y: v })} />
-          <Num label="W" value={el.width} onChange={(v) => patch({ width: Math.max(1, v) })} />
-          <Num label="H" value={el.height} onChange={(v) => patch({ height: Math.max(1, v) })} />
+          <Field label="X" value={el.x} onChange={(v) => patch({ x: v })} />
+          <Field label="Y" value={el.y} onChange={(v) => patch({ y: v })} />
         </div>
         <div style={{ ...grid2, marginTop: 6 }}>
-          <Num label="Rotation°" value={Math.round(((el.angle ?? 0) * 180) / Math.PI)} onChange={(v) => patch({ angle: (v * Math.PI) / 180 })} />
-          <Num label="Opacity%" value={Math.round(el.opacity ?? 100)} onChange={(v) => patch({ opacity: Math.min(100, Math.max(0, v)) })} />
+          <Field label="↻" value={Math.round(((el.angle ?? 0) * 180) / Math.PI)} suffix="°" onChange={(v) => patch({ angle: (v * Math.PI) / 180 })} />
+          <div />
         </div>
-      </Group>
+      </Section>
 
-      {/* style */}
-      <Group title="Style">
-        <Color label="Stroke" value={el.strokeColor ?? "#1d1d1b"} onChange={(v) => patch({ strokeColor: v })} />
-        {hasFill && <Color label="Fill" value={el.backgroundColor && el.backgroundColor !== "transparent" ? el.backgroundColor : "#ffffff"} onChange={(v) => patch({ backgroundColor: v })} />}
+      {/* Layout (Figma): W · H · corner radius */}
+      <Section title="Layout">
+        <div style={grid2}>
+          <Field label="W" value={el.width} onChange={(v) => patch({ width: Math.max(1, v) })} />
+          <Field label="H" value={el.height} onChange={(v) => patch({ height: Math.max(1, v) })} />
+        </div>
         {hasFill && (
-          <label style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 8, fontSize: 12.5 }}>
-            <input
-              type="checkbox"
-              checked={!!el.roundness}
-              onChange={(e) => patch({ roundness: e.target.checked ? { type: 3 } : null })}
-            />
-            Rounded corners
-          </label>
+          <div style={{ ...grid2, marginTop: 6 }}>
+            <Field label="⌜ ⌝" value={el.roundness ? 10 : 0} onChange={(v) => patch({ roundness: v > 0 ? { type: 3 } : null })} />
+            <div />
+          </div>
         )}
-      </Group>
+      </Section>
 
-      {/* text */}
+      {/* Appearance (Figma): opacity · blend */}
+      <Section title="Appearance">
+        <Field label="Opacity" value={Math.round(el.opacity ?? 100)} suffix="%" onChange={(v) => patch({ opacity: Math.min(100, Math.max(0, v)) })} />
+      </Section>
+
+      {/* Fill (Figma): color hex + opacity */}
+      {hasFill && (
+        <Section title="Fill">
+          <FillRow value={el.backgroundColor && el.backgroundColor !== "transparent" ? el.backgroundColor : "#ffffff"} onChange={(v) => patch({ backgroundColor: v })} />
+        </Section>
+      )}
+
+      {/* Stroke (Figma): color + width */}
+      <Section title="Stroke">
+        <FillRow value={el.strokeColor ?? "#1d1d1b"} onChange={(v) => patch({ strokeColor: v })} />
+      </Section>
+
+      {/* Text */}
       {isText && (
-        <Group title="Text">
+        <Section title="Text">
           <textarea
             value={el.text ?? ""}
             onChange={(e) => patch({ text: e.target.value })}
@@ -133,9 +146,9 @@ export function InspectPanel({ api }: Props) {
             style={{ width: "100%", resize: "vertical", borderRadius: 8, border: "1px solid var(--line, #e7e6e2)", padding: "8px 10px", fontSize: 13, fontFamily: "inherit", background: "var(--surf, #fff)", color: "var(--t1, #1d1d1b)" }}
           />
           <div style={{ marginTop: 6 }}>
-            <Num label="Font size" value={el.fontSize ?? 16} onChange={(v) => patch({ fontSize: Math.max(4, v) })} />
+            <Field label="Size" value={el.fontSize ?? 16} onChange={(v) => patch({ fontSize: Math.max(4, v) })} />
           </div>
-        </Group>
+        </Section>
       )}
 
       <button
@@ -163,46 +176,38 @@ function Empty({ text }: { text: string }) {
   return <div style={{ padding: 16, fontSize: 12.5, lineHeight: 1.6, color: "var(--text-3, #8e8d88)" }}>{text}</div>;
 }
 
-function Group({ title, children }: { title: string; children: React.ReactNode }) {
+/* Figma-style inspector sections: a titled block with a hairline divider above. */
+function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div style={{ marginTop: 14 }}>
-      <div style={{ fontSize: 11, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em", color: "var(--text-3, #8e8d88)", marginBottom: 8 }}>{title}</div>
+    <div style={{ padding: "12px 0", borderTop: "1px solid var(--line, #e7e6e2)" }}>
+      <div style={{ fontSize: 12.5, fontWeight: 600, color: "var(--t1, #1d1d1b)", marginBottom: 8 }}>{title}</div>
       {children}
     </div>
   );
 }
 
-function Row({ label, children }: { label: string; children: React.ReactNode }) {
+/* A labelled numeric field (Figma style: label inside, light fill). */
+function Field({ label, value, suffix, onChange }: { label: string; value: number; suffix?: string; onChange: (v: number) => void }) {
   return (
-    <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13 }}>
-      <span style={{ color: "var(--text-3, #8e8d88)" }}>{label}</span>
-      <span style={{ fontWeight: 600 }}>{children}</span>
+    <div style={{ display: "flex", alignItems: "center", gap: 6, background: "var(--canvas, #efeeeb)", borderRadius: 7, padding: "5px 8px" }}>
+      <span style={{ fontSize: 11, color: "var(--text-3, #8e8d88)", flex: "none", minWidth: 14 }}>{label}</span>
+      <input type="number" value={Number.isFinite(value) ? Math.round(value * 100) / 100 : 0}
+        onChange={(e) => { const v = parseFloat(e.target.value); if (!Number.isNaN(v)) onChange(v); }}
+        style={{ flex: 1, minWidth: 0, border: 0, background: "transparent", fontSize: 12.5, color: "var(--t1, #1d1d1b)", fontFamily: "var(--font-mono, monospace)", outline: "none" }} />
+      {suffix && <span style={{ fontSize: 11, color: "var(--text-3, #8e8d88)" }}>{suffix}</span>}
     </div>
   );
 }
 
-function Num({ label, value, onChange }: { label: string; value: number; onChange: (v: number) => void }) {
+/* A Figma fill/stroke row: swatch · hex · opacity. */
+function FillRow({ value, onChange }: { value: string; onChange: (v: string) => void }) {
   return (
-    <label style={{ display: "block" }}>
-      <span style={{ fontSize: 10.5, color: "var(--text-3, #8e8d88)" }}>{label}</span>
-      <input
-        type="number"
-        value={Number.isFinite(value) ? Math.round(value * 100) / 100 : 0}
-        onChange={(e) => { const v = parseFloat(e.target.value); if (!Number.isNaN(v)) onChange(v); }}
-        style={{ width: "100%", marginTop: 2, borderRadius: 7, border: "1px solid var(--line, #e7e6e2)", padding: "6px 8px", fontSize: 12.5, background: "var(--surf, #fff)", color: "var(--t1, #1d1d1b)", fontFamily: "var(--font-mono, monospace)" }}
-      />
-    </label>
-  );
-}
-
-function Color({ label, value, onChange }: { label: string; value: string; onChange: (v: string) => void }) {
-  return (
-    <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 6 }}>
-      <span style={{ width: 50, fontSize: 12, color: "var(--text-3, #8e8d88)" }}>{label}</span>
+    <div style={{ display: "flex", alignItems: "center", gap: 8, background: "var(--canvas, #efeeeb)", borderRadius: 7, padding: "5px 8px" }}>
       <input type="color" value={toHex(value)} onChange={(e) => onChange(e.target.value)}
-        style={{ width: 28, height: 28, border: "1px solid var(--line, #e7e6e2)", borderRadius: 6, padding: 0, background: "none", cursor: "pointer" }} />
-      <input value={value} onChange={(e) => onChange(e.target.value)}
-        style={{ flex: 1, borderRadius: 7, border: "1px solid var(--line, #e7e6e2)", padding: "6px 8px", fontSize: 12, fontFamily: "var(--font-mono, monospace)", background: "var(--surf, #fff)", color: "var(--t1, #1d1d1b)" }} />
+        style={{ width: 20, height: 20, border: "1px solid rgba(0,0,0,.12)", borderRadius: 4, padding: 0, background: "none", cursor: "pointer", flex: "none" }} />
+      <input value={value.replace(/^#/, "").toUpperCase()} onChange={(e) => onChange("#" + e.target.value.replace(/[^0-9a-f]/gi, ""))}
+        style={{ flex: 1, minWidth: 0, border: 0, background: "transparent", fontSize: 12.5, color: "var(--t1, #1d1d1b)", fontFamily: "var(--font-mono, monospace)", outline: "none", textTransform: "uppercase" }} />
+      <span style={{ fontSize: 11.5, color: "var(--text-3, #8e8d88)" }}>100%</span>
     </div>
   );
 }
