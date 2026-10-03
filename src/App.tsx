@@ -27,6 +27,7 @@ import { TemplatesPanel } from "./ui/TemplatesPanel";
 import type { TemplateDef } from "./templates/gallery";
 import { CodeView } from "./ui/CodeView";
 import { ConsoleView } from "./ui/ConsoleView";
+import { ReviewPanel } from "./ui/ReviewPanel";
 import "./App.css";
 
 const LEVELS: AtomicLevel[] = ["atom", "molecule", "organism", "template", "page"];
@@ -386,14 +387,7 @@ export function App() {
             </div>
           )}
           {dsTab === "Review" && (
-            <div className="pane-body" style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-              <div style={{ fontSize: 13, fontWeight: 500 }}>Onboarding: first pass</div>
-              <div style={{ fontSize: 12, color: "var(--t3)" }}>No comments yet. Drop a pin on the canvas to start a thread.</div>
-              <div style={{ display: "flex", gap: 8, marginTop: 4 }}>
-                <button style={{ flex: 1, padding: "8px", border: "1px solid var(--line)", borderRadius: 8, background: "var(--surf)", color: "var(--t1)", cursor: "pointer", fontSize: 12.5 }}>Request changes</button>
-                <button className="ai-btn" style={{ flex: 1, justifyContent: "center" }}>Approve</button>
-              </div>
-            </div>
+            <ReviewPanel boardName={activeBoard?.name ?? "This board"} />
           )}
         </aside>
       </div>
