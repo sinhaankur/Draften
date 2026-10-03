@@ -6,7 +6,7 @@ import type { ExcalidrawImperativeAPI } from "@excalidraw/excalidraw/types";
 import { AnimatePresence, motion } from "motion/react";
 import {
   PanelLeft, PanelRight, GitBranch, LayoutTemplate, Puzzle,
-  Moon, Sun, Sparkles, Play,
+  Moon, Sun, Sparkles, Play, History,
 } from "lucide-react";
 
 import { ExcalidrawCanvas, toElements } from "./canvas/ExcalidrawCanvas";
@@ -51,7 +51,7 @@ export function App() {
   const [pasteNote, setPasteNote] = useState<string | null>(null);
   // Responsive drawers (below md the rails slide over the canvas — Hick's Law).
   const [leftOpen, setLeftOpen] = useState(false);
-  const [leftMode, setLeftMode] = useState<"layers" | "git">("layers");
+  const [leftMode, setLeftMode] = useState<"layers" | "git" | "components" | "history">("layers");
   const [rightOpen, setRightOpen] = useState(false);
   const setDesignSystem = useEditor((s) => s.setDesignSystem);
   const rename = useEditor((s) => s.rename);
@@ -214,6 +214,24 @@ export function App() {
           className={`rail-scrim${leftOpen || rightOpen ? " show" : ""}`}
           onClick={() => { setLeftOpen(false); setRightOpen(false); }}
         />
+
+        {/* far-left vertical icon rail (v2): layers · components · source control ·
+            history · plugins · assistant. Switches what the left panel shows. */}
+        <nav className="icon-rail">
+          {([
+            { id: "layers", icon: <PanelLeft size={18} />, title: "Artboards & layers", on: () => { setLeftMode("layers"); setLeftOpen(true); } },
+            { id: "components", icon: <LayoutTemplate size={18} />, title: "Components & templates", on: () => { setLeftMode("components"); setLeftOpen(true); } },
+            { id: "git", icon: <GitBranch size={18} />, title: "Source control", on: () => { setLeftMode("git"); setLeftOpen(true); } },
+            { id: "history", icon: <History size={18} />, title: "Version history", on: () => { setLeftMode("history"); setLeftOpen(true); } },
+            { id: "plugins", icon: <Puzzle size={18} />, title: "Plugins", on: () => setPluginsOpen(true) },
+            { id: "assistant", icon: <Sparkles size={18} />, title: "AI assistant", on: () => setAiOpen(true) },
+          ] as const).map((it) => (
+            <button key={it.id} className={`rail-icon${leftMode === it.id ? " on" : ""}`} title={it.title} onClick={it.on}>
+              {it.icon}
+            </button>
+          ))}
+        </nav>
+
         {/* left: Artboards & layers — ported from design/Draften v2.dc.html
             (exact markup + inline styles, wired to real state). */}
         <aside className={`left${leftOpen ? " open" : ""}`}

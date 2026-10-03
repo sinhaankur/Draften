@@ -40,6 +40,30 @@
 .topbar .chip {
   -webkit-app-region: no-drag;
 }
+/* far-left vertical icon rail (v2) — primary navigation between left-panel modes */
+.icon-rail {
+  flex: none;
+  width: 48px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 10px 0;
+  background: var(--panel, var(--raised));
+  border-right: 1px solid var(--line, var(--border));
+}
+.rail-icon {
+  width: 34px; height: 34px;
+  display: grid; place-items: center;
+  border: 0; border-radius: 9px;
+  background: transparent; color: var(--text-3, #8e8d88);
+  cursor: pointer; transition: background .12s, color .12s;
+}
+.rail-icon:hover { background: var(--hover, #f0efec); color: var(--t1, #1d1d1b); }
+.rail-icon.on { background: var(--acc-soft, #eaf1ee); color: var(--accent, #3d6b5f); }
+/* on mobile the rail collapses — the hamburger opens the drawer instead */
+@media (max-width: 768px) { .icon-rail { display: none; } }
+
 .brand {
   display: flex;
   align-items: center;
