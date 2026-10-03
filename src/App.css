@@ -633,6 +633,26 @@
   padding: var(--s4); margin: var(--s3) 0; max-height: 160px; overflow: auto;
   white-space: pre-wrap; line-height: 1.45; color: var(--text-1);
 }
+
+/* Conversation thread — chat with the canvas, like Claude Design. */
+.ai-thread {
+  display: flex; flex-direction: column; gap: var(--s3);
+  min-height: 180px; max-height: 42vh; overflow-y: auto;
+  margin: var(--s2) 0 var(--s3);
+  padding-right: 2px;
+}
+.ai-welcome { display: flex; flex-direction: column; gap: var(--s3); padding: var(--s3) 0; }
+.ai-turn { display: flex; flex-direction: column; gap: 3px; max-width: 94%; }
+.ai-turn-you { align-self: flex-end; align-items: flex-end; }
+.ai-turn-ai { align-self: flex-start; align-items: flex-start; }
+.ai-turn-who { color: var(--text-3); font-weight: 600; }
+.ai-turn-text {
+  border-radius: 12px; padding: 9px 13px; line-height: 1.5; white-space: pre-wrap;
+}
+.ai-turn-you .ai-turn-text { background: var(--accent); color: #fff; border-bottom-right-radius: 4px; }
+.ai-turn-ai .ai-turn-text { background: var(--bg); border: 1px solid var(--border); color: var(--text-1); border-bottom-left-radius: 4px; }
+.ai-caret { animation: ai-blink 1s step-end infinite; color: var(--accent); }
+@keyframes ai-blink { 50% { opacity: 0; } }
 .ai-field textarea {
   width: 100%; background: var(--bg); border: 1px solid var(--border);
   border-radius: var(--r-input); padding: var(--s3) var(--s4); color: var(--text-1);

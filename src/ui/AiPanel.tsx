@@ -46,12 +46,21 @@ export function AiPanel({ onClose }: { onClose: () => void }) {
   const [prompt, setPrompt] = useState("");
   const [streaming, setStreaming] = useState("");
   const [busy, setBusy] = useState(false);
+  // The conversation thread — like Claude Design: each turn builds on the last.
+  const [turns, setTurns] = useState<{ role: "you" | "ai"; text: string }[]>([]);
+  const threadRef = useRef<HTMLDivElement>(null);
   const [attachment, setAttachment] = useState<{ name: string; text: string } | null>(null);
   const [provider, setProvider] = useState<AiProvider | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
 
   // Pick the best on-device provider once, so the badge + runs use it.
   useEffect(() => { pickBestAvailable().then(setProvider).catch(() => {}); }, []);
+
+  // Keep the conversation scrolled to the latest turn (Claude Design feel).
+  useEffect(() => {
+    const el = threadRef.current;
+    if (el) el.scrollTop = el.scrollHeight;
+  }, [turns, streaming]);
 
   // The providers a designer can switch between — all local/keyless by default;
   // LM Studio runs whatever model they've loaded on their machine.
@@ -102,10 +111,12 @@ export function AiPanel({ onClose }: { onClose: () => void }) {
     if (!p || busy || !provider) return;
     setBusy(true);
     setStreaming("");
+    setTurns((t) => [...t, { role: "you", text: p }]);   // your message into the thread
+    setPrompt("");
     try {
       // FAST, KEYLESS PATH FIRST: deterministic "scripts" (table of contents,
-      // grids, nav bars, lists) run instantly with no model — the modern
-      // OmniGraffle automation. Only fall through to the LLM if none matches.
+      // grids, flowcharts, nav bars, lists) run instantly with no model — the
+      // modern OmniGraffle automation. Only fall through to the LLM if none matches.
       const auto = automate(p);
       if (auto) {
         const drew = await drawSkeletonOnCanvas(auto.skeleton);
@@ -114,8 +125,7 @@ export function AiPanel({ onClose }: { onClose: () => void }) {
           summary: auto.summary,
           actions: [{ op: "layout", detail: auto.summary }],
         });
-        setStreaming(drew ? `✓ ${auto.summary}.` : `${auto.summary} — open a canvas to place it.`);
-        setPrompt("");
+        setTurns((t) => [...t, { role: "ai", text: drew ? `✓ ${auto.summary} — drawn on the canvas. Ask for a change, or tell me what's next.` : `${auto.summary} — open a canvas to place it.` }]);
         setAttachment(null);
         setBusy(false);
         return;
@@ -125,11 +135,11 @@ export function AiPanel({ onClose }: { onClose: () => void }) {
         onToken: (t) => setStreaming((s) => s + t),
         apply: applyActions,
       });
-      setStreaming(res.message);
-      setPrompt("");
+      setTurns((t) => [...t, { role: "ai", text: res.message }]);
+      setStreaming("");
       setAttachment(null);
     } catch (e) {
-      setStreaming(`Couldn't complete that: ${(e as Error).message}`);
+      setTurns((t) => [...t, { role: "ai", text: `Couldn't complete that: ${(e as Error).message}` }]);
     } finally {
       setBusy(false);
     }
@@ -172,29 +182,46 @@ export function AiPanel({ onClose }: { onClose: () => void }) {
           </select>
         </div>
 
-        {/* streaming reply / status */}
-        {streaming && (
-          <div className="ai-reply small" aria-live="polite">{streaming}</div>
-        )}
+        {/* conversation thread — chat with the canvas, like Claude Design */}
+        <div className="ai-thread" ref={threadRef}>
+          {turns.length === 0 && !streaming ? (
+            <div className="ai-welcome">
+              <p className="muted small">Describe what you want to design — then keep the conversation going to refine it. Everything you ask lands on the canvas.</p>
+              <div className="ai-starters">
+                {STARTERS.map((s) => (
+                  <button key={s} className="ai-starter small" onClick={() => { setPrompt(s); }}>{s}</button>
+                ))}
+              </div>
+            </div>
+          ) : (
+            <>
+              {turns.map((t, i) => (
+                <div key={i} className={`ai-turn ai-turn-${t.role}`}>
+                  <span className="ai-turn-who small">{t.role === "you" ? "You" : "✦ Draften"}</span>
+                  <div className="ai-turn-text small">{t.text}</div>
+                </div>
+              ))}
+              {streaming && (
+                <div className="ai-turn ai-turn-ai">
+                  <span className="ai-turn-who small">✦ Draften</span>
+                  <div className="ai-turn-text small" aria-live="polite">{streaming}<span className="ai-caret">▍</span></div>
+                </div>
+              )}
+              {busy && !streaming && (
+                <div className="ai-turn ai-turn-ai"><span className="ai-turn-who small">✦ Draften</span><div className="ai-turn-text small muted">Thinking…</div></div>
+              )}
+            </>
+          )}
+        </div>
 
-        {/* prompt starters — help a designer get going (easy to use) */}
-        {!streaming && !prompt && (
-          <div className="ai-starters">
-            {STARTERS.map((s) => (
-              <button key={s} className="ai-starter small" onClick={() => setPrompt(s)}>{s}</button>
-            ))}
-          </div>
-        )}
-
-        {/* the prompt */}
+        {/* the prompt — pinned at the bottom like a chat composer */}
         <label className="ai-field">
-          <span>What do you want to design?</span>
           <textarea
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
-            onKeyDown={(e) => { if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) send(); }}
-            placeholder="e.g. a sign-up screen with our tokens, or: turn the attached PDF into a landing page"
-            rows={3}
+            onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); } }}
+            placeholder={turns.length ? "Refine it, or ask for the next thing… (Enter to send)" : "Describe what you want to design… (Enter to send)"}
+            rows={2}
             autoFocus
           />
         </label>
