@@ -41,6 +41,14 @@ export function documentToSkeleton(doc: DraftenDocument): Skeleton {
   const out: Skeleton = [];
   const base = { roughness: 0 as const, strokeWidth: 1, fillStyle: "solid" as const };
 
+  // Each board (a PDF/Sketch page) → a white page "sheet" rectangle so you SEE
+  // the document page behind the text, not floating runs. Drawn first = behind.
+  for (const board of doc.boards ?? []) {
+    const f = (board as { frame?: { x: number; y: number; width: number; height: number } }).frame;
+    if (!f) continue;
+    out.push({ ...base, type: "rectangle", x: f.x, y: f.y, width: Math.max(1, f.width ?? 800), height: Math.max(1, f.height ?? 1000), strokeColor: LINE, backgroundColor: "#ffffff" });
+  }
+
   for (const node of Object.values(doc.nodes)) {
     const { x, y } = worldXY(node, doc);
     const w = Math.max(1, node.frame.width);
