@@ -23,6 +23,8 @@ import { AiPanel } from "./ui/AiPanel";
 import { PluginsPanel } from "./ui/PluginsPanel";
 import { ImportButton } from "./ui/ImportButton";
 import { InspectPanel } from "./ui/InspectPanel";
+import { TemplatesPanel } from "./ui/TemplatesPanel";
+import type { TemplateDef } from "./templates/gallery";
 import "./App.css";
 
 const LEVELS: AtomicLevel[] = ["atom", "molecule", "organism", "template", "page"];
@@ -38,6 +40,7 @@ export function App() {
   const [theme, setTheme] = useState<"light" | "dark">("light");
   const [aiOpen, setAiOpen] = useState(false);
   const [pluginsOpen, setPluginsOpen] = useState(false);
+  const [templatesOpen, setTemplatesOpen] = useState(false);
   const [pasteNote, setPasteNote] = useState<string | null>(null);
   // Responsive drawers (below md the rails slide over the canvas — Hick's Law).
   const [leftOpen, setLeftOpen] = useState(false);
@@ -63,6 +66,24 @@ export function App() {
       });
       api.scrollToContent(api.getSceneElements(), { fitToContent: true });
     }
+  };
+
+  /** Draw a gallery template onto the canvas (APPENDED beside existing work, so
+   *  it never wipes what you have). Every element becomes a real editable layer. */
+  const pickTemplate = (t: TemplateDef) => {
+    // The sinhaankur.com entry loads a whole design SYSTEM (tokens + component
+    // library + hero) — not just a skeleton — so it routes to the full loader.
+    if (t.id === "sinhaankur") { openTemplate(); return; }
+    const api = excalidrawApi.current;
+    if (!api) return;
+    const existing = api.getSceneElements();
+    // offset the template to the right of whatever's already on the canvas
+    const maxX = existing.reduce((m, e) => Math.max(m, (e.x ?? 0) + (e.width ?? 0)), 0);
+    const dx = existing.length ? maxX + 80 : 0;
+    const skeleton = t.build().map((s) => ({ ...s, x: (s.x as number) + dx }));
+    const drawn = toElements(skeleton as Parameters<typeof toElements>[0]);
+    api.updateScene({ elements: [...existing, ...drawn] });
+    api.scrollToContent(drawn, { fitToContent: true, animate: true });
   };
 
   useEffect(() => {
@@ -140,8 +161,8 @@ export function App() {
         <button className="tb-btn" title="Git branch">
           <GitBranch size={14} /> main
         </button>
-        <button className="tb-btn" onClick={openTemplate} title="Templates">
-          <LayoutTemplate size={14} /> Template
+        <button className="tb-btn" onClick={() => setTemplatesOpen(true)} title="Templates">
+          <LayoutTemplate size={14} /> Templates
         </button>
         <button className="tb-btn" onClick={() => setPluginsOpen(true)} title="Install plugins from GitHub">
           <Puzzle size={14} /> Plugins
@@ -166,6 +187,7 @@ export function App() {
       <AnimatePresence>
         {aiOpen && <AiPanel key="ai" onClose={() => setAiOpen(false)} />}
         {pluginsOpen && <PluginsPanel key="plugins" onClose={() => setPluginsOpen(false)} />}
+        {templatesOpen && <TemplatesPanel key="templates" onClose={() => setTemplatesOpen(false)} onPick={pickTemplate} />}
       </AnimatePresence>
 
       <AnimatePresence>
