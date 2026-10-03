@@ -12,10 +12,10 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  height: 52px;
+  height: 48px;
   /* default left padding (Windows/Linux/web have no left traffic-lights) */
   padding: 0 14px;
-  background: color-mix(in srgb, var(--raised) 82%, transparent);
+  background: var(--raised);
   backdrop-filter: saturate(180%) blur(20px);
   -webkit-backdrop-filter: saturate(180%) blur(20px);
   border-bottom: 1px solid var(--border);
@@ -147,7 +147,7 @@
   background: var(--accent);
   color: #fff;
   border: none;
-  border-radius: 7px;
+  border-radius: 8px;
   padding: 0 13px;
   font-size: 13px;
   font-weight: 590;
