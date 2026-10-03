@@ -1,8 +1,9 @@
 import { useEffect, useRef, useState } from "react";
-import { FolderOpen, Save, Download, ChevronDown } from "lucide-react";
+import { FolderOpen, Save, Download, ChevronDown, Package, FileCode } from "lucide-react";
 import type { ExcalidrawImperativeAPI } from "@excalidraw/excalidraw/types";
 
 import { saveDraften, saveExcalidraw, exportSvg, exportPng, openFile } from "../io/files";
+import { downloadProject, downloadStandaloneHtml } from "../export/project";
 
 /**
  * FileMenu — real Save / Open / Export in open formats.
@@ -70,11 +71,15 @@ export function FileMenu({ api, name, onOpened }: {
           {item(<Save size={15} />, "Save (.draften.json)", "⌘S", () => saveDraften(api, name))}
           {item(<Save size={15} />, "Save as .excalidraw", "", () => saveExcalidraw(api, name))}
           {sep}
-          {groupLabel("Export")}
+          {groupLabel("Build app")}
+          {item(<Package size={15} />, "Export runnable app (.zip)", "", () => { void downloadProject(api, name); })}
+          {item(<FileCode size={15} />, "Export standalone HTML", "", () => downloadStandaloneHtml(api, name))}
+          {sep}
+          {groupLabel("Export image")}
           {item(<Download size={15} />, "Export SVG", "", () => exportSvg(api, name))}
           {item(<Download size={15} />, "Export PNG", "", () => exportPng(api, name))}
           <div style={{ padding: "8px 12px 4px", fontSize: 11, color: "var(--text-3, #8e8d88)", lineHeight: 1.5 }}>
-            Open formats only — your file stays yours, and the GitHub panel commits the same document.
+            Design → runnable app. Open formats only — your file stays yours, and the GitHub panel commits the project.
           </div>
         </div>
       )}

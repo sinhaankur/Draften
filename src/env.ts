@@ -25,11 +25,14 @@ export function isWeb(): boolean {
 export type OS = "macos" | "windows" | "linux" | "web";
 export function detectOS(): OS {
   if (typeof navigator === "undefined") return "web";
-  const p = (navigator.platform || "").toLowerCase();
+  // navigator.platform is deprecated + often EMPTY in the Tauri WebKit webview,
+  // so check userAgentData + userAgent too (userAgent carries "Macintosh").
+  const uaData = (navigator as unknown as { userAgentData?: { platform?: string } }).userAgentData?.platform || "";
+  const p = `${navigator.platform || ""} ${uaData}`.toLowerCase();
   const ua = (navigator.userAgent || "").toLowerCase();
-  if (/mac/.test(p) || /mac/.test(ua)) return "macos";
-  if (/win/.test(p) || /win/.test(ua)) return "windows";
-  if (/linux/.test(p) || /x11/.test(ua)) return "linux";
+  if (/mac|iphone|ipad|darwin/.test(p) || /macintosh|mac os|darwin/.test(ua)) return "macos";
+  if (/win/.test(p) || /windows/.test(ua)) return "windows";
+  if (/linux|x11|cros/.test(p) || /linux|x11/.test(ua)) return "linux";
   return "web";
 }
 

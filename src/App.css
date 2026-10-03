@@ -22,8 +22,11 @@
   /* the empty parts of the toolbar drag the window (native feel) */
   -webkit-app-region: drag;
 }
-/* macOS overlay title bar: leave clearance for the traffic-light buttons */
-:root[data-os="macos"] .topbar {
+/* macOS overlay title bar: leave clearance for the traffic-light buttons.
+   Any DESKTOP build on an unknown OS also gets the gap — never risk the brand
+   colliding with native window controls (that was a real bug). */
+:root[data-os="macos"] .topbar,
+:root[data-shell="desktop"]:not([data-os="windows"]):not([data-os="linux"]) .topbar {
   padding-left: 82px;
 }
 /* Windows/Linux desktop: reserve room on the RIGHT for native window controls */
