@@ -675,6 +675,16 @@
 .plugin-dot.on { background: #34d399; }
 
 /* ── ✦ Design assistant (conversational) ──────────────────────────────── */
+/* Hide Excalidraw's own hamburger menu + its "Excalidraw links" (GitHub/X/Discord)
+   — Draften has its own File menu; the library's menu must not leak through. */
+.excalidraw .dropdown-menu-button,
+.excalidraw .main-menu-trigger,
+.excalidraw [data-testid="main-menu-trigger"] { display: none !important; }
+/* also hide the Excalidraw-branded footer links if they render */
+.excalidraw .footer-center a[href*="github.com/excalidraw"],
+.excalidraw .footer-center a[href*="twitter.com"],
+.excalidraw .footer-center a[href*="discord"] { display: none !important; }
+
 /* page rows: delete × only on hover (clean until you need it) */
 .page-row .page-del { opacity: 0; transition: opacity .12s; }
 .page-row:hover .page-del { opacity: 1; }

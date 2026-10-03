@@ -66,6 +66,24 @@ export function App() {
   const excalidrawApi = useRef<ExcalidrawImperativeAPI | null>(null);
   // Flip once the canvas API exists so panels that read it (Inspect) re-render.
   const [canvasReady, setCanvasReady] = useState(false);
+  // Per-page canvas scenes (Sketch-style): each Page has its OWN artboards/layers.
+  // Switching pages saves the current scene and loads the target's. Keyed by board id.
+  const pageScenes = useRef<Map<string, readonly unknown[]>>(new Map());
+
+  /** Switch to a page like Sketch: stash the current page's canvas, load the new one. */
+  const switchPage = (id: string) => {
+    if (id === activeBoardId) return;
+    const api = excalidrawApi.current;
+    if (api) {
+      // save the page we're leaving
+      pageScenes.current.set(activeBoardId, api.getSceneElements());
+      // load the page we're entering (empty if never visited)
+      const next = pageScenes.current.get(id) ?? [];
+      api.updateScene({ elements: next as Parameters<typeof api.updateScene>[0]["elements"] });
+      setTimeout(() => { try { api.scrollToContent(api.getSceneElements(), { fitToContent: true, animate: false }); } catch { /* ignore */ } }, 40);
+    }
+    setActiveBoard(id);
+  };
 
   /** Load the sinhaankur.com template: real design system into the panel, and
    *  the hero screen onto the canvas (dark ground). One click, whole pipeline. */
@@ -297,7 +315,7 @@ export function App() {
                   style={{ width: 20, height: 20, border: 0, borderRadius: 5, background: "transparent", color: "var(--text-3)", cursor: "pointer", display: "grid", placeItems: "center", fontSize: 14 }}>+</button>
               </div>
               {doc.boards.map((b) => (
-                <div key={b.id} className="page-row" onClick={() => setActiveBoard(b.id)} onDoubleClick={() => setEditingBoard(b.id)}
+                <div key={b.id} className="page-row" onClick={() => switchPage(b.id)} onDoubleClick={() => setEditingBoard(b.id)}
                   style={{
                     display: "flex", alignItems: "center", gap: 8, padding: "5px 8px", borderRadius: 6, cursor: "pointer",
                     background: b.id === activeBoardId ? "var(--acc-soft, var(--accent-soft))" : "transparent",
