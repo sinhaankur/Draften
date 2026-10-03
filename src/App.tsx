@@ -28,6 +28,7 @@ import type { TemplateDef } from "./templates/gallery";
 import { CodeView } from "./ui/CodeView";
 import { ConsoleView } from "./ui/ConsoleView";
 import { ReviewPanel } from "./ui/ReviewPanel";
+import { FileMenu } from "./ui/FileMenu";
 import "./App.css";
 
 const LEVELS: AtomicLevel[] = ["atom", "molecule", "organism", "template", "page"];
@@ -157,13 +158,12 @@ export function App() {
 
         <div className="tb-sep" />
 
+        {/* File — real Save/Open/Export in open formats (replaces the dead branch btn) */}
+        <FileMenu api={canvasReady ? excalidrawApi.current : null} name={doc.name} onOpened={(n) => rename(n)} />
+
         {/* GitHub sign-in (device flow) — unlocks the git features */}
         <GitHubSignIn />
 
-        {/* document actions group — real Lucide icons (mockup) */}
-        <button className="tb-btn" title="Git branch">
-          <GitBranch size={14} /> main
-        </button>
         <button className="tb-btn" onClick={() => setTemplatesOpen(true)} title="Templates">
           <LayoutTemplate size={14} /> Templates
         </button>
