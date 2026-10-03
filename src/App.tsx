@@ -29,6 +29,7 @@ import { CodeView } from "./ui/CodeView";
 import { ConsoleView } from "./ui/ConsoleView";
 import { ReviewPanel } from "./ui/ReviewPanel";
 import { FileMenu } from "./ui/FileMenu";
+import { PrototypePlay } from "./ui/PrototypePlay";
 import "./App.css";
 
 const LEVELS: AtomicLevel[] = ["atom", "molecule", "organism", "template", "page"];
@@ -45,6 +46,7 @@ export function App() {
   const [aiOpen, setAiOpen] = useState(false);
   const [pluginsOpen, setPluginsOpen] = useState(false);
   const [templatesOpen, setTemplatesOpen] = useState(false);
+  const [playing, setPlaying] = useState(false);
   const [pasteNote, setPasteNote] = useState<string | null>(null);
   // Responsive drawers (below md the rails slide over the canvas — Hick's Law).
   const [leftOpen, setLeftOpen] = useState(false);
@@ -192,6 +194,10 @@ export function App() {
         {pluginsOpen && <PluginsPanel key="plugins" onClose={() => setPluginsOpen(false)} />}
         {templatesOpen && <TemplatesPanel key="templates" onClose={() => setTemplatesOpen(false)} onPick={pickTemplate} />}
       </AnimatePresence>
+
+      {playing && canvasReady && excalidrawApi.current && (
+        <PrototypePlay api={excalidrawApi.current} onClose={() => setPlaying(false)} />
+      )}
 
       <AnimatePresence>
         {pasteNote && (
@@ -361,11 +367,15 @@ export function App() {
           {dsTab === "Prototype" && (
             <div className="pane-body" style={{ display: "flex", flexDirection: "column", gap: 10 }}>
               <div style={{ fontSize: 12, color: "var(--t3)" }}>
-                Select a layer to make it interactive. Links show as lines on the canvas while this tab is open.
+                Preview your design with no editor chrome — at real phone, tablet &amp; desktop widths.
               </div>
-              <button className="ai-btn" style={{ width: "100%", justifyContent: "center" }}>▶ Play from {activeBoard?.name ?? "Welcome"}</button>
-              <div style={{ fontSize: 11.5, fontWeight: 500, color: "var(--t3)", marginTop: 4 }}>Links on this page</div>
-              <div style={{ fontSize: 12, color: "var(--t3)" }}>No interactions yet — connect a layer to another artboard.</div>
+              <button className="ai-btn" style={{ width: "100%", justifyContent: "center" }}
+                onClick={() => canvasReady && excalidrawApi.current && setPlaying(true)}>
+                ▶ Play
+              </button>
+              <div style={{ fontSize: 11.5, color: "var(--t3)", marginTop: 4, lineHeight: 1.5 }}>
+                Tip: use frames (artboards) to lay out separate screens — Play shows the whole canvas as a clean preview.
+              </div>
             </div>
           )}
           {dsTab === "Inspect" && (
