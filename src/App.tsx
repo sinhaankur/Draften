@@ -22,6 +22,7 @@ import { sinhaankurDesignSystem, sinhaankurScreenSkeleton } from "./templates/si
 import { AiPanel } from "./ui/AiPanel";
 import { PluginsPanel } from "./ui/PluginsPanel";
 import { ImportButton } from "./ui/ImportButton";
+import { InspectPanel } from "./ui/InspectPanel";
 import "./App.css";
 
 const LEVELS: AtomicLevel[] = ["atom", "molecule", "organism", "template", "page"];
@@ -45,6 +46,8 @@ export function App() {
   const setDesignSystem = useEditor((s) => s.setDesignSystem);
   const rename = useEditor((s) => s.rename);
   const excalidrawApi = useRef<ExcalidrawImperativeAPI | null>(null);
+  // Flip once the canvas API exists so panels that read it (Inspect) re-render.
+  const [canvasReady, setCanvasReady] = useState(false);
 
   /** Load the sinhaankur.com template: real design system into the panel, and
    *  the hero screen onto the canvas (dark ground). One click, whole pipeline. */
@@ -245,7 +248,7 @@ export function App() {
 
         {/* center: canvas */}
         <main className="stage">
-          <ExcalidrawCanvas theme={theme} onReady={(api) => { excalidrawApi.current = api; registerCanvasApplier(api); }} />
+          <ExcalidrawCanvas theme={theme} onReady={(api) => { excalidrawApi.current = api; registerCanvasApplier(api); setCanvasReady(true); }} />
         </main>
 
         {/* right: system / inspect / stack */}
@@ -325,7 +328,9 @@ export function App() {
             </div>
           )}
           {dsTab === "Inspect" && (
-            <div className="pane-body" style={{ fontSize: 12, color: "var(--t3)" }}>Select a node to inspect its size, position and styles.</div>
+            <div className="pane-body" style={{ padding: 0 }}>
+              <InspectPanel api={canvasReady ? excalidrawApi.current : null} />
+            </div>
           )}
           {dsTab === "Assistant" && (
             <div className="pane-body" style={{ display: "flex", flexDirection: "column", gap: 10 }}>
