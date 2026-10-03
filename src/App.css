@@ -623,3 +623,28 @@
 .plugin-name { font-weight: 600; font-size: 13px; display: flex; align-items: center; gap: 7px; }
 .plugin-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--muted); }
 .plugin-dot.on { background: #34d399; }
+
+/* ── ✦ Design assistant (conversational) ──────────────────────────────── */
+.ai-assistant { width: 440px; }
+.ai-head { display: flex; align-items: baseline; justify-content: space-between; gap: var(--s3); margin-bottom: var(--s2); }
+.ai-provider { white-space: nowrap; }
+.ai-reply {
+  background: var(--bg); border: 1px solid var(--border); border-radius: var(--r-input);
+  padding: var(--s4); margin: var(--s3) 0; max-height: 160px; overflow: auto;
+  white-space: pre-wrap; line-height: 1.45; color: var(--text-1);
+}
+.ai-field textarea {
+  width: 100%; background: var(--bg); border: 1px solid var(--border);
+  border-radius: var(--r-input); padding: var(--s3) var(--s4); color: var(--text-1);
+  font: inherit; resize: vertical; min-height: 64px;
+}
+.ai-field textarea:focus { outline: none; border-color: var(--accent); }
+.ai-row { display: flex; gap: var(--s3); margin-top: var(--s4); flex-wrap: wrap; }
+.ai-history { margin-top: var(--s5); border-top: 1px solid var(--border); padding-top: var(--s4); }
+.ai-history-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--s2); }
+.ai-history-ctrls { display: flex; gap: var(--s2); }
+.ai-history-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--s2); max-height: 180px; overflow: auto; }
+.ai-history-list li { display: flex; align-items: center; gap: var(--s2); color: var(--text-1); }
+.ai-history-list li.ai-undone { opacity: 0.4; text-decoration: line-through; }
+.ai-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--text-3, var(--text-2)); flex: 0 0 auto; }
+.ai-dot-ai { background: var(--accent); }
