@@ -34,15 +34,22 @@ Reference app for UX/UI standard: **Sketch.app** (native macOS feel).
   text style** (weight / align / line-height / letter-spacing).
 - ✅ **Figma / Sketch paste** — clipboard handler parses `figma`/`figmeta` + the
   readable HTML payload → nodes (`src/import/paste.ts`).
-- 🟡 **PDF** importer (page → board)
+- ✅ **PDF** importer — each page → an **artboard** that keeps its look: the page
+  is rasterized to a high-DPI image (vectors/images/fills preserved pixel-for-pixel,
+  the way Figma/Sketch import PDFs) as the background, with extracted text kept as
+  **editable** nodes on top. Page image + text are grouped under the board and
+  carry the page's real background colour; pages lay out side by side (no overlap).
 - ⬜ **OmniGraffle** importer (Rust `decode_omnigraffle` exists → wire to model)
 - ⬜ Generic image paste (PNG/SVG from clipboard → canvas)
 
 **Import fidelity (shared, `src/import/to-canvas.ts`):** imported nodes render on
 the canvas with their real stroke width/colour, opacity, rotation, true corner
-radius, a gradient approximated to its mid stop, and labelled image placeholders —
-so an opened Sketch/Figma file reads like it did in the source tool, and the
-Inspect panel reads those same fields back.
+radius, a gradient approximated to its mid stop, real bitmap bytes for data-URI
+images (rasterized PDF pages show for real; registered via Excalidraw's file
+store), and the artboard sheet in the board's real background colour — so an
+opened Sketch/Figma/PDF file reads like it did in the source tool, and the Inspect
+panel reads those same fields back. Board-parented nodes are offset by the
+artboard frame so multi-page docs don't stack at the origin.
 
 ## Design system
 - ✅ AI-generated design system (deterministic: tokens + atomic components)

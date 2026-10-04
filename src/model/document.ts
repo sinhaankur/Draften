@@ -40,6 +40,10 @@ export interface Board {
   parentId?: string;
   /** last-known viewport, so reopening a board restores the view */
   viewport?: { x: number; y: number; zoom: number };
+  /** placement + size of the board on the infinite canvas (artboard rect) */
+  frame?: { x: number; y: number; width: number; height: number };
+  /** artboard paper colour (e.g. a PDF page's background); defaults white */
+  background?: string;
 }
 
 /**

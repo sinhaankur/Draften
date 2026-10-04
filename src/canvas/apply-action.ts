@@ -144,9 +144,39 @@ export function registerCanvasApplier(api: ExcalidrawImperativeAPI): void {
 export async function drawSkeletonOnCanvas(skeleton: Array<Record<string, unknown>>, replace = false): Promise<boolean> {
   if (!liveApi || !skeleton.length) return false;
   const { convertToExcalidrawElements } = await import("@excalidraw/excalidraw");
-  const fresh = convertToExcalidrawElements(skeleton as Parameters<typeof convertToExcalidrawElements>[0]);
+
+  // Image skeletons carry their bytes inline on `_dataURL` (e.g. a rasterized PDF
+  // page). Excalidraw keeps image bytes in a separate file store keyed by fileId,
+  // so register those files first, then strip the marker before converting.
+  const files = skeleton
+    .filter((s) => s.type === "image" && typeof s._dataURL === "string" && typeof s.fileId === "string")
+    .map((s) => ({
+      id: s.fileId as string,
+      dataURL: s._dataURL as string,
+      mimeType: mimeFromDataUrl(s._dataURL as string),
+      created: Date.now(),
+    }));
+  if (files.length && typeof (liveApi as unknown as { addFiles?: unknown }).addFiles === "function") {
+    (liveApi as unknown as { addFiles: (f: unknown[]) => void }).addFiles(files);
+  }
+  const clean = skeleton.map((s) => {
+    if (s.type === "image" && "_dataURL" in s) {
+      const { _dataURL, ...rest } = s;
+      void _dataURL;
+      return rest;
+    }
+    return s;
+  });
+
+  const fresh = convertToExcalidrawElements(clean as Parameters<typeof convertToExcalidrawElements>[0]);
   const existing = replace ? [] : liveApi.getSceneElements();
   liveApi.updateScene({ elements: [...existing, ...fresh] });
   liveApi.scrollToContent(fresh, { fitToContent: true, animate: true });
   return true;
+}
+
+/** Pull the mime type out of a data: URL (defaults to png). */
+function mimeFromDataUrl(url: string): string {
+  const m = /^data:([^;,]+)[;,]/.exec(url);
+  return m?.[1] || "image/png";
 }

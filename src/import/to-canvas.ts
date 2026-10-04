@@ -45,7 +45,13 @@ function transformProps(node: Node): Record<string, unknown> {
   return out;
 }
 
-/** World (x,y) of a node by walking parent frames. */
+/** World (x,y) of a node by walking parent frames up to the board.
+ *
+ * Nodes may be parented to a BOARD id (not another node) — a PDF page's image +
+ * text are parented to the page board. Boards live in `doc.boards`, not
+ * `doc.nodes`, and carry the page's placement on the infinite canvas (`frame`),
+ * so the board offset must be added too — otherwise every page stacks at the
+ * origin and the pages overlap. */
 function worldXY(node: Node, doc: DraftenDocument): { x: number; y: number } {
   let x = node.frame.x, y = node.frame.y;
   let pid = node.parentId;
@@ -53,10 +59,16 @@ function worldXY(node: Node, doc: DraftenDocument): { x: number; y: number } {
   while (pid && !guard.has(pid)) {
     guard.add(pid);
     const parent = doc.nodes[pid];
-    if (!parent) break;
-    x += parent.frame.x;
-    y += parent.frame.y;
-    pid = parent.parentId;
+    if (parent) {
+      x += parent.frame.x;
+      y += parent.frame.y;
+      pid = parent.parentId;
+      continue;
+    }
+    // Not a node → maybe a board. Add its artboard offset and stop.
+    const board = (doc.boards ?? []).find((b) => b.id === pid) as { frame?: { x: number; y: number } } | undefined;
+    if (board?.frame) { x += board.frame.x; y += board.frame.y; }
+    break;
   }
   return { x, y };
 }
@@ -65,12 +77,15 @@ export function documentToSkeleton(doc: DraftenDocument): Skeleton {
   const out: Skeleton = [];
   const base = { roughness: 0 as const, strokeWidth: 1, fillStyle: "solid" as const };
 
-  // Each board (a PDF/Sketch page) → a white page "sheet" rectangle so you SEE
-  // the document page behind the text, not floating runs. Drawn first = behind.
+  // Each board (a PDF/Sketch page) → an artboard "sheet" rectangle so you SEE
+  // the document page behind its contents, not floating runs. Drawn first =
+  // behind. The sheet uses the board's real background colour when it declares
+  // one (e.g. a PDF page's paper colour), else white.
   for (const board of doc.boards ?? []) {
-    const f = (board as { frame?: { x: number; y: number; width: number; height: number } }).frame;
+    const b = board as { frame?: { x: number; y: number; width: number; height: number }; background?: string };
+    const f = b.frame;
     if (!f) continue;
-    out.push({ ...base, type: "rectangle", x: f.x, y: f.y, width: Math.max(1, f.width ?? 800), height: Math.max(1, f.height ?? 1000), strokeColor: LINE, backgroundColor: "#ffffff" });
+    out.push({ ...base, type: "rectangle", x: f.x, y: f.y, width: Math.max(1, f.width ?? 800), height: Math.max(1, f.height ?? 1000), strokeColor: LINE, backgroundColor: b.background || "#ffffff" });
   }
 
   for (const node of Object.values(doc.nodes)) {
@@ -100,10 +115,18 @@ export function documentToSkeleton(doc: DraftenDocument): Skeleton {
         out.push({ ...base, type: "ellipse", x, y, width: w, height: h, backgroundColor: solid((node as { fills?: Paint[] }).fills), strokeColor: LINE, ...xf, ...sp });
         break;
       case "image": {
-        // No bitmap bytes in the skeleton path → a labelled placeholder box so the
-        // layout reads (the real pixels come later via the asset store).
-        out.push({ ...base, type: "rectangle", x, y, width: w, height: h, backgroundColor: "#f1f0ec", strokeColor: LINE, ...xf });
-        out.push({ ...base, type: "text", x: x + 6, y: y + Math.max(0, h / 2 - 8), text: node.name || "Image", fontSize: 12, fontFamily: 2, strokeColor: "#8e8d88", ...xf });
+        const src = (node as { src?: string }).src ?? "";
+        if (src.startsWith("data:")) {
+          // Real bitmap bytes (e.g. a rasterized PDF page) → an Excalidraw image
+          // element. The dataURL rides along on `_dataURL`; drawSkeletonOnCanvas
+          // registers it as a file and keeps only the fileId.
+          out.push({ ...base, type: "image", x, y, width: w, height: h, fileId: node.id, _dataURL: src, strokeColor: "transparent", ...xf });
+        } else {
+          // No inline bytes (e.g. a figma:// ref) → a labelled placeholder box so
+          // the layout reads until the real pixels are fetched.
+          out.push({ ...base, type: "rectangle", x, y, width: w, height: h, backgroundColor: "#f1f0ec", strokeColor: LINE, ...xf });
+          out.push({ ...base, type: "text", x: x + 6, y: y + Math.max(0, h / 2 - 8), text: node.name || "Image", fontSize: 12, fontFamily: 2, strokeColor: "#8e8d88", ...xf });
+        }
         break;
       }
       case "text": {

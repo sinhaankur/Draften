@@ -52,7 +52,7 @@ describe("documentToSkeleton — imported doc → canvas", () => {
     expect(rect.backgroundColor).toBe("#000000"); // mid of a 2-stop gradient
   });
 
-  it("renders an image node as a labelled placeholder box", () => {
+  it("renders an image node as a labelled placeholder box (no inline bytes)", () => {
     const doc = createEmptyDocument("test");
     doc.nodes = {
       i1: { id: "i1", type: "image", name: "Avatar", frame: { x: 0, y: 0, width: 80, height: 80 }, src: "figma://image/abc" } as never,
@@ -60,6 +60,47 @@ describe("documentToSkeleton — imported doc → canvas", () => {
     const sk = documentToSkeleton(doc) as Array<Record<string, unknown>>;
     expect(sk.map((s) => s.type)).toEqual(["rectangle", "text"]);
     expect(sk[1].text).toBe("Avatar");
+  });
+
+  it("renders a data-URI image node (e.g. a rasterized PDF page) as a real image element", () => {
+    const doc = createEmptyDocument("test");
+    const dataUrl = "data:image/png;base64,AAAA";
+    doc.nodes = {
+      pg: { id: "pg", type: "image", name: "Page 1", frame: { x: 0, y: 0, width: 612, height: 792 }, src: dataUrl, fit: "fill" } as never,
+    };
+    const [img] = documentToSkeleton(doc) as Array<Record<string, unknown>>;
+    expect(img.type).toBe("image");
+    expect(img.fileId).toBe("pg");
+    expect(img._dataURL).toBe(dataUrl); // carried for drawSkeletonOnCanvas to register
+    expect(img.width).toBe(612);
+  });
+
+  it("draws the artboard sheet in the board's real background colour", () => {
+    const doc = createEmptyDocument("test");
+    doc.boards = [
+      { id: "b1", name: "Page 1", kind: "design", children: [], frame: { x: 0, y: 0, width: 400, height: 300 }, background: "#101418" },
+    ] as never;
+    doc.nodes = {};
+    const [sheet] = documentToSkeleton(doc) as Array<Record<string, unknown>>;
+    expect(sheet.type).toBe("rectangle");
+    expect(sheet.backgroundColor).toBe("#101418");
+    expect(sheet.width).toBe(400);
+  });
+
+  it("offsets board-parented nodes by the artboard frame (pages don't overlap)", () => {
+    const doc = createEmptyDocument("test");
+    // two PDF-style pages side by side; a text node parented to the 2nd board
+    doc.boards = [
+      { id: "p1", name: "Page 1", kind: "design", children: [], frame: { x: 0, y: 0, width: 600, height: 800 } },
+      { id: "p2", name: "Page 2", kind: "design", children: ["t2"], frame: { x: 660, y: 0, width: 600, height: 800 } },
+    ] as never;
+    doc.nodes = {
+      t2: { id: "t2", type: "text", name: "On page 2", frame: { x: 20, y: 30, width: 100, height: 20 }, text: "Hi", fills: [{ kind: "solid", color: "#000" }], parentId: "p2" } as never,
+    };
+    const sk = documentToSkeleton(doc) as Array<Record<string, number | string>>;
+    const text = sk.find((s) => s.type === "text") as Record<string, number>;
+    expect(text.x).toBe(680); // 660 (board 2) + 20 (local)
+    expect(text.y).toBe(30);
   });
 
   it("flattens child coordinates to world space (parent offset added)", () => {
