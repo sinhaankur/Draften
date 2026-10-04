@@ -36,6 +36,7 @@ import { LayersPanel } from "./ui/LayersPanel";
 import { RailAccount } from "./ui/RailAccount";
 import { SettingsPanel, type SettingsValues } from "./ui/SettingsPanel";
 import { MeasureOverlay } from "./ui/MeasureOverlay";
+import { ComponentsPanel } from "./ui/ComponentsPanel";
 import { StylesPanel } from "./ui/StylesPanel";
 import { AlignBar } from "./ui/AlignBar";
 import { BooleanBar } from "./ui/BooleanBar";
@@ -386,15 +387,11 @@ export function App() {
           {leftMode === "git" ? (
             <SourceControlPanel />
           ) : leftMode === "components" ? (
-            <div style={{ flex: 1, minHeight: 0, overflow: "auto", padding: "4px 12px" }}>
-              <p style={{ fontSize: 12.5, color: "var(--text-3)", lineHeight: 1.6 }}>
-                Your component library appears here. Generate one with the ✦ assistant, or open Templates for a starting point.
-              </p>
-              <div style={{ display: "flex", flexDirection: "column", gap: 8, marginTop: 10 }}>
-                <button className="ai-btn" style={{ justifyContent: "center" }} onClick={() => { setDsTab("Assistant"); setRightOpen(true); }}><Sparkles size={14} /> Generate a library</button>
-                <button className="tb-btn" style={{ justifyContent: "center" }} onClick={() => setTemplatesOpen(true)}><LayoutTemplate size={14} /> Templates</button>
-              </div>
-            </div>
+            <ComponentsPanel
+              api={canvasReady ? excalidrawApi.current : null}
+              onOpenTemplates={() => setTemplatesOpen(true)}
+              onGenerate={() => { setDsTab("Assistant"); setRightOpen(true); }}
+            />
           ) : leftMode === "history" ? (
             <div style={{ flex: 1, minHeight: 0, overflow: "auto", padding: "4px 12px" }}>
               <p style={{ fontSize: 12.5, color: "var(--text-3)", lineHeight: 1.6 }}>

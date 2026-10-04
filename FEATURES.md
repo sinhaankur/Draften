@@ -85,6 +85,17 @@ artboard frame so multi-page docs don't stack at the origin.
   deck is just artboards + components + the shared document, presented. Next:
   richer AI layouts (2-col, image, quote), slide reorder, components in decks.
 
+## Components / symbols (Figma/Sketch) — OPT-IN
+- ✅ **Component library** (`src/ui/ComponentsPanel.tsx` + `src/canvas/components.ts`):
+  enable toggle (you can design without it), **create a component from the
+  selection**, **drop instances** on the canvas, **edit the master** (re-capture
+  from selection) + **Sync** all instances to match (positions kept), rename/
+  delete. Masters persist on-device (`components-store.ts`). Honest symbols for a
+  canvas with no native symbol concept: explicit capture + explicit sync.
+- Spacing tools (`src/canvas/measure.ts`, `MeasureOverlay.tsx`): Alt/Option-hover
+  measurement guides (px gaps + frame-edge/padding distances), and **Auto spacing**
+  (Tidy up with an even gap) in the Align panel.
+
 ## Design system
 - ✅ AI-generated design system (deterministic: tokens + atomic components)
 - 🟡 System panel shows generated tokens + components
