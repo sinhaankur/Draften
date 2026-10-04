@@ -119,8 +119,10 @@ export function documentToSkeleton(doc: DraftenDocument): Skeleton {
         if (src.startsWith("data:")) {
           // Real bitmap bytes (e.g. a rasterized PDF page) → an Excalidraw image
           // element. The dataURL rides along on `_dataURL`; drawSkeletonOnCanvas
-          // registers it as a file and keeps only the fileId.
-          out.push({ ...base, type: "image", x, y, width: w, height: h, fileId: node.id, _dataURL: src, strokeColor: "transparent", ...xf });
+          // registers it as a file and keeps only the fileId. `status: "saved"`
+          // is REQUIRED — a "pending" image renders blank even with its file
+          // registered (Excalidraw only paints saved images).
+          out.push({ ...base, type: "image", x, y, width: w, height: h, fileId: node.id, _dataURL: src, status: "saved", strokeColor: "transparent", ...xf });
         } else {
           // No inline bytes (e.g. a figma:// ref) → a labelled placeholder box so
           // the layout reads until the real pixels are fetched.

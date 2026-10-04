@@ -72,6 +72,7 @@ describe("documentToSkeleton — imported doc → canvas", () => {
     expect(img.type).toBe("image");
     expect(img.fileId).toBe("pg");
     expect(img._dataURL).toBe(dataUrl); // carried for drawSkeletonOnCanvas to register
+    expect(img.status).toBe("saved"); // REQUIRED — a "pending" image renders blank
     expect(img.width).toBe(612);
   });
 

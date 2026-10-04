@@ -150,10 +150,17 @@ export class PdfImporter implements Importer {
     const vp = page.getViewport({ scale });
     canvas.width = Math.max(1, Math.ceil(vp.width));
     canvas.height = Math.max(1, Math.ceil(vp.height));
-    const ctx = canvas.getContext("2d");
+    const ctx = canvas.getContext("2d") as CanvasRenderingContext2D | null;
     if (!ctx) return undefined;
     try {
-      await page.render({ canvasContext: ctx, viewport: vp }).promise;
+      // pdf.js v6: pass the `canvas` directly (the `canvasContext`-only form is a
+      // deprecated back-compat path). An OffscreenCanvas has no element to pass,
+      // so fall back to the context form (with canvas: null) for that case.
+      const isOffscreen = typeof OffscreenCanvas !== "undefined" && canvas instanceof OffscreenCanvas;
+      const params = isOffscreen
+        ? { canvas: null, canvasContext: ctx, viewport: vp }
+        : { canvas: canvas as HTMLCanvasElement, viewport: vp };
+      await page.render(params).promise;
       // OffscreenCanvas uses convertToBlob; HTMLCanvasElement uses toDataURL.
       if (typeof (canvas as HTMLCanvasElement).toDataURL === "function") {
         return (canvas as HTMLCanvasElement).toDataURL("image/png");
@@ -202,6 +209,6 @@ interface PdfViewport { width: number; height: number }
 interface PdfPage {
   getViewport(o: { scale: number }): PdfViewport;
   getTextContent(): Promise<{ items: unknown[] }>;
-  render(o: { canvasContext: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D; viewport: PdfViewport }): { promise: Promise<void> };
+  render(o: { canvas?: HTMLCanvasElement | null; canvasContext?: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D; viewport: PdfViewport }): { promise: Promise<void> };
 }
 interface PdfTextItem { str: string; width: number; transform: number[]; }
