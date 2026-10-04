@@ -94,7 +94,7 @@ export function AnnotationLayer({ api }: { api: ExcalidrawImperativeAPI | null }
                 <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 6 }}>
                   <span style={{ fontSize: 11, fontWeight: 700, color: "#e5a000" }}>Note {p.n}</span>
                   <button onClick={() => { remove(p.id); setEditing(null); }} title="Delete note" aria-label="Delete note"
-                    style={{ marginLeft: "auto", border: 0, background: "transparent", cursor: "pointer", color: "var(--text-3,#8e8d88)", fontSize: 14, width: 24, height: 24 }}>×</button>
+                    style={{ marginLeft: "auto", border: 0, background: "transparent", cursor: "pointer", color: "var(--text-3,#8e8d88)", fontSize: 15, lineHeight: 1, width: 28, height: 28, display: "grid", placeItems: "center", borderRadius: 6 }}>×</button>
                 </div>
                 <textarea autoFocus value={p.text} onChange={(e) => update(p.id, { text: e.target.value })}
                   placeholder="Spec or feedback…" rows={3}

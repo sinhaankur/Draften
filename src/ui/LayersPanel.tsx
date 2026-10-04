@@ -216,10 +216,12 @@ export function LayersPanel({ api }: { api: ExcalidrawImperativeAPI | null }) {
               color: on ? "var(--accent, #3d6b5f)" : hidden || locked ? "var(--text-3, #8e8d88)" : "var(--t1, #1d1d1b)",
               opacity: hidden ? 0.55 : 1, fontWeight: on || isFrame ? 600 : 400,
               outline: dragging ? "1.5px dashed var(--accent,#3d6b5f)" : "none" }}>
-            {/* collapse chevron for frames; spacer otherwise so labels align */}
+            {/* collapse chevron for frames; spacer otherwise so labels align.
+                14px glyph, but a ≥20px hit area so it's easy to click (Fitts). */}
             {isFrame ? (
               <button onClick={(e) => { e.stopPropagation(); toggleCollapse(r.id); }}
-                style={{ flex: "none", border: 0, background: "transparent", cursor: "pointer", color: "var(--text-3, #8e8d88)", display: "grid", placeItems: "center", width: 14, height: 14, padding: 0 }}>
+                title={collapsed.has(r.id) ? "Expand" : "Collapse"} aria-label={collapsed.has(r.id) ? "Expand group" : "Collapse group"}
+                style={{ flex: "none", border: 0, background: "transparent", cursor: "pointer", color: "var(--text-3, #8e8d88)", display: "grid", placeItems: "center", width: 20, height: 22, margin: "0 -3px", padding: 0 }}>
                 {collapsed.has(r.id) ? <ChevronRight size={13} /> : <ChevronDown size={13} />}
               </button>
             ) : <span style={{ width: 14, flex: "none" }} />}
