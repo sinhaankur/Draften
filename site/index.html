@@ -3,12 +3,46 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Draften — the free, open-source design tool</title>
-<meta name="description" content="Draften is a free, open-source design + diagramming tool — a Figma / Sketch / OmniGraffle alternative that opens their files. Local-first, on-device AI, Git-backed. Mac, Windows, Linux, or in your browser." />
-<meta property="og:title" content="Draften — free, open-source design tool" />
-<meta property="og:description" content="Design, diagram, and build a design system — free forever. Opens Figma/Sketch/OmniGraffle files. Mac · Windows · Linux · Web." />
-<meta property="og:image" content="./og.png" />
+
+<!-- ── SEO: primary ── -->
+<title>Draften — a design-centered, dev-oriented app with an AI companion</title>
+<meta name="description" content="Draften is a free, open-source design tool built for developers: design-centered canvas, git-backed (your designs live in your repo), opens Figma/Sketch/PDF files, exports a runnable app, with an on-device AI companion. Mac, Windows, Linux, or in your browser." />
+<meta name="keywords" content="free design tool, open source Figma alternative, Sketch alternative, git design tool, design in your repo, AI design tool, on-device AI, local-first design, design to code, PDF editor, MCP design server, developer design tool" />
+<meta name="author" content="Ankur Sinha" />
+<meta name="theme-color" content="#3d6b5f" />
+<link rel="canonical" href="https://sinhaankur.github.io/Draften/" />
 <link rel="icon" href="./logo.svg" />
+<link rel="apple-touch-icon" href="./logo.svg" />
+
+<!-- ── Open Graph (Facebook, LinkedIn, Slack…) ── -->
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="Draften" />
+<meta property="og:title" content="Draften — design-centered, dev-oriented, with an AI companion" />
+<meta property="og:description" content="Free, open-source design tool for developers. Git-backed, opens Figma/Sketch/PDF, exports a runnable app, on-device AI. Mac · Windows · Linux · Web." />
+<meta property="og:image" content="https://sinhaankur.github.io/Draften/og.png" />
+<meta property="og:url" content="https://sinhaankur.github.io/Draften/" />
+
+<!-- ── Twitter / X card ── -->
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Draften — a design-centered, dev-oriented app with an AI companion" />
+<meta name="twitter:description" content="Free & open source. Design-centered, git-backed, opens Figma/Sketch/PDF, on-device AI." />
+<meta name="twitter:image" content="https://sinhaankur.github.io/Draften/og.png" />
+
+<!-- ── Structured data (rich results) ── -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "Draften",
+  "applicationCategory": "DesignApplication",
+  "operatingSystem": "macOS, Windows, Linux, Web",
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+  "description": "A design-centered, dev-oriented design tool with an AI companion. Free, open-source, git-backed, opens Figma/Sketch/PDF, exports a runnable app.",
+  "author": { "@type": "Person", "name": "Ankur Sinha" },
+  "url": "https://sinhaankur.github.io/Draften/",
+  "license": "https://opensource.org/licenses/MIT"
+}
+</script>
 <style>
   :root{
     /* Draften v2 brand — warm paper + teal-green accent */
@@ -55,6 +89,7 @@
   .dl:hover{border-color:var(--acc)}
   .dl.current{border-color:var(--acc);background:var(--acc-soft)}
   .dl .tag{font-family:var(--mono);font-size:10px;color:var(--acc);font-weight:700}
+  .dl small{color:var(--muted);font-weight:500}
   /* sections */
   section{padding:56px 0;border-top:1px solid var(--line)}
   h2{font-family:var(--serif);font-weight:500;font-size:clamp(24px,4vw,32px);margin-bottom:8px;letter-spacing:-.01em}
@@ -85,11 +120,11 @@
 
   <header class="hero">
     <p class="eyebrow">free · open source · yours</p>
-    <h1>Design, diagram &amp; build a system — <em>free forever</em>.</h1>
-    <p class="lead">An open-source alternative to Figma, Sketch &amp; OmniGraffle
-      that opens their files. Local-first, on-device AI, versioned with Git.
-      One tool from idea → live, on any screen.</p>
-    <div class="badges"><span><b>✓</b> No account needed</span><span><b>✓</b> Works offline</span><span><b>✓</b> Your files stay yours</span></div>
+    <h1>Design-centered, <em>dev-oriented</em> — with an AI companion.</h1>
+    <p class="lead">Draften is a free, open-source design tool built the way developers work:
+      a real design canvas whose files live in <b>your git repo</b>, that opens Figma / Sketch / PDF,
+      exports a runnable app, and has an <b>on-device AI companion</b>. No cloud, no subscription.</p>
+    <div class="badges"><span><b>✓</b> Git-backed</span><span><b>✓</b> On-device AI</span><span><b>✓</b> Opens their files</span><span><b>✓</b> Free &amp; open source</span></div>
 
     <!-- Primary CTA adapts to the visitor's OS (set by JS below) -->
     <div class="cta">
@@ -101,13 +136,14 @@
       <p class="sub-note" id="osNote">Pick your platform below, or <a href="https://sinhaankur.github.io/Draften/app/">use it in the browser</a> — no install.</p>
     </div>
 
-    <!-- all platforms; the one matching the visitor is highlighted -->
+    <!-- every platform + chip; the one matching the visitor is highlighted -->
     <div class="downloads" id="downloads">
-      <a class="dl" data-os="mac" href="https://github.com/sinhaankur/Draften/releases"><span>🍎</span> macOS</a>
-      <a class="dl" data-os="windows" href="https://github.com/sinhaankur/Draften/releases"><span>🪟</span> Windows</a>
-      <a class="dl" data-os="linux" href="https://github.com/sinhaankur/Draften/releases"><span>🐧</span> Linux</a>
-      <a class="dl" data-os="web" href="https://sinhaankur.github.io/Draften/app/"><span>🌐</span> Web app</a>
+      <a class="dl" data-os="mac" href="https://github.com/sinhaankur/Draften/releases"><span>🍎</span> macOS<small> · Apple Silicon &amp; Intel</small></a>
+      <a class="dl" data-os="windows" href="https://github.com/sinhaankur/Draften/releases"><span>🪟</span> Windows<small> · x64 &amp; ARM</small></a>
+      <a class="dl" data-os="linux" href="https://github.com/sinhaankur/Draften/releases"><span>🐧</span> Linux<small> · x64 &amp; ARM</small></a>
+      <a class="dl" data-os="web" href="https://sinhaankur.github.io/Draften/app/"><span>🌐</span> Web app<small> · any device</small></a>
     </div>
+    <p style="text-align:center;color:var(--muted);font-size:13px;margin-top:10px">Mac · Windows · Linux — every chip, every family. Free forever.</p>
   </header>
 
   <div class="wrap">
@@ -155,36 +191,51 @@
   </footer>
 
   <script>
-    // Device detection — show the right download as the primary action so a
-    // visitor can get Draften for THEIR machine in one tap. Falls back to a
-    // neutral "Download" + the web app when the OS is unknown (or mobile).
-    (function () {
+    // Spec detection — detect the OS AND the chip (Apple Silicon / Intel / ARM),
+    // for every platform + family, so a visitor gets the exact build in one tap.
+    (async function () {
       var ua = navigator.userAgent || "";
-      var platform = (navigator.userAgentData && navigator.userAgentData.platform) || navigator.platform || "";
+      var uaData = navigator.userAgentData || null;
+      var platform = (uaData && uaData.platform) || navigator.platform || "";
       var p = (platform + " " + ua).toLowerCase();
-      var isMobile = /android|iphone|ipad|ipod|mobile/.test(p) && !/ipad/.test(p) === false ? /android|iphone|ipod|mobile/.test(p) : /android|iphone|ipod|mobile/.test(p);
+
+      // OS
       var os = "unknown";
       if (/mac|iphone|ipad|ipod/.test(p)) os = /iphone|ipad|ipod/.test(p) ? "ios" : "mac";
       else if (/win/.test(p)) os = "windows";
       else if (/linux|x11|cros/.test(p)) os = "linux";
+      if (/android/.test(p)) os = "android";
+
+      // Chip / architecture — best effort (UA hints, then heuristics).
+      var arch = "";
+      try {
+        if (uaData && uaData.getHighEntropyValues) {
+          var hv = await uaData.getHighEntropyValues(["architecture", "bitness"]);
+          if (hv.architecture === "arm") arch = "ARM64";
+          else if (hv.architecture === "x86") arch = hv.bitness === "64" ? "Intel (x64)" : "Intel (x86)";
+        }
+      } catch (e) {}
+      if (!arch) {
+        if (os === "mac") arch = (navigator.maxTouchPoints > 1 || /arm|apple/.test(p)) ? "Apple Silicon" : "Apple Silicon or Intel";
+        else if (/aarch64|arm64|arm/.test(p)) arch = "ARM64";
+        else if (/x86_64|win64|x64|wow64/.test(p)) arch = "Intel / AMD (x64)";
+      }
 
       var RELEASES = "https://github.com/sinhaankur/Draften/releases";
       var WEB = "https://sinhaankur.github.io/Draften/app/";
       var map = {
-        mac:     { icon: "🍎", label: "Download for macOS",   href: RELEASES, note: "Apple Silicon &amp; Intel · .dmg" },
-        windows: { icon: "🪟", label: "Download for Windows", href: RELEASES, note: "Windows 10/11 · .msi" },
-        linux:   { icon: "🐧", label: "Download for Linux",   href: RELEASES, note: "AppImage &amp; .deb" },
+        mac:     { icon: "🍎", label: "Download for macOS",   href: RELEASES, note: (arch || "Apple Silicon &amp; Intel") + " · .dmg" },
+        windows: { icon: "🪟", label: "Download for Windows", href: RELEASES, note: (arch || "x64 &amp; ARM64") + " · .msi" },
+        linux:   { icon: "🐧", label: "Download for Linux",   href: RELEASES, note: (arch || "x64 &amp; ARM64") + " · AppImage &amp; .deb" },
         ios:     { icon: "🌐", label: "Open the web app",     href: WEB,      note: "Runs right here — no install on iOS" },
         android: { icon: "🌐", label: "Open the web app",     href: WEB,      note: "Runs right here — no install" },
-        unknown: { icon: "⬇", label: "Download Draften",     href: RELEASES, note: "Pick your platform below, or use it in the browser." }
+        unknown: { icon: "⬇", label: "Download Draften",     href: RELEASES, note: "Mac · Windows · Linux — all chips. Or use it in the browser." }
       };
-      if (/android/.test(p)) os = "android";
 
       var m = map[os] || map.unknown;
-      var btn = document.getElementById("primaryDownload");
-      document.getElementById("primaryLabel").textContent = m.label;
+      document.getElementById("primaryLabel").textContent = m.label + (arch && (os === "mac" || os === "windows" || os === "linux") ? " · " + arch : "");
       document.getElementById("primaryOsIcon").textContent = m.icon;
-      btn.setAttribute("href", m.href);
+      document.getElementById("primaryDownload").setAttribute("href", m.href);
       document.getElementById("osNote").innerHTML = m.note + (os === "mac" || os === "windows" || os === "linux"
         ? " · <a href='" + WEB + "'>or use it in the browser</a>"
         : "");
