@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { GitBranch, GitPullRequest, RefreshCw, Download, GitFork } from "lucide-react";
 import { useGitSession } from "../git/session";
-import { listRepos, listBranches, listCommits, listPulls, commitFile, openPull, readDraftenFromRepo, type Repo, type Commit, type PullRequest } from "../git/github-api";
+import { listRepos, listBranches, listCommits, listPulls, commitFile, openPull, readDraftenFromRepo, listDraftenFiles, type Repo, type Commit, type PullRequest } from "../git/github-api";
 import { useEditor } from "../state/store";
 
 /**
@@ -24,6 +24,7 @@ export function SourceControlPanel() {
   const [branch, setBranch] = useState<string>("");
   const [commits, setCommits] = useState<Commit[]>([]);
   const [pulls, setPulls] = useState<PullRequest[]>([]);
+  const [designs, setDesigns] = useState<{ name: string; path: string }[]>([]);
   const [msg, setMsg] = useState("");
   const [busy, setBusy] = useState(false);
   const [status, setStatus] = useState<string | null>(null);
@@ -46,11 +47,24 @@ export function SourceControlPanel() {
     listPulls(token, repo).then(setPulls).catch(() => setPulls([]));
   }, [token, repo, repos]);
 
-  // commits for the chosen branch
+  // commits + designs for the chosen branch (the project view)
   useEffect(() => {
     if (!token || !repo || !branch) return;
     listCommits(token, repo, branch).then(setCommits).catch(() => setCommits([]));
+    listDraftenFiles(token, repo, branch).then(setDesigns).catch(() => setDesigns([]));
   }, [token, repo, branch]);
+
+  // Open a specific design from the selected repo onto the canvas.
+  async function openDesign(path: string) {
+    if (!token || !repo || !branch) return;
+    setBusy(true); setStatus(null);
+    try {
+      const got = await readDraftenFromRepo(token, repo, branch, path);
+      if (got) { loadDocument(got.content as Parameters<typeof loadDocument>[0]); setStatus(`Opened ${path}`); }
+      else setStatus("Couldn't read that design.");
+    } catch (e) { setStatus((e as Error).message); }
+    finally { setBusy(false); }
+  }
 
   async function doCommit() {
     if (!token || !repo || !branch || !msg.trim()) return;
@@ -136,6 +150,25 @@ export function SourceControlPanel() {
       <select value={branch} onChange={(e) => setBranch(e.target.value)} style={selStyle}>
         {branches.map((b) => <option key={b} value={b}>{b}</option>)}
       </select>
+
+      {/* Project view — the designs in the selected repo (click to open) */}
+      {repo && (
+        <>
+          {label(`Designs in ${repo.split("/")[1]}`)}
+          {designs.length === 0 ? (
+            <div style={{ fontSize: 12, color: "var(--t3)", padding: "2px 0" }}>No designs yet — Commit this one to add it to the repo.</div>
+          ) : (
+            designs.map((d) => (
+              <button key={d.path} onClick={() => openDesign(d.path)} disabled={busy}
+                style={{ display: "flex", alignItems: "center", gap: 8, width: "100%", border: "1px solid var(--line)", borderRadius: 8, background: "var(--surf)", cursor: "pointer", padding: "7px 10px", fontSize: 12.5, color: "var(--t1)", textAlign: "left", marginBottom: 4 }}>
+                <span style={{ color: "var(--accent)" }}>▦</span>
+                <span style={{ flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{d.name}</span>
+                <span style={{ fontSize: 11, color: "var(--t3)" }}>open</span>
+              </button>
+            ))
+          )}
+        </>
+      )}
 
       {label("Review and commit")}
       <textarea value={msg} onChange={(e) => setMsg(e.target.value)} placeholder="Describe your changes" rows={2}

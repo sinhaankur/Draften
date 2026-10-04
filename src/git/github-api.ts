@@ -110,6 +110,16 @@ export async function readDraftenFromRepo(
   } catch { return null; }
 }
 
+/** List the Draften design files in a repo's draften/ folder (for the project view). */
+export async function listDraftenFiles(token: string, repo: string, branch: string): Promise<{ name: string; path: string }[]> {
+  try {
+    const entries = await gh<Array<{ name: string; path: string; type: string }>>(
+      token, `/repos/${repo}/contents/draften?ref=${branch}`,
+    );
+    return entries.filter((e) => e.type === "file" && e.name.endsWith(".draften.json")).map((e) => ({ name: e.name.replace(/\.draften\.json$/, ""), path: e.path }));
+  } catch { return []; } // no draften/ folder yet
+}
+
 /** Open a pull request from `head` into `base`. */
 export function openPull(
   token: string, repo: string, title: string, head: string, base: string, body = "",
