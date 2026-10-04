@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { User, LogOut, GitBranch, Key, Settings as SettingsIcon, IdCard } from "lucide-react";
+import { User, LogOut, GitBranch, Key, IdCard } from "lucide-react";
 
 import { useGitSession } from "../git/session";
 import { signInWithGitHub } from "../git/github-auth";
@@ -134,7 +134,6 @@ export function RailAccount() {
               )}
               <button onClick={() => setSub("identity")} style={{ ...item, ...itemBtn }}><IdCard size={14} /> Git identity</button>
               <button onClick={() => setSub("pat")} style={{ ...item, ...itemBtn }}><Key size={14} /> Personal access token</button>
-              <button style={{ ...item, ...itemBtn }}><SettingsIcon size={14} /> Settings</button>
               {token && (
                 <button onClick={() => { signOut(); setOpen(false); }} style={{ ...item, ...itemBtn, color: "#b23b3b" }}>
                   <LogOut size={14} /> Sign out
