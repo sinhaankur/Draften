@@ -98,7 +98,10 @@ export function RailAccount() {
               <p style={{ fontSize: 11, color: "var(--text-3,#8e8d88)", margin: "0 0 6px", lineHeight: 1.5 }}>
                 Paste a GitHub token with <b>repo</b> scope. <a href="https://github.com/settings/tokens/new?scopes=repo&description=Draften" target="_blank" rel="noreferrer" style={{ color: "var(--accent,#3d6b5f)" }}>Create one →</a>
               </p>
-              <input value={pat} onChange={(e) => setPat(e.target.value)} type="password" placeholder="ghp_… or github_pat_…" style={inp} autoComplete="off" />
+              <input value={pat}
+                onChange={(e) => setPat(e.target.value)}
+                onPaste={(e) => { e.stopPropagation(); setPat(e.clipboardData.getData("text").trim()); e.preventDefault(); }}
+                type="password" placeholder="ghp_… or github_pat_…" style={inp} autoComplete="off" autoFocus />
               {patErr && <p style={{ fontSize: 11, color: "#b23b3b", margin: "4px 0 0" }}>{patErr}</p>}
               <div style={{ display: "flex", gap: 6, marginTop: 8 }}>
                 <button onClick={async () => {

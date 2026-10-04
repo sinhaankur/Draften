@@ -148,8 +148,11 @@ export function App() {
   // (Fixes "copy from Figma/Sketch doesn't work" — before this, nothing caught it.)
   useEffect(() => {
     const onPaste = async (e: ClipboardEvent) => {
-      // let Excalidraw handle its own native paste (its own elements)
       const target = e.target as HTMLElement | null;
+      // NEVER intercept paste into a form field (token input, text areas, etc.) —
+      // let the field receive it normally. (This was blocking the GitHub token paste.)
+      if (target && (target.tagName === "INPUT" || target.tagName === "TEXTAREA" || target.isContentEditable)) return;
+      // let Excalidraw handle its own native paste (its own elements)
       if (target && target.closest(".excalidraw")) return;
       const api = excalidrawApi.current;
       if (!api) return;
