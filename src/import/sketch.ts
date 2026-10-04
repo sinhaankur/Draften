@@ -63,6 +63,8 @@ interface SketchLayer {
     attributes?: Array<{ attributes?: SketchTextAttribute }>;
   };
   fixedRadius?: number;
+  /** bitmap layers reference an image file inside the archive */
+  image?: { _ref?: string };
 }
 
 export class SketchImporter implements Importer {
@@ -87,6 +89,11 @@ export class SketchImporter implements Importer {
     const doc = createEmptyDocument(name);
     doc.importedFrom = "sketch";
     doc.boards = []; // replace the default board with the Sketch pages
+
+    // Pre-load every embedded image as a data URL so bitmap layers render as
+    // REAL pictures (not blank frames). The .sketch archive carries the PNG/JPG
+    // bytes directly under images/… and each bitmap layer references one by path.
+    const images = await this.loadImages(zip);
 
     // meta.json → ordered list of page ids under pagesAndArtboards or pages
     const pageIds: string[] =
@@ -113,7 +120,7 @@ export class SketchImporter implements Importer {
         viewport: { x: 0, y: 0, zoom: 1 },
       };
       for (const layer of page.layers ?? []) {
-        const node = this.mapLayer(layer, doc, warnings, undefined);
+        const node = this.mapLayer(layer, doc, warnings, undefined, images);
         if (node) board.children.push(node.id);
       }
       doc.boards.push(board);
@@ -134,6 +141,7 @@ export class SketchImporter implements Importer {
     doc: DraftenDocument,
     warnings: string[],
     parentId: string | undefined,
+    images: Map<string, string>,
   ): Node | undefined {
     const id = layer.do_objectID ?? crypto.randomUUID();
     const frame = layer.frame
@@ -160,10 +168,23 @@ export class SketchImporter implements Importer {
         node = { ...base, type: "frame", fills: this.fills(layer), ...(stroke ? { stroke } : {}), children: [] } as FrameNode;
         doc.nodes[id] = node;
         for (const child of layer.layers ?? []) {
-          const c = this.mapLayer(child, doc, warnings, id);
+          const c = this.mapLayer(child, doc, warnings, id, images);
           if (c) (node as FrameNode).children!.push(c.id);
         }
         return node;
+      }
+      case "bitmap": {
+        // a real image: resolve the referenced file to its data URL
+        const ref = layer.image?._ref;
+        const src = ref ? images.get(ref) : undefined;
+        if (src) {
+          node = { ...base, type: "image", src, fit: "fill" } as Node;
+          doc.nodes[id] = node;
+          return node;
+        }
+        // image bytes missing → a labelled frame so the layout still reads
+        node = { ...base, type: "frame", fills: [{ kind: "none" }], children: [] } as FrameNode;
+        break;
       }
       case "rectangle":
         node = {
@@ -196,14 +217,44 @@ export class SketchImporter implements Importer {
         } as TextNode;
         break;
       }
-      default:
-        // unknown → a plain frame so nothing vanishes; note it once per class
+      default: {
+        // unknown → a frame so nothing vanishes; note it once per class. If it's
+        // a container (shapeGroup, etc.) recurse so nested layers aren't lost.
         warnings.push(`Approximated unsupported Sketch layer "${layer._class}" as a frame.`);
-        node = { ...base, type: "frame", fills: this.fills(layer), ...(stroke ? { stroke } : {}), children: [] } as FrameNode;
-        break;
+        const frameNode = { ...base, type: "frame", fills: this.fills(layer), ...(stroke ? { stroke } : {}), children: [] } as FrameNode;
+        doc.nodes[id] = frameNode;
+        for (const child of layer.layers ?? []) {
+          const c = this.mapLayer(child, doc, warnings, id, images);
+          if (c) frameNode.children!.push(c.id);
+        }
+        return frameNode;
+      }
     }
     doc.nodes[id] = node;
     return node;
+  }
+
+  /** Read every images/… entry in the archive into a path → data-URL map. */
+  private async loadImages(zip: JSZip): Promise<Map<string, string>> {
+    const out = new Map<string, string>();
+    const entries = Object.keys(zip.files).filter((f) => /^images\/.+\.(png|jpe?g|gif|webp|pdf)$/i.test(f));
+    for (const path of entries) {
+      const file = zip.file(path);
+      if (!file) continue;
+      try {
+        const b64 = await file.async("base64");
+        const mime = this.mimeOf(path);
+        out.set(path, `data:${mime};base64,${b64}`);
+      } catch { /* skip unreadable image */ }
+    }
+    return out;
+  }
+
+  private mimeOf(path: string): string {
+    const ext = path.toLowerCase().split(".").pop();
+    return ext === "jpg" || ext === "jpeg" ? "image/jpeg"
+      : ext === "gif" ? "image/gif" : ext === "webp" ? "image/webp"
+      : ext === "pdf" ? "application/pdf" : "image/png";
   }
 
   private fills(layer: SketchLayer, fallback?: string): Paint[] {

@@ -13,6 +13,8 @@ async function makeSketchZip(): Promise<Uint8Array> {
     JSON.stringify({ pagesAndArtboards: { [pageId]: { name: "Page 1" } } }),
   );
   zip.file("document.json", JSON.stringify({ pages: [{ _ref: `pages/${pageId}` }] }));
+  // a tiny real PNG (1×1) so a bitmap layer resolves to a data URL
+  zip.file("images/img1.png", "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==", { base64: true });
   zip.file(
     `pages/${pageId}.json`,
     JSON.stringify({
@@ -49,6 +51,13 @@ async function makeSketchZip(): Promise<Uint8Array> {
               },
             ],
           },
+        },
+        {
+          do_objectID: "BMP-1",
+          _class: "bitmap",
+          name: "Photo",
+          frame: { _class: "rect", x: 10, y: 130, width: 120, height: 80 },
+          image: { _class: "MSJSONFileReference", _ref_class: "MSImageData", _ref: "images/img1.png" },
         },
         {
           do_objectID: "GROUP-1",
@@ -89,8 +98,8 @@ describe("SketchImporter", () => {
     expect(document.boards).toHaveLength(1);
     const board = document.boards[0];
     expect(board.name).toBe("Page 1");
-    // rectangle + text + group at root
-    expect(board.children).toHaveLength(3);
+    // rectangle + text + bitmap + group at root
+    expect(board.children).toHaveLength(4);
 
     const rect = document.nodes["RECT-1"];
     expect(rect.type).toBe("rectangle");
@@ -110,6 +119,11 @@ describe("SketchImporter", () => {
     expect((text as any).style.fontSize).toBe(22);
     expect((text as any).style.fontWeight).toBe(600); // "SemiBold"
     expect((text as any).fills[0]).toEqual({ kind: "solid", color: "#0080ff" });
+
+    // bitmap → a real image node with the embedded PNG as a data URL
+    const bmp = document.nodes["BMP-1"];
+    expect(bmp.type).toBe("image");
+    expect((bmp as any).src).toMatch(/^data:image\/png;base64,/);
 
     // nested oval reachable via the group frame's children
     const group = document.nodes["GROUP-1"];
