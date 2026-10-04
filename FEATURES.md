@@ -35,14 +35,19 @@ Reference app for UX/UI standard: **Sketch.app** (native macOS feel).
 - ✅ **Figma / Sketch paste** — clipboard handler parses `figma`/`figmeta` + the
   readable HTML payload → nodes (`src/import/paste.ts`).
 - ✅ **PDF** importer — each page → an **artboard of REAL, EDITABLE nodes**, the
-  way Sketch lets you edit every shape. Vectors are extracted from the page's
-  drawing operators into editable **rectangle / path** nodes (fills, strokes, line
-  widths; `src/import/pdf-vectors.ts`), and text into editable **text** nodes with
-  their real size/position — so you can click any shape or word and change it, with
-  no baked-in "ghost" text underneath. All nodes group under the page board and
-  carry its real background colour; pages lay out side by side (no overlap). Only a
-  scanned/image-only page (no vectors, no text) falls back to a rasterized image so
-  nothing is lost.
+  way Sketch lets you edit every shape. Powered by the standalone
+  **`@draften/pdf-vectors`** package (`packages/pdf-vectors/`): vectors become
+  editable **rectangle / path** nodes (fills across RGB/gray/CMYK, strokes, dashes,
+  line widths, alpha, transforms), and text becomes editable **text** nodes — so you
+  can click any shape or word and change it, with no baked-in "ghost" text. All
+  nodes group under the page board; pages lay out side by side. Only a scanned/
+  image-only page falls back to a rasterized image so nothing is lost.
+- ✅ **PDF EXPORT (editable)** — `@draften/pdf-vectors` also writes a real PDF back
+  out (vector shapes + selectable/searchable text, not a flattened raster). Draften
+  is a round-trip PDF **editor**: open a PDF → edit → export a PDF. File ▸ "Export
+  PDF (editable)". Verified round-trip (import → export → re-import is identity).
+- ⬜ **OmniGraffle** importer (Rust `decode_omnigraffle` exists → wire to model)
+- ⬜ Generic image paste (PNG/SVG from clipboard → canvas)
 - ⬜ **OmniGraffle** importer (Rust `decode_omnigraffle` exists → wire to model)
 - ⬜ Generic image paste (PNG/SVG from clipboard → canvas)
 

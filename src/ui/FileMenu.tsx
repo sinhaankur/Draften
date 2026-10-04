@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { FolderOpen, Save, Download, ChevronDown, Package, FileCode, Code2, FileText } from "lucide-react";
 import type { ExcalidrawImperativeAPI } from "@excalidraw/excalidraw/types";
 
-import { saveDraften, saveExcalidraw, exportSvg, exportPng, exportPdf, copyLayerCss, openFile } from "../io/files";
+import { saveDraften, saveExcalidraw, exportSvg, exportPng, exportPdf, exportVectorPdf, copyLayerCss, openFile } from "../io/files";
 import { downloadProject, downloadStandaloneHtml } from "../export/project";
 
 /**
@@ -81,7 +81,8 @@ export function FileMenu({ api, name, onOpened, onToast }: {
           {item(<Download size={15} />, "Export PNG", "@1x", () => exportPng(api, name, 1))}
           {item(<Download size={15} />, "Export PNG", "@2x", () => exportPng(api, name, 2))}
           {item(<Download size={15} />, "Export PNG", "@3x", () => exportPng(api, name, 3))}
-          {item(<FileText size={15} />, "Export PDF", "", () => { void exportPdf(api, name); })}
+          {item(<FileText size={15} />, "Export PDF (editable)", "vector", () => { void exportVectorPdf(api, name).then((m) => onToast?.(m)); })}
+          {item(<FileText size={15} />, "Export PDF (image)", "raster", () => { void exportPdf(api, name); })}
           {sep}
           {groupLabel("Developer handoff")}
           {item(<Code2 size={15} />, "Copy CSS of selection", "", () => { void copyLayerCss(api).then((m) => onToast?.(m)); })}

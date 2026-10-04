@@ -96,6 +96,89 @@ export async function exportPdf(api: ExcalidrawImperativeAPI, name: string) {
   download(`${safe(name)}.pdf`, new Blob([pdf as unknown as BlobPart], { type: "application/pdf" }), "application/pdf");
 }
 
+/**
+ * Export a REAL, editable PDF (vector + selectable text) from the live scene via
+ * @draften/pdf-vectors — not a flattened raster. This is what makes Draften a PDF
+ * editor: open a PDF, edit it, write it back as a PDF that still has real shapes
+ * and searchable text. Exports the selection if any, else the whole canvas, onto
+ * one page sized to the content bounds.
+ */
+export async function exportVectorPdf(api: ExcalidrawImperativeAPI, name: string): Promise<string> {
+  const { exportPdf } = await import("@draften/pdf-vectors");
+  const els = selectedOrAll(api) as unknown as SceneEl[];
+  if (!els.length) return "Nothing to export.";
+
+  // content bounds → page size (points), with a small margin
+  const M = 24;
+  const minX = Math.min(...els.map((e) => e.x));
+  const minY = Math.min(...els.map((e) => e.y));
+  const maxX = Math.max(...els.map((e) => e.x + (e.width ?? 0)));
+  const maxY = Math.max(...els.map((e) => e.y + (e.height ?? 0)));
+  const width = Math.max(1, maxX - minX) + M * 2;
+  const height = Math.max(1, maxY - minY) + M * 2;
+  const ox = minX - M, oy = minY - M;
+
+  const nodes = els.map((e) => sceneElToNode(e, ox, oy)).filter(Boolean) as PdfVecNode[];
+  const bytes = exportPdf({ title: name, pages: [{ width, height, background: "#ffffff", nodes }] });
+  download(`${safe(name)}.pdf`, new Blob([bytes as unknown as BlobPart], { type: "application/pdf" }), "application/pdf");
+  return `Exported ${els.length} layer${els.length === 1 ? "" : "s"} to PDF ✓`;
+}
+
+type SceneEl = {
+  id: string; type: string; x: number; y: number; width?: number; height?: number;
+  angle?: number; opacity?: number; strokeColor?: string; backgroundColor?: string;
+  strokeWidth?: number; text?: string; fontSize?: number; textAlign?: string;
+  points?: Array<[number, number]>; roundness?: unknown;
+};
+type PdfVecNode = import("@draften/pdf-vectors").PDFNode;
+
+/** One Excalidraw element → a neutral pdf-vectors node (origin-shifted). */
+function sceneElToNode(e: SceneEl, ox: number, oy: number): PdfVecNode | null {
+  const x = e.x - ox, y = e.y - oy;
+  const w = Math.max(0, e.width ?? 0), h = Math.max(0, e.height ?? 0);
+  const op = e.opacity != null && e.opacity < 100 ? e.opacity / 100 : undefined;
+  const hasBg = e.backgroundColor && e.backgroundColor !== "transparent";
+  const fill = hasBg ? { kind: "solid" as const, color: e.backgroundColor! } : { kind: "none" as const };
+  const stroke = e.strokeColor && e.strokeColor !== "transparent"
+    ? { color: e.strokeColor, width: e.strokeWidth ?? 1 } : undefined;
+
+  switch (e.type) {
+    case "rectangle": case "diamond":
+      return { id: e.id, type: "rect", frame: { x, y, width: w, height: h }, fill, ...(stroke ? { stroke } : {}), ...(e.roundness ? { radius: 8 } : {}), ...(op ? { opacity: op } : {}) };
+    case "ellipse": {
+      // approximate an ellipse as a path (4 cubic arcs)
+      const d = ellipsePathD(x, y, w, h);
+      return { id: e.id, type: "path", frame: { x, y, width: w, height: h }, d, fill, ...(stroke ? { stroke } : {}), ...(op ? { opacity: op } : {}) };
+    }
+    case "line": case "arrow": case "freedraw": {
+      const pts = (e.points ?? []).map(([px, py]) => [px + x, py + y] as [number, number]);
+      if (pts.length < 2) return null;
+      const d = "M " + pts.map((p) => `${r2(p[0])} ${r2(p[1])}`).join(" L ");
+      return { id: e.id, type: "path", frame: { x, y, width: w, height: h }, d, fill: { kind: "none" }, ...(stroke ? { stroke } : { stroke: { color: "#1d1d1b", width: 1 } }), ...(op ? { opacity: op } : {}) };
+    }
+    case "text":
+      return { id: e.id, type: "text", frame: { x, y, width: w, height: h }, text: e.text ?? "", fontSize: e.fontSize ?? 16, fontFamily: "Helvetica", fontWeight: 400, color: e.strokeColor ?? "#1d1d1b", align: (e.textAlign as "left" | "center" | "right") ?? "left", ...(op ? { opacity: op } : {}) };
+    default:
+      return null;
+  }
+}
+
+function r2(n: number): number { return Math.round(n * 100) / 100; }
+
+/** A 4-cubic-bezier ellipse as an absolute SVG path (top-left space). */
+function ellipsePathD(x: number, y: number, w: number, h: number): string {
+  const kx = (w / 2) * 0.5523, ky = (h / 2) * 0.5523;
+  const cx = x + w / 2, cy = y + h / 2;
+  const x0 = x, x1 = x + w, y0 = y, y1 = y + h;
+  return [
+    `M ${r2(x0)} ${r2(cy)}`,
+    `C ${r2(x0)} ${r2(cy - ky)} ${r2(cx - kx)} ${r2(y0)} ${r2(cx)} ${r2(y0)}`,
+    `C ${r2(cx + kx)} ${r2(y0)} ${r2(x1)} ${r2(cy - ky)} ${r2(x1)} ${r2(cy)}`,
+    `C ${r2(x1)} ${r2(cy + ky)} ${r2(cx + kx)} ${r2(y1)} ${r2(cx)} ${r2(y1)}`,
+    `C ${r2(cx - kx)} ${r2(y1)} ${r2(x0)} ${r2(cy + ky)} ${r2(x0)} ${r2(cy)} Z`,
+  ].join(" ");
+}
+
 /** Read a JPEG's pixel dimensions from its SOF marker. */
 function jpegSize(b: Uint8Array): { w: number; h: number } {
   let i = 2;

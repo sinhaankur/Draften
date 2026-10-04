@@ -1,3 +1,5 @@
+import { fileURLToPath } from "node:url";
+
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 
@@ -11,6 +13,11 @@ const base = process.env.DEPLOY_TARGET === "pages" ? "/Draften/app/" : "./";
 
 export default defineConfig({
   plugins: [react()],
+  resolve: {
+    alias: {
+      "@draften/pdf-vectors": fileURLToPath(new URL("./packages/pdf-vectors/src/index.ts", import.meta.url)),
+    },
+  },
   clearScreen: false,
   server: {
     port: 1420,
