@@ -1,7 +1,7 @@
 {
   "name": "draften",
   "private": true,
-  "version": "0.1.0",
+  "version": "0.4.0",
   "type": "module",
   "description": "A unified design + diagramming canvas — Figma × OmniGraffle × Sketch — that also opens their files.",
   "scripts": {
