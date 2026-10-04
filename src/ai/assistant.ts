@@ -42,6 +42,9 @@ export interface DocContext {
   summary: string;
   /** optional extracted text from an attached document (PDF/Word/…) */
   attachment?: { name: string; text: string };
+  /** RAG: the passages retrieved as relevant to the prompt (doc + design system
+   *  + UX laws), already formatted. Grounds edits + "why" answers. */
+  retrieved?: string;
 }
 
 const SYSTEM = `You are Draften's design assistant. You edit ONE shared design document by returning STRUCTURED ACTIONS, never prose-only.
@@ -49,12 +52,16 @@ Reply with a short message, then a fenced JSON block of actions:
 \`\`\`json
 {"actions":[{"op":"create","detail":"a primary button","payload":{"type":"button","label":"Get started"}}]}
 \`\`\`
-Rules: use ONLY the document + attachment given; never invent data; prefer the design system's tokens; keep each action small and reviewable; if you can't help, return an empty actions array and say why. Ops: create, update, delete, style, move, component, tokens, layout, note.`;
+Rules: use ONLY the document + retrieved context given; never invent data; prefer the design system's tokens; keep each action small and reviewable; if you can't help, return an empty actions array and say why. When you make a layout/placement/grouping decision, GROUND it in the retrieved UX laws and name the law (e.g. Proximity, Fitts's, Hick's). Ops: create, update, delete, style, move, component, tokens, layout, note.`;
 
 /** Build the messages for the provider from the user's ask + doc context. */
 export function buildMessages(prompt: string, ctx: DocContext): AiMessage[] {
   const parts: string[] = [`# Document\n${ctx.summary}`];
-  if (ctx.attachment) {
+  if (ctx.retrieved) {
+    // RAG: only the passages relevant to this prompt (doc + design system + UX laws).
+    parts.push(`# Relevant context (retrieved)\n${ctx.retrieved}`);
+  } else if (ctx.attachment) {
+    // fallback when retrieval isn't available: the old blind slice
     parts.push(`# Attached: ${ctx.attachment.name}\n${ctx.attachment.text.slice(0, 8000)}`);
   }
   parts.push(`# Request\n${prompt}`);

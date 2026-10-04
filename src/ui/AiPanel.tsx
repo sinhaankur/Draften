@@ -15,6 +15,7 @@ import { drawSkeletonOnCanvas } from "../canvas/apply-action";
 import { outline, buildPresentation } from "../ai/presentation";
 import { planFlow, buildWireframe } from "../ai/wireframe";
 import { autoNameLayers } from "../ai/layer-namer";
+import { buildCorpus, retrieve, contextBlock } from "../ai/rag";
 import { documentToSkeleton } from "../import/to-canvas";
 import { overlay, scrim } from "./motion";
 
@@ -82,14 +83,19 @@ export function AiPanel({ onClose, docked = false }: { onClose: () => void; dock
     setProvider(made);
   }
 
-  // A compact summary of the live document so edits are grounded in THIS doc.
-  function docContext(): DocContext {
+  // A compact summary of the live document so edits are grounded in THIS doc,
+  // PLUS RAG: retrieve the passages (doc + design system + UX laws) relevant to
+  // the prompt, so placement/grouping decisions are justified by the framework.
+  function docContext(forPrompt = ""): DocContext {
     const boards = doc.boards.map((b) => `${b.name} (${b.kind})`).join(", ");
     const comps = doc.designSystem?.components?.length ?? 0;
+    const corpus = buildCorpus(doc, doc.designSystem, attachment ?? undefined);
+    const hits = forPrompt.trim() ? retrieve(forPrompt, corpus, 5) : [];
     return {
       summary: `Document "${doc.name}". Boards: ${boards || "none"}. ` +
         `Design system: ${comps} component${comps === 1 ? "" : "s"}.`,
       attachment: attachment ?? undefined,
+      retrieved: hits.length ? contextBlock(hits) : undefined,
     };
   }
 
@@ -136,7 +142,7 @@ export function AiPanel({ onClose, docked = false }: { onClose: () => void; dock
         return;
       }
 
-      const res = await runAssistant(provider, p, docContext(), {
+      const res = await runAssistant(provider, p, docContext(p), {
         onToken: (t) => setStreaming((s) => s + t),
         apply: applyActions,
       });
