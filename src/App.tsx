@@ -34,6 +34,7 @@ import { LayersPanel } from "./ui/LayersPanel";
 import { RailAccount } from "./ui/RailAccount";
 import { StylesPanel } from "./ui/StylesPanel";
 import { AlignBar } from "./ui/AlignBar";
+import { BooleanBar } from "./ui/BooleanBar";
 import { McpPanel } from "./ui/McpPanel";
 import { PrototypePanel } from "./ui/PrototypePanel";
 import { importFile, canImportFile } from "./import/import-file";
@@ -447,6 +448,7 @@ export function App() {
                     show Page + design system below. */}
                 <InspectPanel api={canvasReady ? excalidrawApi.current : null} />
                 <AlignBar api={canvasReady ? excalidrawApi.current : null} />
+                <BooleanBar api={canvasReady ? excalidrawApi.current : null} />
 
                 {hasSelection ? null : (
                 <>
@@ -487,7 +489,7 @@ export function App() {
                     placeholder="Brand name"
                     style={{ flex: 1, minWidth: 0, borderRadius: 8, border: "1px solid var(--line, #e7e6e2)", padding: "7px 10px", fontSize: 14, fontWeight: 600, background: "var(--surf, #fff)", color: "var(--t1, #1d1d1b)" }}
                   />
-                  <span className="ver" style={{ flex: "none" }}>v0.4</span>
+                  <span className="ver" style={{ flex: "none" }}>v1.0.00</span>
                 </div>
 
                 <div className="section-title">Brand Kit</div>

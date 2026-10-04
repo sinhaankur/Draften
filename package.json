@@ -1,7 +1,7 @@
 {
   "name": "draften",
   "private": true,
-  "version": "0.4.0",
+  "version": "1.0.0",
   "type": "module",
   "description": "A unified design + diagramming canvas — Figma × OmniGraffle × Sketch — that also opens their files.",
   "scripts": {
@@ -24,10 +24,12 @@
     "@fontsource/geist-mono": "^5.3.0",
     "@fontsource/geist-sans": "^5.3.0",
     "@tauri-apps/api": "^2.0.0",
+    "fflate": "^0.8.3",
     "lucide-react": "^1.49.0",
     "mammoth": "^1.13.0",
     "motion": "^13.2.0",
     "pdfjs-dist": "^6.3.289",
+    "polygon-clipping": "^0.15.7",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "zustand": "^5.0.0"

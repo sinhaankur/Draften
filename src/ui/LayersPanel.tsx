@@ -1,8 +1,9 @@
-import { useEffect, useState } from "react";
-import { Eye, EyeOff, Square, Circle, Diamond, Type, MoveUpRight, Minus, Image, Frame, Group, PenLine, Dot, ChevronRight, ChevronDown, Plus } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { Eye, EyeOff, Lock, Unlock, Square, Circle, Diamond, Type, MoveUpRight, Minus, Image, Frame, Group, PenLine, Dot, ChevronRight, ChevronDown, Plus, Copy, Trash2, ArrowUpToLine, ArrowDownToLine, Pencil, SquareDashedBottom } from "lucide-react";
 import type { ExcalidrawImperativeAPI } from "@excalidraw/excalidraw/types";
 
 import { drawSkeletonOnCanvas } from "../canvas/apply-action";
+import { renameLayer, setLocked, deleteLayer, duplicateLayer, bringToFront, sendToBack, moveTo, wrapInArtboard } from "../canvas/layer-actions";
 
 // New-artboard size presets (v2: iPhone / Desktop / Tablet / Custom).
 const ARTBOARD_PRESETS = [
@@ -31,17 +32,24 @@ type El = {
   height?: number;
   isDeleted?: boolean;
   opacity?: number;
+  locked?: boolean;
   groupIds?: string[];
   frameId?: string | null;
   boundElements?: { id: string; type: string }[] | null;
   containerId?: string;
 };
 
+type Menu = { id: string; x: number; y: number; locked: boolean } | null;
+
 export function LayersPanel({ api }: { api: ExcalidrawImperativeAPI | null }) {
   const [els, setEls] = useState<El[]>([]);
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [collapsed, setCollapsed] = useState<Set<string>>(new Set());
   const [addMenu, setAddMenu] = useState(false);
+  const [menu, setMenu] = useState<Menu>(null);        // right-click context menu
+  const [editing, setEditing] = useState<string | null>(null); // inline rename
+  const [dragId, setDragId] = useState<string | null>(null);   // drag-to-reorder
+  const draftName = useRef("");
 
   useEffect(() => {
     if (!api) return;
@@ -61,6 +69,16 @@ export function LayersPanel({ api }: { api: ExcalidrawImperativeAPI | null }) {
     tick();
     return () => window.clearTimeout(t);
   }, [api]);
+
+  // Dismiss the context menu on any outside click or Escape.
+  useEffect(() => {
+    if (!menu) return;
+    const close = () => setMenu(null);
+    const key = (e: KeyboardEvent) => { if (e.key === "Escape") setMenu(null); };
+    window.addEventListener("click", close);
+    window.addEventListener("keydown", key);
+    return () => { window.removeEventListener("click", close); window.removeEventListener("keydown", key); };
+  }, [menu]);
 
   if (!api) return <Hint>Canvas loading…</Hint>;
   if (els.length === 0) return <Hint>No layers yet — draw something, import a file, or pick a template.</Hint>;
@@ -83,9 +101,36 @@ export function LayersPanel({ api }: { api: ExcalidrawImperativeAPI | null }) {
     api.updateScene({ elements: scene as Parameters<typeof api.updateScene>[0]["elements"] });
   };
 
+  const toggleLock = (id: string) => {
+    const el = api.getSceneElements().find((e) => e.id === id) as unknown as El | undefined;
+    setLocked(api, id, !el?.locked);
+  };
+
+  // Open the context menu at the cursor for a layer row.
+  const openMenu = (e: React.MouseEvent, id: string) => {
+    e.preventDefault(); e.stopPropagation();
+    const el = api.getSceneElements().find((x) => x.id === id) as unknown as El | undefined;
+    setMenu({ id, x: e.clientX, y: e.clientY, locked: !!el?.locked });
+  };
+
+  // Commit an inline rename.
+  const commitRename = (id: string) => {
+    const name = draftName.current.trim();
+    if (name) renameLayer(api, id, name);
+    setEditing(null);
+  };
+
+  // Wrap the selected loose layers into a new artboard.
+  const wrapSelection = () => {
+    const ids = [...selected];
+    if (ids.length) wrapInArtboard(api, ids, "Artboard");
+  };
+
   const rows = buildRows(els, collapsed);
   const toggleCollapse = (id: string) => setCollapsed((c) => { const n = new Set(c); n.has(id) ? n.delete(id) : n.add(id); return n; });
   const frames = els.filter((e) => e.type === "frame" && !e.isDeleted);
+  // selected layers that aren't frames and aren't already inside a frame → wrappable
+  const looseSelected = els.filter((e) => selected.has(e.id) && e.type !== "frame" && !e.frameId);
 
   // Add a new artboard (a real frame) to the right of existing content.
   const addArtboard = (w: number, h: number, name: string) => {
@@ -138,20 +183,39 @@ export function LayersPanel({ api }: { api: ExcalidrawImperativeAPI | null }) {
         })}
       </div>
     {/* Layers — the full nested tree */}
-    <div style={{ padding: "4px 8px 0", fontSize: 11.5, fontWeight: 500, color: "var(--text-3, #8e8d88)", borderTop: "1px solid var(--line, #e7e6e2)" }}>Layers</div>
+    <div style={{ display: "flex", alignItems: "center", padding: "4px 8px 0", borderTop: "1px solid var(--line, #e7e6e2)" }}>
+      <span style={{ flex: 1, fontSize: 11.5, fontWeight: 500, color: "var(--text-3, #8e8d88)" }}>Layers</span>
+      {looseSelected.length >= 1 && (
+        <button title="Wrap selection in an artboard" onClick={wrapSelection}
+          style={{ display: "flex", alignItems: "center", gap: 4, border: 0, background: "transparent", color: "var(--accent, #3d6b5f)", cursor: "pointer", fontSize: 11, fontWeight: 600, padding: "2px 4px" }}>
+          <SquareDashedBottom size={12} /> Wrap
+        </button>
+      )}
+    </div>
     <div style={{ display: "flex", flexDirection: "column", gap: 1, padding: "2px 4px", maxHeight: 420, overflow: "auto" }}>
       {rows.map((r) => {
         const on = selected.has(r.id);
         const hidden = (r.opacity ?? 100) === 0;
+        const locked = !!r.locked;
         const isFrame = r.type === "frame";
+        const dragging = dragId === r.id;
         return (
           <div key={r.id}
-            onClick={(e) => select(r.id, e.metaKey || e.shiftKey)}
+            draggable={editing !== r.id}
+            onDragStart={() => setDragId(r.id)}
+            onDragOver={(e) => { e.preventDefault(); }}
+            onDrop={(e) => { e.preventDefault(); if (dragId && dragId !== r.id) moveTo(api, dragId, r.id); setDragId(null); }}
+            onDragEnd={() => setDragId(null)}
+            onClick={(e) => { if (editing !== r.id) select(r.id, e.metaKey || e.shiftKey); }}
+            onDoubleClick={(e) => { e.stopPropagation(); draftName.current = r.label; setEditing(r.id); }}
+            onContextMenu={(e) => openMenu(e, r.id)}
+            className="layer-row"
             style={{ display: "flex", alignItems: "center", gap: 5, padding: "5px 8px", paddingLeft: 6 + r.depth * 16,
               borderRadius: 6, cursor: "pointer", fontSize: 12.5,
               background: on ? "var(--acc-soft, #eaf1ee)" : "transparent",
-              color: on ? "var(--accent, #3d6b5f)" : hidden ? "var(--text-3, #8e8d88)" : "var(--t1, #1d1d1b)",
-              opacity: hidden ? 0.55 : 1, fontWeight: on || isFrame ? 600 : 400 }}>
+              color: on ? "var(--accent, #3d6b5f)" : hidden || locked ? "var(--text-3, #8e8d88)" : "var(--t1, #1d1d1b)",
+              opacity: hidden ? 0.55 : 1, fontWeight: on || isFrame ? 600 : 400,
+              outline: dragging ? "1.5px dashed var(--accent,#3d6b5f)" : "none" }}>
             {/* collapse chevron for frames; spacer otherwise so labels align */}
             {isFrame ? (
               <button onClick={(e) => { e.stopPropagation(); toggleCollapse(r.id); }}
@@ -160,7 +224,22 @@ export function LayersPanel({ api }: { api: ExcalidrawImperativeAPI | null }) {
               </button>
             ) : <span style={{ width: 14, flex: "none" }} />}
             <span style={{ flex: "none", width: 15, display: "grid", placeItems: "center", color: on || isFrame ? "var(--accent, #3d6b5f)" : "var(--text-3, #8e8d88)" }}><Glyph type={r.type} /></span>
-            <span style={{ flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{r.label}</span>
+            {editing === r.id ? (
+              <input autoFocus defaultValue={r.label}
+                onChange={(e) => { draftName.current = e.target.value; }}
+                onBlur={() => commitRename(r.id)}
+                onKeyDown={(e) => { if (e.key === "Enter") commitRename(r.id); if (e.key === "Escape") setEditing(null); }}
+                onClick={(e) => e.stopPropagation()}
+                style={{ flex: 1, minWidth: 0, border: "1px solid var(--accent,#3d6b5f)", borderRadius: 5, padding: "1px 5px", fontSize: 12.5, background: "var(--surf,#fff)", color: "var(--t1,#1d1d1b)" }} />
+            ) : (
+              <span style={{ flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{r.label}</span>
+            )}
+            {/* lock — always visible when locked, on hover otherwise (CSS class) */}
+            <button onClick={(e) => { e.stopPropagation(); toggleLock(r.id); }} title={locked ? "Unlock" : "Lock"}
+              className={locked ? "" : "on-hover"}
+              style={{ flex: "none", border: 0, background: "transparent", cursor: "pointer", color: "var(--text-3, #8e8d88)", display: "grid", placeItems: "center", width: 20, height: 20, padding: 0 }}>
+              {locked ? <Lock size={13} /> : <Unlock size={13} />}
+            </button>
             <button onClick={(e) => { e.stopPropagation(); toggleVisible(r.id); }} title={hidden ? "Show" : "Hide"}
               style={{ flex: "none", border: 0, background: "transparent", cursor: "pointer", color: "var(--text-3, #8e8d88)", display: "grid", placeItems: "center", width: 20, height: 20, padding: 0 }}>
               {hidden ? <EyeOff size={14} /> : <Eye size={14} />}
@@ -169,11 +248,41 @@ export function LayersPanel({ api }: { api: ExcalidrawImperativeAPI | null }) {
         );
       })}
     </div>
+
+    {/* Context menu (right-click a layer) — Figma/Sketch layer actions */}
+    {menu && (
+      <div role="menu" onClick={(e) => e.stopPropagation()}
+        style={{ position: "fixed", top: Math.min(menu.y, window.innerHeight - 260), left: Math.min(menu.x, window.innerWidth - 200),
+          zIndex: 1000, width: 190, background: "var(--panel,#fbfbfa)", border: "1px solid var(--line,#e7e6e2)", borderRadius: 9,
+          boxShadow: "0 10px 30px -8px rgba(0,0,0,.28)", padding: 4 }}>
+        <MenuItem icon={<Pencil size={13} />} label="Rename" onClick={() => { const lbl = rows.find((x) => x.id === menu.id)?.label ?? ""; draftName.current = lbl; setEditing(menu.id); setMenu(null); }} />
+        <MenuItem icon={<Copy size={13} />} label="Duplicate" onClick={() => { duplicateLayer(api, menu.id); setMenu(null); }} />
+        <MenuItem icon={menu.locked ? <Unlock size={13} /> : <Lock size={13} />} label={menu.locked ? "Unlock" : "Lock"} onClick={() => { toggleLock(menu.id); setMenu(null); }} />
+        <div style={{ height: 1, background: "var(--line,#e7e6e2)", margin: "4px 0" }} />
+        <MenuItem icon={<ArrowUpToLine size={13} />} label="Bring to front" onClick={() => { bringToFront(api, menu.id); setMenu(null); }} />
+        <MenuItem icon={<ArrowDownToLine size={13} />} label="Send to back" onClick={() => { sendToBack(api, menu.id); setMenu(null); }} />
+        <div style={{ height: 1, background: "var(--line,#e7e6e2)", margin: "4px 0" }} />
+        <MenuItem icon={<Trash2 size={13} />} label="Delete" danger onClick={() => { deleteLayer(api, menu.id); setMenu(null); }} />
+      </div>
+    )}
    </>
   );
 }
 
-type Row = { id: string; type: string; label: string; depth: number; opacity?: number };
+function MenuItem({ icon, label, onClick, danger }: { icon: React.ReactNode; label: string; onClick: () => void; danger?: boolean }) {
+  return (
+    <button role="menuitem" onClick={onClick}
+      style={{ display: "flex", alignItems: "center", gap: 9, width: "100%", border: 0, background: "transparent", cursor: "pointer",
+        padding: "7px 9px", borderRadius: 6, fontSize: 12.5, color: danger ? "var(--danger,#d0453b)" : "var(--t1,#1d1d1b)", textAlign: "left" }}
+      onMouseEnter={(e) => (e.currentTarget.style.background = "var(--hover,#f0efec)")}
+      onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}>
+      <span style={{ display: "grid", placeItems: "center", color: danger ? "var(--danger,#d0453b)" : "var(--text-3,#8e8d88)" }}>{icon}</span>
+      {label}
+    </button>
+  );
+}
+
+type Row = { id: string; type: string; label: string; depth: number; opacity?: number; locked?: boolean };
 
 /**
  * The layers TREE (SketchApp/Figma style): frames (artboards) at the top, their
@@ -187,10 +296,10 @@ function buildRows(els: El[], collapsed: Set<string>): Row[] {
 
   // 1) each frame + its children nested under it
   for (const f of frames) {
-    rows.push({ id: f.id, type: "frame", label: nameOf(f, els), depth: 0, opacity: f.opacity });
+    rows.push({ id: f.id, type: "frame", label: nameOf(f, els), depth: 0, opacity: f.opacity, locked: f.locked });
     if (collapsed.has(f.id)) { ordered.forEach((e) => { if (e.frameId === f.id) framed.add(e.id); }); continue; }
     const kids = ordered.filter((e) => e.frameId === f.id && e.type !== "frame");
-    for (const k of kids) { framed.add(k.id); rows.push({ id: k.id, type: k.type, label: nameOf(k, els), depth: 1, opacity: k.opacity }); }
+    for (const k of kids) { framed.add(k.id); rows.push({ id: k.id, type: k.type, label: nameOf(k, els), depth: 1, opacity: k.opacity, locked: k.locked }); }
   }
 
   // 2) loose elements (not in a frame), grouped where they share a group id
@@ -202,9 +311,9 @@ function buildRows(els: El[], collapsed: Set<string>): Row[] {
       seenGroup.add(gid);
       const members = ordered.filter((x) => !x.frameId && (x.groupIds || []).includes(gid));
       rows.push({ id: gid, type: "group", label: `Group · ${members.length}`, depth: 0 });
-      for (const m of members) rows.push({ id: m.id, type: m.type, label: nameOf(m, els), depth: 1, opacity: m.opacity });
+      for (const m of members) rows.push({ id: m.id, type: m.type, label: nameOf(m, els), depth: 1, opacity: m.opacity, locked: m.locked });
     } else if (!gid) {
-      rows.push({ id: e.id, type: e.type, label: nameOf(e, els), depth: 0, opacity: e.opacity });
+      rows.push({ id: e.id, type: e.type, label: nameOf(e, els), depth: 0, opacity: e.opacity, locked: e.locked });
     }
   }
   return rows;

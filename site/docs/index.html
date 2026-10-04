@@ -1,0 +1,350 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Draften Docs — get started, the git-backed flow, every feature</title>
+<meta name="description" content="How to use Draften: install or open in the browser, connect a free GitHub token as your account, design on a real canvas, and commit your designs to your repo. Plus every feature and keyboard shortcut." />
+<meta name="author" content="Ankur Sinha" />
+<meta name="theme-color" content="#3d6b5f" />
+<link rel="canonical" href="https://sinhaankur.github.io/Draften/docs/" />
+<link rel="icon" href="../logo.svg" />
+<meta property="og:title" content="Draften Docs — get started & the git-backed flow" />
+<meta property="og:description" content="Install, connect a free GitHub token, design, commit to your repo. Every feature + shortcut." />
+<meta property="og:image" content="https://sinhaankur.github.io/Draften/og.png" />
+<meta property="og:url" content="https://sinhaankur.github.io/Draften/docs/" />
+<style>
+  :root{
+    --bg:#f7f6f3;--bg2:#efeeeb;--ink:#191917;--ink2:#4b4a46;--muted:#78776f;
+    --card:#ffffff;--acc:#3d6b5f;--acc2:#54897a;--acc-soft:#e9f0ed;
+    --line:rgba(25,25,23,.09);--line2:rgba(25,25,23,.14);
+    --sans:-apple-system,BlinkMacSystemFont,'Segoe UI',Inter,system-ui,sans-serif;
+    --serif:'Fraunces','Source Serif 4',Georgia,serif;
+    --mono:ui-monospace,'SF Mono','JetBrains Mono',Menlo,monospace;
+  }
+  @media (prefers-color-scheme:dark){
+    :root{--bg:#141413;--bg2:#1b1b19;--ink:#ecebe7;--ink2:#b7b6b0;--muted:#8a897f;
+      --card:#1f1f1d;--acc:#86b8a8;--acc2:#6fa493;--acc-soft:#223029;
+      --line:rgba(255,255,255,.09);--line2:rgba(255,255,255,.15);}
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{font-family:var(--sans);background:var(--bg);color:var(--ink);line-height:1.68;-webkit-font-smoothing:antialiased}
+  a{color:var(--acc);text-decoration:none}
+  a:hover{text-decoration:underline}
+  code{font-family:var(--mono);font-size:.88em;background:var(--bg2);border:1px solid var(--line);border-radius:6px;padding:1.5px 6px}
+  pre{font-family:var(--mono);font-size:13px;background:var(--bg2);border:1px solid var(--line);border-radius:10px;padding:14px 16px;overflow:auto;line-height:1.6;margin:12px 0}
+  pre code{background:0;border:0;padding:0}
+  :focus-visible{outline:2.5px solid var(--acc);outline-offset:3px;border-radius:4px}
+  .skip{position:absolute;left:-999px;top:8px;background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:10px;z-index:100;font-weight:600}
+  .skip:focus{left:12px}
+
+  /* nav */
+  header.nav{position:sticky;top:0;z-index:50;backdrop-filter:saturate(180%) blur(14px);background:color-mix(in srgb,var(--bg) 82%,transparent);border-bottom:1px solid var(--line)}
+  .nav-in{display:flex;align-items:center;gap:14px;max-width:1120px;margin:0 auto;padding:13px 24px}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:17px;letter-spacing:-.02em;color:var(--ink)}
+  .brand:hover{text-decoration:none}
+  .brand .ver{font-family:var(--mono);font-size:10.5px;color:var(--muted);background:var(--bg2);border:1px solid var(--line);border-radius:999px;padding:2px 7px;font-weight:500}
+  .nav-sp{flex:1}
+  .nav a.link{color:var(--ink2);font-size:14px;font-weight:600}
+  .nav a.link:hover{color:var(--ink);text-decoration:none}
+
+  /* layout: sticky TOC + content (sinhaankur teaching-page rhythm) */
+  .shell{max-width:1120px;margin:0 auto;padding:40px 24px 90px;display:grid;grid-template-columns:230px 1fr;gap:48px}
+  .toc{position:sticky;top:78px;align-self:start;font-size:13.5px;max-height:calc(100vh - 100px);overflow:auto}
+  .toc .eyebrow{font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin:16px 0 8px}
+  .toc a{display:block;color:var(--ink2);padding:4px 0;border-left:2px solid transparent;padding-left:12px;margin-left:-14px}
+  .toc a:hover{color:var(--acc);text-decoration:none}
+  .toc a.active{color:var(--acc);border-color:var(--acc);font-weight:600}
+  @media(max-width:860px){.shell{grid-template-columns:1fr}.toc{position:static;max-height:none;border-bottom:1px solid var(--line);padding-bottom:16px;margin-bottom:8px}}
+
+  article{max-width:720px}
+  .eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--acc);font-weight:600}
+  h1{font-family:var(--serif);font-weight:450;font-size:clamp(32px,5vw,46px);line-height:1.05;letter-spacing:-.02em;margin:12px 0 10px}
+  .lead{color:var(--ink2);font-size:18px;margin-bottom:8px}
+  h2{font-family:var(--serif);font-weight:470;font-size:clamp(22px,3vw,28px);letter-spacing:-.01em;margin:46px 0 12px;padding-top:12px;scroll-margin-top:78px}
+  h3{font-size:16px;font-weight:650;margin:26px 0 6px}
+  p{margin:10px 0;color:var(--ink)}
+  ul,ol{margin:10px 0 10px 22px}
+  li{margin:5px 0}
+  .muted{color:var(--muted)}
+
+  /* step cards for the flow */
+  .steps{counter-reset:s;margin:20px 0}
+  .step{position:relative;border:1px solid var(--line);background:var(--card);border-radius:12px;padding:18px 20px 18px 58px;margin:12px 0}
+  .step::before{counter-increment:s;content:counter(s);position:absolute;left:16px;top:18px;width:28px;height:28px;border-radius:50%;background:var(--acc);color:#fff;display:grid;place-items:center;font-weight:700;font-size:13px;font-family:var(--mono)}
+  .step h3{margin:0 0 4px}
+  .step p{margin:4px 0;font-size:14.5px}
+
+  .note{border:1px solid var(--line);border-left:3px solid var(--acc);background:var(--acc-soft);border-radius:10px;padding:13px 16px;margin:16px 0;font-size:14px}
+  .note b{color:var(--acc)}
+  .kbd{display:inline-block;font-family:var(--mono);font-size:12px;background:var(--card);border:1px solid var(--line2);border-bottom-width:2px;border-radius:6px;padding:2px 7px;color:var(--ink)}
+  table.keys{width:100%;border-collapse:collapse;font-size:14px;margin:12px 0;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+  table.keys td{padding:9px 14px;border-bottom:1px solid var(--line)}
+  table.keys td:first-child{width:160px}
+  table.keys tr:last-child td{border-bottom:0}
+
+  footer{border-top:1px solid var(--line);padding:34px 24px;text-align:center;color:var(--muted);font-size:13px}
+  footer a{color:var(--acc);font-weight:600}
+  .vis{display:inline-grid;place-items:center;vertical-align:-2px}
+</style>
+</head>
+<body>
+<a href="#start" class="skip">Skip to content</a>
+
+<header class="nav">
+  <div class="nav-in">
+    <a class="brand" href="../"><img src="../logo.svg" alt="" width="28" height="28" /><span>Draften</span><span class="ver">Docs</span></a>
+    <span class="nav-sp"></span>
+    <a class="link" href="../#design">Features</a>
+    <a class="link" href="https://sinhaankur.github.io/Draften/app/">Open app</a>
+    <a class="link" href="https://github.com/sinhaankur/Draften">GitHub</a>
+  </div>
+</header>
+
+<div class="shell">
+  <!-- ── TOC ── -->
+  <nav class="toc" aria-label="On this page">
+    <div class="eyebrow">Getting started</div>
+    <a href="#start">What is Draften</a>
+    <a href="#install">Install or open in browser</a>
+    <a href="#flow">The user flow</a>
+    <div class="eyebrow">Your account</div>
+    <a href="#why-git">Why git is your account</a>
+    <a href="#token">Create a GitHub token</a>
+    <a href="#connect">Connect it in Draften</a>
+    <a href="#commit">Commit your designs</a>
+    <div class="eyebrow">Using Draften</div>
+    <a href="#design">Design on the canvas</a>
+    <a href="#ai">The AI companion</a>
+    <a href="#open-files">Open Sketch / Figma / OmniGraffle</a>
+    <a href="#combine">Combine shapes &amp; layers</a>
+    <a href="#prototype">Prototype &amp; play</a>
+    <a href="#export">Export</a>
+    <div class="eyebrow">Reference</div>
+    <a href="#shortcuts">Keyboard shortcuts</a>
+    <a href="#mcp">MCP &amp; the SKILL file</a>
+    <a href="#privacy">Privacy &amp; offline</a>
+    <a href="#help">Troubleshooting</a>
+  </nav>
+
+  <!-- ── CONTENT ── -->
+  <article>
+    <p class="eyebrow">Documentation</p>
+    <h1 id="start">Draften, start to finish.</h1>
+    <p class="lead">A free, open-source design tool whose files live in your git repo, with an on-device
+      AI companion. This page takes you from install → connected → designing → committed.</p>
+    <p class="muted">New here? The fastest path: <a href="https://sinhaankur.github.io/Draften/app/">open the web app</a>
+      and start drawing. When you're ready to save, connect a GitHub token (below) and commit.</p>
+
+    <h2 id="install">Install, or open in the browser</h2>
+    <p>Draften runs everywhere. Pick whichever fits:</p>
+    <ul>
+      <li><b>Web app</b> — <a href="https://sinhaankur.github.io/Draften/app/">open it now</a>, nothing to install, any device.</li>
+      <li><b>Desktop</b> — download for <a href="../#download">macOS, Windows, or Linux</a> (every chip). The desktop app adds offline persistence and native file dialogs.</li>
+    </ul>
+    <div class="note"><b>Free forever.</b> There is no paid tier. The desktop builds and the web app are the same app — use what you like.</div>
+
+    <h2 id="flow">The user flow</h2>
+    <p>The whole journey, at a glance. Each step is detailed below.</p>
+    <div class="steps">
+      <div class="step"><h3>Open Draften</h3><p>Install a build or open the web app. You can start designing immediately — no sign-up wall.</p></div>
+      <div class="step"><h3>Connect a GitHub token</h3><p>Create a free personal access token with <code>repo</code> scope and paste it once. That token <em>is</em> your account — no separate Draften login.</p></div>
+      <div class="step"><h3>Design</h3><p>Add artboards, draw layers, use the inspector, ask the AI companion to generate screens. It's a real canvas.</p></div>
+      <div class="step"><h3>Commit to your repo</h3><p>Save your design as open-format files and commit / branch / open a PR — your design history is git history.</p></div>
+    </div>
+
+    <h2 id="why-git">Why git is your account</h2>
+    <p>Most design tools make you create an account and store your files on their cloud — which is what you
+      end up paying for. Draften flips that: <b>your designs are plain files, and your “account” is your
+      git login.</b> That means:</p>
+    <ul>
+      <li>No new password to manage — you already have a GitHub account.</li>
+      <li>No cloud bill — your files live in <em>your</em> repository.</li>
+      <li>Real version control — branches, diffs, PRs, history, for free.</li>
+      <li>Your team already knows the workflow.</li>
+    </ul>
+    <p class="muted">GitHub is supported today. GitLab, Bitbucket, and any-git are on the roadmap — the
+      provider is intentionally kept swappable.</p>
+
+    <h2 id="token">Create a GitHub token (free)</h2>
+    <p>A personal access token lets Draften read and write your design repo on your behalf. It takes a minute:</p>
+    <ol>
+      <li>Go to <a href="https://github.com/settings/tokens/new?description=Draften&amp;scopes=repo" target="_blank" rel="noopener">github.com/settings/tokens/new</a> (you may need to sign in to GitHub).</li>
+      <li>Give it a name like <code>Draften</code>.</li>
+      <li>Under <b>scopes</b>, tick <code>repo</code> — this is the only scope Draften needs (read/write your repositories).</li>
+      <li>Click <b>Generate token</b> and <b>copy it</b>. GitHub shows it only once.</li>
+    </ol>
+    <div class="note"><b>What scope do I pick?</b> Just <code>repo</code>. Draften never needs admin, delete,
+      or org scopes. If you only want a single repo, use a <em>fine-grained</em> token scoped to that repo
+      with <b>Contents: Read and write</b>.</div>
+
+    <h2 id="connect">Connect it in Draften</h2>
+    <ol>
+      <li>In Draften, click the <b>account avatar</b> at the bottom of the left icon rail.</li>
+      <li>Choose <b>“Connect with a GitHub token.”</b></li>
+      <li>Paste your token and press <b>Connect</b>.</li>
+    </ol>
+    <p>You're now signed in — the menu shows your name and avatar, and the <b>Source control</b> panel
+      (Clone / Pull / Commit / PR) unlocks.</p>
+    <div class="note"><b>Paste not working?</b> Click into the token field first, then paste (⌘V / Ctrl-V).
+      The field reads the clipboard directly, so your token won't be swallowed by the canvas paste handler.
+      If you reinstalled, reconnect once.</div>
+
+    <h2 id="commit">Design → commit to your repo</h2>
+    <p>Your design is saved as open-format files, so git handles them like any source:</p>
+    <ol>
+      <li>Open the <b>Source control</b> panel (the git icon in the left rail).</li>
+      <li><b>Clone a repository</b> (or point at one you've already cloned).</li>
+      <li>Design. When ready, write a message and <b>Commit</b>.</li>
+      <li><b>Push</b>, branch, or <b>open a PR</b> — exactly like code.</li>
+    </ol>
+    <pre><code># what a committed design looks like in your repo
+my-app/
+  design/
+    onboarding.draften.json   ← editable, diff-able design file
+    settings.draften.json
+  src/ ...</code></pre>
+
+    <h2 id="design">Design on the canvas</h2>
+    <p>Draften is a real design surface, not a wireframe toy:</p>
+    <ul>
+      <li><b>Artboards</b> — add iPhone / Android / tablet / desktop / square frames from the <b>+</b> in the Artboards section.</li>
+      <li><b>Layers</b> — a nested tree with rename, lock, show/hide, reorder, duplicate, and group.</li>
+      <li><b>Inspector</b> (right panel) — Position, Size, Opacity, Fill, Stroke, Effects, Text. Edit any value precisely.</li>
+      <li><b>Boolean shapes</b> — select two shapes → Union / Subtract / Intersect / Difference → a real editable vector path.</li>
+      <li><b>Align &amp; distribute</b> — appears when 2+ layers are selected.</li>
+      <li><b>Styles &amp; tokens</b> — shared color &amp; text styles, your design system versioned with the file.</li>
+    </ul>
+
+    <h2 id="ai">The AI companion</h2>
+    <p>Open the <b>Assistant</b> tab (the ✦ panel). It's a real conversation that draws onto your canvas:</p>
+    <ul>
+      <li><b>Describe a screen</b> — “a fitness app home with a weekly streak and a start button” → real, editable layers.</li>
+      <li><b>Keyless automations</b> — “table of contents for: Intro, Setup, API” or “a 3×2 card grid”, “a nav bar”, “a flowchart”. These run <em>instantly, offline, with no model at all.</em></li>
+      <li><b>Bring a model</b> — point at a local LM Studio / Ollama model, or use Apple Intelligence on macOS, for free-form conversation. No API keys, no per-use bills.</li>
+    </ul>
+
+    <h2 id="open-files">Open Sketch / Figma / OmniGraffle / PDF</h2>
+    <p>It's your file — Draften opens it, rather than locking you out. Use <b>Import file</b>
+      (in the left panel) or drag a file onto the canvas.</p>
+    <ul>
+      <li><b>Sketch</b> (<code>.sketch</code>) — a zip of JSON; imported as real editable artboards &amp; layers.</li>
+      <li><b>OmniGraffle</b> (<code>.graffle</code>) — the gzipped Apple binary property list is decoded in-app
+        (no plugin) → shapes, connectors, groups and text become editable layers.</li>
+      <li><b>Figma</b> — a <code>.fig</code> is proprietary binary, so Draften opens your file via Figma's
+        official <b>REST API</b>: paste the file <b>URL</b> and a Figma <b>personal access token</b>, and the
+        document imports as frames, shapes and text. (Your token, your file — nothing leaves your machine
+        except the call to Figma.)</li>
+      <li><b>PDF</b> — opens as an editable page: text becomes editable text layers over a page sheet.</li>
+      <li><b>Word</b> (<code>.docx</code>) — text extracted to layers.</li>
+    </ul>
+    <div class="note"><b>Unknown pieces aren't dropped.</b> If a file uses a feature Draften doesn't fully
+      map yet, it's approximated to the closest shape and noted in the import warnings — so you never lose
+      content. The on-device AI can help refine ambiguous imports.</div>
+
+    <h3>Get a Figma token</h3>
+    <ol>
+      <li>In Figma: <b>Settings → Security → Personal access tokens → Generate new token</b> (read-only file access is enough).</li>
+      <li>Copy the token.</li>
+      <li>In Draften: <b>Import file → Figma</b>, paste the file URL and the token, and import.</li>
+    </ol>
+
+    <h2 id="combine">Combine shapes (boolean)</h2>
+    <p>Select two or more shapes, then use the <b>Combine</b> bar in the inspector:</p>
+    <ul>
+      <li><b>Union</b> — merge into one shape.</li>
+      <li><b>Subtract</b> — cut the later shapes out of the first.</li>
+      <li><b>Intersect</b> — keep only the overlapping area.</li>
+      <li><b>Difference</b> — keep everything except the overlap.</li>
+    </ul>
+    <p>The result is a real, editable vector path — keep nudging its points. Great for icons and custom silhouettes.</p>
+
+    <h3>Layer actions</h3>
+    <p>In the <b>Layers</b> panel, each layer supports the Sketch/Figma essentials:</p>
+    <ul>
+      <li><b>Rename</b> — double-click the name (or right-click → Rename).</li>
+      <li><b>Lock / unlock</b> and <b>show / hide</b> — the icons on the right of each row.</li>
+      <li><b>Reorder</b> — drag a layer up or down to change its z-order.</li>
+      <li><b>Right-click</b> for: Duplicate, Lock, Bring to front, Send to back, Delete.</li>
+      <li><b>Wrap in artboard</b> — select loose layers → <b>Wrap</b> to put them in a new frame.</li>
+    </ul>
+
+    <h2 id="prototype">Prototype &amp; play</h2>
+    <ol>
+      <li>Open the <b>Prototype</b> tab.</li>
+      <li>Select a layer, choose <b>Navigate to…</b> a frame, pick an animation (smart-animate / dissolve / push / slide) and duration, then <b>Link</b>.</li>
+      <li>Hit <b>Play</b> — click through your screens in the browser.</li>
+    </ol>
+
+    <h2 id="export">Export</h2>
+    <ul>
+      <li><b>Images</b> — export layers / artboards as PNG / SVG / PDF at 1×/2×/3×.</li>
+      <li><b>Runnable app</b> — <b>File → Build app</b> exports a full Vite + React + TypeScript project (or standalone HTML). Your design becomes code you can run.</li>
+      <li><b>Open format</b> — <b>File → Save</b> writes a diff-able design file you commit to git.</li>
+    </ul>
+
+    <h2 id="shortcuts">Keyboard shortcuts</h2>
+    <table class="keys">
+      <tr><td><span class="kbd">V</span></td><td>Select / move</td></tr>
+      <tr><td><span class="kbd">R</span></td><td>Rectangle</td></tr>
+      <tr><td><span class="kbd">O</span></td><td>Oval</td></tr>
+      <tr><td><span class="kbd">T</span></td><td>Text</td></tr>
+      <tr><td><span class="kbd">⌘</span> <span class="kbd">G</span></td><td>Group · <span class="kbd">⇧⌘G</span> ungroup</td></tr>
+      <tr><td><span class="kbd">⌘</span> <span class="kbd">D</span></td><td>Duplicate</td></tr>
+      <tr><td><span class="kbd">⌘</span> <span class="kbd">S</span></td><td>Save (open-format file)</td></tr>
+      <tr><td><span class="kbd">⌘</span> <span class="kbd">Z</span></td><td>Undo · <span class="kbd">⇧⌘Z</span> redo</td></tr>
+      <tr><td><span class="kbd">⌘</span> <span class="kbd">\</span></td><td>Toggle panels</td></tr>
+    </table>
+    <p class="muted">On Windows / Linux, <span class="kbd">⌘</span> is <span class="kbd">Ctrl</span>.</p>
+
+    <h2 id="mcp">MCP &amp; the SKILL file</h2>
+    <p>Draften is an <b>MCP server</b>: an AI client (like Claude Desktop) can read and edit your design
+      through named tools — <code>get_design</code>, <code>export_html</code>, <code>add_rectangle</code>,
+      <code>add_text</code>. Open the <b>MCP</b> panel to copy the client config.</p>
+    <p>A <a href="https://github.com/sinhaankur/Draften/blob/main/SKILL.md"><b>SKILL.md</b></a> ships in the
+      repo — it teaches any model (Claude, your on-device model, an MCP client) <em>how to drive Draften
+      well</em>: its primitives, the keyless automations, and the right way to generate a design. It's the
+      modern version of OmniGraffle's scripting, for the AI era.</p>
+
+    <h2 id="privacy">Privacy &amp; offline</h2>
+    <ul>
+      <li><b>Local-first</b> — your files are yours; nothing is uploaded to a Draften server (there isn't one).</li>
+      <li><b>Offline</b> — the desktop app and keyless automations work with no network.</li>
+      <li><b>Your git, your data</b> — the only cloud involved is the git host <em>you</em> choose.</li>
+      <li><b>On-device AI</b> — model inference runs on your machine; prompts don't leave it.</li>
+    </ul>
+
+    <h2 id="help">Troubleshooting</h2>
+    <h3>“I can't paste my token”</h3>
+    <p>Click into the token field first, then paste. If you just reinstalled, reconnect once.</p>
+    <h3>“Sign-in says ‘Load failed’”</h3>
+    <p>Use the <b>token</b> path (not the browser device-flow) — the webview blocks the GitHub device-flow
+      request for security reasons. The token flow always works.</p>
+    <h3>“Dragged a PDF and nothing happened” (desktop)</h3>
+    <p>This is fixed in current builds. If you're on an old one, update from <a href="../#download">Download</a>.</p>
+    <h3>Something else?</h3>
+    <p><a href="https://github.com/sinhaankur/Draften/issues">Open an issue on GitHub</a> — it's open source, and every report helps.</p>
+  </article>
+</div>
+
+<footer>
+  Draften — free &amp; open source (MIT) · built by <a href="https://sinhaankur.com">Ankur Sinha</a><br/>
+  <a href="../">Home</a> · <a href="https://sinhaankur.github.io/Draften/app/">Open app</a> · <a href="https://github.com/sinhaankur/Draften">GitHub</a>
+</footer>
+
+<script>
+  // Scroll-spy: highlight the TOC entry for the section in view.
+  (function(){
+    var links = [].slice.call(document.querySelectorAll('.toc a'));
+    var map = {}; links.forEach(function(a){ var id=a.getAttribute('href').slice(1); var el=document.getElementById(id); if(el) map[id]=a; });
+    var obs = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if(e.isIntersecting){ links.forEach(function(a){a.classList.remove('active');}); var a=map[e.target.id]; if(a)a.classList.add('active'); }
+      });
+    }, { rootMargin: '-78px 0px -70% 0px', threshold: 0 });
+    Object.keys(map).forEach(function(id){ var el=document.getElementById(id); if(el) obs.observe(el); });
+  })();
+</script>
+</body>
+</html>

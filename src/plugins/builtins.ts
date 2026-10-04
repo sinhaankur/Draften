@@ -12,6 +12,8 @@ import { DeterministicProvider } from "../ai/providers";
 import { PdfImporter } from "../import/pdf";
 import { DocxImporter } from "../import/docx";
 import { SketchImporter } from "../import/sketch";
+import { OmniGraffleImporter } from "../import/omnigraffle";
+import { FigmaImporter } from "../import/figma";
 import { importers } from "../import/importer";
 
 let registered = false;
@@ -21,11 +23,14 @@ export function registerBuiltins(): void {
   registered = true;
 
   // ── importers (the "open any design tool" pipeline) ──
-  importers.register(new SketchImporter());
+  // It's the user's own file — Draften opens it rather than locking them out.
+  importers.register(new SketchImporter());      // .sketch  = zip of JSON
+  importers.register(new OmniGraffleImporter()); // .graffle = gzipped binary plist
+  importers.register(new FigmaImporter());       // Figma    = REST API (link + token)
   importers.register(new PdfImporter());
   importers.register(new DocxImporter());
-  // Figma (REST API), OmniGraffle (Rust plist), XD, draw.io importers register
-  // here once built; each is just another Importer against the same contract.
+  // XD, draw.io, Visio importers register here once built; each is just another
+  // Importer against the same contract.
 
   // ── AI providers, cheapest-capable first ──
   // The deterministic provider is always available (no key, no model, offline) so

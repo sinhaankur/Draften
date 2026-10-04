@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 
 <!-- ── SEO: primary ── -->
-<title>Draften — a design-centered, dev-oriented app with an AI companion</title>
-<meta name="description" content="Draften is a free, open-source design tool built for developers: design-centered canvas, git-backed (your designs live in your repo), opens Figma/Sketch/PDF files, exports a runnable app, with an on-device AI companion. Mac, Windows, Linux, or in your browser." />
+<title>Draften — a design tool that's free, yours, and git-backed</title>
+<meta name="description" content="Draften is a free, open-source design tool built for the way developers work: a real design canvas whose files live in your git repo, that opens Figma / Sketch / PDF, exports a runnable app, with an on-device AI companion. Mac, Windows, Linux, or in your browser." />
 <meta name="keywords" content="free design tool, open source Figma alternative, Sketch alternative, git design tool, design in your repo, AI design tool, on-device AI, local-first design, design to code, PDF editor, MCP design server, developer design tool" />
 <meta name="author" content="Ankur Sinha" />
 <meta name="theme-color" content="#3d6b5f" />
@@ -14,21 +14,21 @@
 <link rel="icon" href="./logo.svg" />
 <link rel="apple-touch-icon" href="./logo.svg" />
 
-<!-- ── Open Graph (Facebook, LinkedIn, Slack…) ── -->
+<!-- ── Open Graph ── -->
 <meta property="og:type" content="website" />
 <meta property="og:site_name" content="Draften" />
-<meta property="og:title" content="Draften — design-centered, dev-oriented, with an AI companion" />
+<meta property="og:title" content="Draften — a design tool that's free, yours, and git-backed" />
 <meta property="og:description" content="Free, open-source design tool for developers. Git-backed, opens Figma/Sketch/PDF, exports a runnable app, on-device AI. Mac · Windows · Linux · Web." />
 <meta property="og:image" content="https://sinhaankur.github.io/Draften/og.png" />
 <meta property="og:url" content="https://sinhaankur.github.io/Draften/" />
 
-<!-- ── Twitter / X card ── -->
+<!-- ── Twitter / X ── -->
 <meta name="twitter:card" content="summary_large_image" />
-<meta name="twitter:title" content="Draften — a design-centered, dev-oriented app with an AI companion" />
-<meta name="twitter:description" content="Free & open source. Design-centered, git-backed, opens Figma/Sketch/PDF, on-device AI." />
+<meta name="twitter:title" content="Draften — a design tool that's free, yours, and git-backed" />
+<meta name="twitter:description" content="Free & open source. Git-backed, opens Figma/Sketch/PDF, on-device AI." />
 <meta name="twitter:image" content="https://sinhaankur.github.io/Draften/og.png" />
 
-<!-- ── Structured data (rich results) ── -->
+<!-- ── Structured data ── -->
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -37,214 +37,470 @@
   "applicationCategory": "DesignApplication",
   "operatingSystem": "macOS, Windows, Linux, Web",
   "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
-  "description": "A design-centered, dev-oriented design tool with an AI companion. Free, open-source, git-backed, opens Figma/Sketch/PDF, exports a runnable app.",
+  "description": "A free, open-source, git-backed design tool with an on-device AI companion. Opens Figma/Sketch/PDF, exports a runnable app.",
   "author": { "@type": "Person", "name": "Ankur Sinha" },
   "url": "https://sinhaankur.github.io/Draften/",
   "license": "https://opensource.org/licenses/MIT"
 }
 </script>
+
 <style>
+  /* ── Design tokens — Draften v2 brand (warm paper + deep teal-green),
+       with sinhaankur.com's type discipline: serif display, mono eyebrows. ── */
   :root{
-    /* Draften v2 brand — warm paper + teal-green accent */
-    --bg:#f6f6f4;--bg2:#efeeeb;--card:#ffffff;--ink:#1d1d1b;--muted:#71706b;
-    --acc:#3d6b5f;--acc2:#4e8475;--acc-soft:#eaf1ee;--line:rgba(0,0,0,.08);
+    --bg:#f7f6f3; --bg2:#efeeeb; --ink:#191917; --ink2:#4b4a46; --muted:#78776f;
+    --card:#ffffff; --acc:#3d6b5f; --acc2:#54897a; --acc-soft:#e9f0ed;
+    --line:rgba(25,25,23,.09); --line2:rgba(25,25,23,.14);
     --sans:-apple-system,BlinkMacSystemFont,'Segoe UI',Inter,system-ui,sans-serif;
-    --serif:'Source Serif 4',Georgia,'Times New Roman',serif;
-    --mono:ui-monospace,'SF Mono',Menlo,monospace;
+    --serif:'Fraunces','Source Serif 4',Georgia,serif;
+    --mono:ui-monospace,'SF Mono','JetBrains Mono',Menlo,monospace;
+    --maxw:1080px; --r:14px;
+  }
+  @media (prefers-color-scheme:dark){
+    :root{--bg:#141413;--bg2:#1b1b19;--ink:#ecebe7;--ink2:#b7b6b0;--muted:#8a897f;
+      --card:#1f1f1d;--acc:#86b8a8;--acc2:#6fa493;--acc-soft:#223029;
+      --line:rgba(255,255,255,.09);--line2:rgba(255,255,255,.15);}
   }
   *{box-sizing:border-box;margin:0;padding:0}
-  body{font-family:var(--sans);background:var(--bg);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased}
-  a{color:inherit}
-  .wrap{max-width:980px;margin:0 auto;padding:0 24px}
-  /* nav */
-  nav{display:flex;align-items:center;gap:12px;padding:20px 24px;max-width:980px;margin:0 auto}
-  nav .mark{width:32px;height:32px;border-radius:9px;background:var(--ink);color:#fff;display:grid;place-items:center;font-family:var(--serif);font-size:19px}
-  nav .name{font-weight:700;font-size:18px;letter-spacing:-.01em}
-  nav .ver{font-family:var(--mono);font-size:11px;color:var(--muted);background:var(--bg2);border-radius:999px;padding:2px 8px}
-  nav .spacer{flex:1}
-  nav a.link{color:var(--muted);text-decoration:none;font-size:14px;font-weight:600}
-  nav a.link:hover{color:var(--ink)}
-  /* hero */
-  .hero{position:relative;text-align:center;padding:64px 24px 44px;overflow:hidden}
-  .hero::before{content:"";position:absolute;top:-180px;left:50%;transform:translateX(-50%);width:640px;height:520px;border-radius:50%;background:radial-gradient(circle,rgba(61,107,95,.16),transparent 66%);filter:blur(50px);z-index:0}
-  .hero > *{position:relative;z-index:1}
-  .eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.26em;text-transform:uppercase;color:var(--muted);font-weight:600}
-  .hero h1{font-family:var(--serif);font-weight:500;font-size:clamp(34px,6vw,58px);line-height:1.06;margin:16px 0;letter-spacing:-.015em}
+  html{scroll-behavior:smooth}
+  body{font-family:var(--sans);background:var(--bg);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+  a{color:inherit;text-decoration:none}
+  img{max-width:100%;display:block}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 24px}
+  .eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--acc);font-weight:600}
+  h2{font-family:var(--serif);font-weight:460;font-size:clamp(27px,4.2vw,40px);line-height:1.08;letter-spacing:-.015em;margin:14px 0 10px}
+  h3{font-size:16px;font-weight:650;letter-spacing:-.01em;margin:0 0 5px}
+  p.sub{color:var(--muted);font-size:clamp(15px,1.8vw,17px);max-width:52ch}
+  :focus-visible{outline:2.5px solid var(--acc);outline-offset:3px;border-radius:4px}
+
+  /* ── Skip link (accessibility — sinhaankur.com does this) ── */
+  .skip{position:absolute;left:-999px;top:8px;background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:10px;z-index:100;font-weight:600}
+  .skip:focus{left:12px}
+
+  /* ── Nav ── */
+  header.nav{position:sticky;top:0;z-index:50;backdrop-filter:saturate(180%) blur(14px);background:color-mix(in srgb,var(--bg) 82%,transparent);border-bottom:1px solid var(--line)}
+  .nav-in{display:flex;align-items:center;gap:14px;max-width:var(--maxw);margin:0 auto;padding:13px 24px}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:17px;letter-spacing:-.02em}
+  .brand .mk{width:28px;height:28px}
+  .brand .ver{font-family:var(--mono);font-size:10.5px;color:var(--muted);background:var(--bg2);border:1px solid var(--line);border-radius:999px;padding:2px 7px;font-weight:500}
+  .nav-links{display:flex;gap:4px;margin-left:12px}
+  .nav-links a{color:var(--ink2);font-size:14px;font-weight:550;padding:7px 11px;border-radius:9px;transition:.15s}
+  .nav-links a:hover{color:var(--ink);background:var(--bg2)}
+  .nav-sp{flex:1}
+  .nav-cta{display:inline-flex;align-items:center;gap:7px;background:var(--ink);color:var(--bg);font-weight:650;font-size:14px;padding:9px 16px;border-radius:10px;transition:.15s}
+  .nav-cta:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(25,25,23,.2)}
+  .nav-ghost{color:var(--ink2);font-size:14px;font-weight:600;padding:9px 12px}
+  @media(max-width:760px){.nav-links{display:none}}
+
+  /* ── Hero ── */
+  .hero{position:relative;text-align:center;padding:84px 24px 56px;overflow:hidden}
+  .hero::before{content:"";position:absolute;inset:-40% 0 auto 0;height:620px;margin:auto;width:760px;left:50%;transform:translateX(-50%);
+    background:radial-gradient(60% 60% at 50% 40%,color-mix(in srgb,var(--acc) 22%,transparent),transparent 70%);filter:blur(42px);z-index:0}
+  .hero>*{position:relative;z-index:1}
+  .hero h1{font-family:var(--serif);font-weight:440;font-size:clamp(38px,6.6vw,68px);line-height:1.03;letter-spacing:-.025em;margin:18px auto 0;max-width:15ch}
   .hero h1 em{font-style:italic;color:var(--acc)}
-  .hero p.lead{max-width:600px;margin:0 auto;color:var(--muted);font-size:clamp(15px,2.3vw,18px)}
-  .badges{display:flex;gap:18px;justify-content:center;flex-wrap:wrap;margin-top:16px;color:var(--muted);font-size:13px}
-  .badges b{color:var(--acc);font-weight:700}
-  /* buttons */
-  .cta{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:28px;align-items:center}
-  .btn{display:inline-flex;align-items:center;gap:9px;padding:14px 24px;border-radius:12px;font-weight:700;font-size:15px;text-decoration:none;transition:.14s;border:1.5px solid transparent;cursor:pointer}
-  .btn.primary{background:var(--ink);color:#fff;box-shadow:0 8px 24px rgba(29,29,27,.18)}
-  .btn.primary:hover{background:#000;transform:translateY(-1px)}
-  .btn.ghost{border-color:var(--line);color:var(--ink);background:var(--card)}
+  .hero .lead{max-width:60ch;margin:20px auto 0;color:var(--ink2);font-size:clamp(16px,2.2vw,19px)}
+  .hero .cta{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:30px;align-items:center}
+  .btn{display:inline-flex;align-items:center;gap:9px;padding:14px 26px;border-radius:12px;font-weight:650;font-size:15.5px;transition:.15s;border:1.5px solid transparent;cursor:pointer}
+  .btn.primary{background:var(--ink);color:var(--bg);box-shadow:0 10px 30px rgba(25,25,23,.18)}
+  .btn.primary:hover{transform:translateY(-2px);box-shadow:0 16px 40px rgba(25,25,23,.26)}
+  .btn.ghost{border-color:var(--line2);color:var(--ink);background:var(--card)}
   .btn.ghost:hover{border-color:var(--acc)}
-  .btn .os{font-size:18px}
-  .cta .sub-note{flex-basis:100%;color:var(--muted);font-size:13px;margin-top:2px}
-  .cta .sub-note a{color:var(--acc);font-weight:600;text-decoration:none}
-  .downloads{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:18px}
-  .dl{display:inline-flex;align-items:center;gap:7px;padding:9px 16px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink);text-decoration:none;font-size:13px;font-weight:600;transition:.14s}
-  .dl:hover{border-color:var(--acc)}
+  .sysnote{margin-top:14px;color:var(--muted);font-size:13px}
+  .sysnote a{color:var(--acc);font-weight:600}
+  .trust{display:flex;gap:22px;justify-content:center;flex-wrap:wrap;margin-top:22px;color:var(--muted);font-size:13.5px}
+  .trust b{color:var(--acc)}
+
+  /* ── Hero product shot ── */
+  .shot{max-width:960px;margin:44px auto 0;border-radius:18px;overflow:hidden;border:1px solid var(--line2);
+    box-shadow:0 30px 80px -30px rgba(25,25,23,.4);background:var(--card)}
+  .shot .chrome{display:flex;align-items:center;gap:7px;padding:11px 15px;border-bottom:1px solid var(--line);background:var(--bg2)}
+  .shot .dot{width:11px;height:11px;border-radius:50%}
+  .shot .body{display:grid;grid-template-columns:200px 1fr 220px;min-height:340px}
+  .shot .rail{border-right:1px solid var(--line);padding:16px 14px;font-size:12.5px;color:var(--ink2)}
+  .shot .rail .grp{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:14px 0 6px}
+  .shot .rail .row{display:flex;align-items:center;gap:8px;padding:5px 7px;border-radius:7px}
+  .shot .rail .row.on{background:var(--acc-soft);color:var(--acc);font-weight:600}
+  .shot .rail .sw{width:13px;height:13px;border-radius:3px;border:1.4px solid currentColor;opacity:.7}
+  .shot .canvas{background:
+     linear-gradient(var(--line) 1px,transparent 1px) 0 0/22px 22px,
+     linear-gradient(90deg,var(--line) 1px,transparent 1px) 0 0/22px 22px,
+     var(--bg);display:grid;place-items:center;position:relative}
+  .shot .frame{width:min(66%,360px);aspect-ratio:9/16;max-height:280px;background:linear-gradient(160deg,#1f2a27,#2d3f3a);border-radius:18px;
+    box-shadow:0 20px 50px -20px rgba(0,0,0,.5);position:relative;overflow:hidden}
+  .shot .frame::before{content:"";position:absolute;inset:14px;border-radius:12px;background:
+    radial-gradient(120px 80px at 30% 20%,rgba(134,184,168,.5),transparent),
+    radial-gradient(140px 100px at 80% 90%,rgba(185,127,20,.35),transparent)}
+  .shot .insp{border-left:1px solid var(--line);padding:16px 14px;font-size:12px;color:var(--ink2)}
+  .shot .insp .sec{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:14px 0 6px}
+  .shot .insp .f{display:flex;justify-content:space-between;padding:5px 8px;border:1px solid var(--line);border-radius:7px;margin-bottom:5px}
+  @media(max-width:820px){.shot .body{grid-template-columns:1fr}.shot .rail,.shot .insp{display:none}}
+
+  /* ── Sections ── */
+  section{padding:68px 0;border-top:1px solid var(--line)}
+  .feat-head{max-width:60ch;margin-bottom:34px}
+  .cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(248px,1fr));gap:18px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:24px;transition:.16s}
+  .card:hover{border-color:var(--acc);transform:translateY(-3px);box-shadow:0 14px 34px -18px rgba(25,25,23,.3)}
+  .card .ic{width:34px;height:34px;border-radius:9px;background:var(--acc-soft);color:var(--acc);display:grid;place-items:center;margin-bottom:14px}
+  .card p{color:var(--muted);font-size:14px}
+
+  /* ── Flow (the free-user git journey) ── */
+  .flow{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:16px;counter-reset:step}
+  .step{position:relative;background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:22px 20px}
+  .step::before{counter-increment:step;content:counter(step);position:absolute;top:-13px;left:20px;width:28px;height:28px;border-radius:50%;
+    background:var(--acc);color:#fff;display:grid;place-items:center;font-weight:700;font-size:13px;font-family:var(--mono)}
+  .step h3{margin-top:8px}
+  .step p{color:var(--muted);font-size:13.5px}
+  .step code{font-family:var(--mono);font-size:12px;background:var(--bg2);border:1px solid var(--line);border-radius:6px;padding:1px 6px}
+
+  /* ── Comparison table ── */
+  .cmp{width:100%;border-collapse:collapse;font-size:14px;border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+  .cmp th,.cmp td{padding:13px 16px;text-align:left;border-bottom:1px solid var(--line)}
+  .cmp thead th{background:var(--bg2);font-size:12.5px;font-weight:650}
+  .cmp th:first-child{width:38%}
+  .cmp td.y{color:var(--acc);font-weight:600}
+  .cmp td.n{color:var(--muted)}
+  .cmp tr:last-child td{border-bottom:0}
+  .cmp .draften{background:var(--acc-soft)}
+
+  /* ── Downloads ── */
+  .dls{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:26px}
+  .dl{display:inline-flex;align-items:center;gap:10px;padding:14px 18px;border-radius:12px;border:1px solid var(--line2);background:var(--card);min-width:190px;transition:.15s}
+  .dl:hover{border-color:var(--acc);transform:translateY(-2px)}
   .dl.current{border-color:var(--acc);background:var(--acc-soft)}
-  .dl .tag{font-family:var(--mono);font-size:10px;color:var(--acc);font-weight:700}
-  .dl small{color:var(--muted);font-weight:500}
-  /* sections */
-  section{padding:56px 0;border-top:1px solid var(--line)}
-  h2{font-family:var(--serif);font-weight:500;font-size:clamp(24px,4vw,32px);margin-bottom:8px;letter-spacing:-.01em}
-  .sub{color:var(--muted);margin-bottom:28px}
-  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px}
-  .feat{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:22px;transition:.14s}
-  .feat:hover{border-color:var(--acc);transform:translateY(-2px)}
-  .feat .ic{font-size:22px}
-  .feat h3{font-size:16px;margin:12px 0 6px}
-  .feat p{color:var(--muted);font-size:14px}
-  .free{background:linear-gradient(135deg,var(--acc-soft),transparent);border:1px solid var(--line);border-radius:16px;padding:28px}
-  .free ul{list-style:none;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;margin-top:14px}
-  .free li{color:var(--muted);font-size:14px}
-  .free li b{color:var(--ink)}
-  footer{padding:40px 24px 60px;text-align:center;color:var(--muted);font-size:13px;border-top:1px solid var(--line)}
-  footer a{color:var(--acc);text-decoration:none}
+  .dl .os{font-size:22px}
+  .dl b{font-size:14.5px;display:block}
+  .dl small{color:var(--muted);font-size:12px}
+  .dl .tag{margin-left:auto;font-family:var(--mono);font-size:9.5px;color:#fff;background:var(--acc);border-radius:999px;padding:3px 7px;font-weight:700}
+
+  /* ── Free band ── */
+  .band{background:linear-gradient(135deg,var(--acc-soft),transparent 80%);border:1px solid var(--line);border-radius:18px;padding:34px}
+  .band ul{list-style:none;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-top:18px}
+  .band li{color:var(--muted);font-size:14px;display:flex;gap:9px;align-items:flex-start}
+  .band li b{color:var(--ink)}
+  .band li .ck{color:var(--acc);flex:none;margin-top:2px}
+
+  /* ── Final CTA ── */
+  .final{text-align:center;padding:84px 24px}
+  .final h2{margin-bottom:8px}
+
+  /* ── Footer ── */
+  footer{border-top:1px solid var(--line);padding:52px 24px 60px;background:var(--bg2)}
+  .foot{max-width:var(--maxw);margin:0 auto;display:grid;grid-template-columns:1.6fr 1fr 1fr 1fr;gap:28px}
+  .foot .col h4{font-size:12px;font-family:var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:12px}
+  .foot .col a{display:block;color:var(--ink2);font-size:14px;padding:4px 0;transition:.14s}
+  .foot .col a:hover{color:var(--acc)}
+  .foot .about p{color:var(--muted);font-size:13.5px;margin-top:10px;max-width:34ch}
+  .foot-base{max-width:var(--maxw);margin:34px auto 0;padding-top:20px;border-top:1px solid var(--line);color:var(--muted);font-size:13px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px}
+  .foot-base a{color:var(--acc);font-weight:600}
+  @media(max-width:760px){.foot{grid-template-columns:1fr 1fr}.foot .about{grid-column:1/-1}}
+
+  .vis{display:inline-grid;place-items:center}
 </style>
 </head>
 <body>
-  <nav>
-    <span class="mark">D</span>
-    <span class="name">Draften</span>
-    <span class="ver">v0.4</span>
-    <span class="spacer"></span>
-    <a class="link" href="https://sinhaankur.github.io/Draften/app/">Open in browser</a>
-    <a class="link" href="https://github.com/sinhaankur/Draften">GitHub</a>
-  </nav>
+<a href="#main" class="skip">Skip to content</a>
 
-  <header class="hero">
+<!-- ── NAV ── -->
+<header class="nav">
+  <div class="nav-in">
+    <a class="brand" href="/Draften/" aria-label="Draften home">
+      <img class="mk" src="./logo.svg" alt="" width="28" height="28" />
+      <span>Draften</span>
+      <span class="ver">v1.0.00</span>
+    </a>
+    <nav class="nav-links" aria-label="Primary">
+      <a href="#design">Design</a>
+      <a href="#prototype">Prototype</a>
+      <a href="#git">Git-backed</a>
+      <a href="#compare">Compare</a>
+      <a href="./docs/">Docs</a>
+    </nav>
+    <span class="nav-sp"></span>
+    <a class="nav-ghost" href="https://github.com/sinhaankur/Draften">GitHub</a>
+    <a class="nav-cta" href="#download">
+      <svg class="vis" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/><path d="M12 15V3"/></svg>
+      Get Draften
+    </a>
+  </div>
+</header>
+
+<main id="main">
+  <!-- ── HERO ── -->
+  <section class="hero" style="border:0">
     <p class="eyebrow">free · open source · yours</p>
-    <h1>Design-centered, <em>dev-oriented</em> — with an AI companion.</h1>
-    <p class="lead">Draften is a free, open-source design tool built the way developers work:
-      a real design canvas whose files live in <b>your git repo</b>, that opens Figma / Sketch / PDF,
-      exports a runnable app, and has an <b>on-device AI companion</b>. No cloud, no subscription.</p>
-    <div class="badges"><span><b>✓</b> Git-backed</span><span><b>✓</b> On-device AI</span><span><b>✓</b> Opens their files</span><span><b>✓</b> Free &amp; open source</span></div>
-
-    <!-- Primary CTA adapts to the visitor's OS (set by JS below) -->
+    <h1>A design tool that's <em>free</em>, yours, and git-backed.</h1>
+    <p class="lead">Draften is an open-source design tool built the way developers work — a real canvas
+      whose files live in <b>your git repo</b>, that opens Figma / Sketch / PDF, exports a runnable app,
+      and has an <b>on-device AI companion</b>. No cloud. No subscription. Ever.</p>
     <div class="cta">
-      <a class="btn primary" id="primaryDownload" href="https://github.com/sinhaankur/Draften/releases">
-        <span class="os" id="primaryOsIcon">⬇</span>
-        <span id="primaryLabel">Download Draften</span>
+      <a class="btn primary" id="primaryDownload" href="#download">
+        <svg class="vis" id="primaryOsIcon" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/><path d="M12 15V3"/></svg>
+        <span id="primaryLabel">Get Draften — free</span>
       </a>
       <a class="btn ghost" href="https://sinhaankur.github.io/Draften/app/">Use in your browser →</a>
-      <p class="sub-note" id="osNote">Pick your platform below, or <a href="https://sinhaankur.github.io/Draften/app/">use it in the browser</a> — no install.</p>
+    </div>
+    <p class="sysnote" id="osNote">Mac · Windows · Linux — every chip. Or <a href="https://sinhaankur.github.io/Draften/app/">run it in the browser</a>, no install.</p>
+    <div class="trust">
+      <span><b>✓</b> Git is the backend</span>
+      <span><b>✓</b> On-device AI</span>
+      <span><b>✓</b> Opens their files</span>
+      <span><b>✓</b> MIT licensed</span>
     </div>
 
-    <!-- every platform + chip; the one matching the visitor is highlighted -->
-    <div class="downloads" id="downloads">
-      <a class="dl" data-os="mac" href="https://github.com/sinhaankur/Draften/releases"><span>🍎</span> macOS<small> · Apple Silicon &amp; Intel</small></a>
-      <a class="dl" data-os="windows" href="https://github.com/sinhaankur/Draften/releases"><span>🪟</span> Windows<small> · x64 &amp; ARM</small></a>
-      <a class="dl" data-os="linux" href="https://github.com/sinhaankur/Draften/releases"><span>🐧</span> Linux<small> · x64 &amp; ARM</small></a>
-      <a class="dl" data-os="web" href="https://sinhaankur.github.io/Draften/app/"><span>🌐</span> Web app<small> · any device</small></a>
-    </div>
-    <p style="text-align:center;color:var(--muted);font-size:13px;margin-top:10px">Mac · Windows · Linux — every chip, every family. Free forever.</p>
-  </header>
-
-  <div class="wrap">
-    <section>
-      <h2>One tool for the whole flow</h2>
-      <p class="sub">Brand → tokens → components → screens → diagrams → code — views of one document.</p>
-      <div class="grid">
-        <div class="feat"><div class="ic">🎨</div><h3>Design + diagram</h3><p>A unified canvas — UI screens, flows, mind maps, journeys — all in one place.</p></div>
-        <div class="feat"><div class="ic">📥</div><h3>Opens their files</h3><p>Import Sketch, PDF &amp; Word; paste from Figma. Don't get locked in.</p></div>
-        <div class="feat"><div class="ic">✦</div><h3>On-device AI</h3><p>Generate &amp; edit designs with a local model (LM Studio / Ollama) or a no-model engine. No keys, no bills.</p></div>
-        <div class="feat"><div class="ic">🔍</div><h3>Inspect &amp; edit</h3><p>Select any layer — tweak its size, color, text &amp; corners. Then read the generated React/HTML.</p></div>
-        <div class="feat"><div class="ic">⑂</div><h3>Versioned with Git</h3><p>Your designs are files. Sign in with GitHub, branch, commit, and open PRs.</p></div>
-        <div class="feat"><div class="ic">🧩</div><h3>Extend it</h3><p>Install plugins from GitHub. Open source &amp; MIT — improve it, make it yours.</p></div>
+    <!-- Honest product shot: the actual app layout, drawn in CSS (no stale PNG) -->
+    <div class="shot" role="img" aria-label="Draften's interface: a layers panel, a design canvas with a phone artboard, and a Sketch-style inspector.">
+      <div class="chrome"><span class="dot" style="background:#ec6a5e"></span><span class="dot" style="background:#f4bf4f"></span><span class="dot" style="background:#61c454"></span><span style="margin-left:10px;font-size:12px;color:var(--muted);font-family:var(--mono)">Draften — Onboarding</span></div>
+      <div class="body">
+        <div class="rail">
+          <div class="grp">Pages</div>
+          <div class="row on"><span class="sw"></span> Onboarding</div>
+          <div class="row"><span class="sw"></span> Settings</div>
+          <div class="grp">Layers</div>
+          <div class="row"><span class="sw"></span> Hero frame</div>
+          <div class="row"><span class="sw"></span> CTA button</div>
+          <div class="row"><span class="sw"></span> Avatar</div>
+        </div>
+        <div class="canvas"><div class="frame"></div></div>
+        <div class="insp">
+          <div class="sec">Position</div>
+          <div class="f"><span>X</span><span>24</span></div>
+          <div class="f"><span>Y</span><span>120</span></div>
+          <div class="sec">Fill</div>
+          <div class="f"><span>#3D6B5F</span><span>100%</span></div>
+          <div class="sec">Effects</div>
+          <div class="f"><span>Shadow</span><span>Y 8</span></div>
+        </div>
       </div>
-    </section>
+    </div>
+  </section>
 
-    <section>
-      <div class="free">
-        <h2>Free at every level — for real</h2>
-        <p class="sub">Not free-until-you-need-the-good-part. Free because of how it's built.</p>
+  <!-- ── DESIGN ── -->
+  <section id="design">
+    <div class="wrap">
+      <div class="feat-head">
+        <p class="eyebrow">Design</p>
+        <h2>A real canvas — not a wireframe toy.</h2>
+        <p class="sub">Frames, artboards, nested layers, a Sketch-grade inspector, boolean shapes,
+          align &amp; distribute, shared styles. Build product UIs, not just boxes.</p>
+      </div>
+      <div class="cols">
+        <div class="card"><div class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg></div><h3>Artboards &amp; layers</h3><p>iPhone, Android, tablet, desktop presets. A nested layer tree with lock, reorder, and rename.</p></div>
+        <div class="card"><div class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="9" r="6"/><circle cx="15" cy="15" r="6"/></svg></div><h3>Boolean shapes</h3><p>Union, Subtract, Intersect, Difference — real vector paths you can keep editing.</p></div>
+        <div class="card"><div class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h16M4 12l4-4M4 12l4 4"/><rect x="2" y="3" width="4" height="18" rx="1"/></svg></div><h3>Figma-grade inspector</h3><p>Position, size, opacity, fill, stroke, effects — tweak any layer precisely.</p></div>
+        <div class="card"><div class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18M3 12h18"/></svg></div><h3>Align &amp; distribute</h3><p>Snap, align edges, distribute evenly — the muscle memory you already have.</p></div>
+        <div class="card"><div class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7V4h16v3M9 20h6M12 4v16"/></svg></div><h3>Shared styles &amp; tokens</h3><p>Color &amp; text styles apply across the doc. Your design system, versioned.</p></div>
+        <div class="card"><div class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3v4a1 1 0 0 0 1 1h4"/><path d="M17 21H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7l5 5v11a2 2 0 0 1-2 2Z"/></svg></div><h3>Opens their files</h3><p>Import Sketch, PDF &amp; Word; paste from Figma. Edit the PDF someone sent you.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── AI ── -->
+  <section id="ai">
+    <div class="wrap">
+      <div class="feat-head">
+        <p class="eyebrow">AI companion</p>
+        <h2>An AI that actually draws — on your device.</h2>
+        <p class="sub">Describe a screen and it builds real, editable layers. Keyless automations (table of
+          contents, grids, nav bars, flowcharts) run offline with no model at all. Bring a local model
+          (LM Studio / Ollama) or Apple Intelligence for conversation. No keys, no per-use bills.</p>
+      </div>
+      <div class="cols">
+        <div class="card"><div class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l2 5 5 2-5 2-2 5-2-5-5-2 5-2 2-5Z"/></svg></div><h3>Describe → it draws</h3><p>“A fitness app home screen” becomes real frames and layers you can refine.</p></div>
+        <div class="card"><div class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 7h14M5 12h14M5 17h9"/></svg></div><h3>Keyless automations</h3><p>Table of contents, card grids, nav bars, checklists, flowcharts — instant, offline.</p></div>
+        <div class="card"><div class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M9 9h6v6H9z"/></svg></div><h3>MCP server + SKILL</h3><p>Draften is an MCP server — drive it from Claude. A SKILL.md teaches any model to use it well.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── GIT FLOW (the free-user journey) ── -->
+  <section id="git">
+    <div class="wrap">
+      <div class="feat-head">
+        <p class="eyebrow">Git-backed · for people who can't pay the subscription</p>
+        <h2>Your designs are files. Your account is your git login.</h2>
+        <p class="sub">No account to create, no cloud to pay for. Sign in with a free GitHub token, and your
+          designs branch, commit, and open PRs like any other code. GitLab &amp; more are on the way.</p>
+      </div>
+      <div class="flow">
+        <div class="step"><h3>Install or open in browser</h3><p>Grab the build for your OS, or just use the web app. No sign-up wall.</p></div>
+        <div class="step"><h3>Connect a GitHub token</h3><p>Create a free token with <code>repo</code> scope, paste it once. That's your account.</p></div>
+        <div class="step"><h3>Design on a real canvas</h3><p>Frames, layers, the AI companion — make real product UIs.</p></div>
+        <div class="step"><h3>Commit to your repo</h3><p>Save as open-format files, commit, branch, open a PR. Your history is git history.</p></div>
+      </div>
+      <p class="sysnote" style="margin-top:20px">Full walkthrough in the <a href="./docs/">documentation</a>, including creating the token step-by-step.</p>
+    </div>
+  </section>
+
+  <!-- ── PROTOTYPE ── -->
+  <section id="prototype">
+    <div class="wrap">
+      <div class="feat-head">
+        <p class="eyebrow">Prototype</p>
+        <h2>Link screens. Play it through.</h2>
+        <p class="sub">Select a layer, link it to another frame with an animation, and play the flow —
+          click-through navigation, right in the browser.</p>
+      </div>
+      <div class="cols">
+        <div class="card"><div class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="m6 3 14 9-14 9V3Z"/></svg></div><h3>Play the flow</h3><p>Tap hotspots to navigate between screens, with smart-animate / dissolve / push / slide.</p></div>
+        <div class="card"><div class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 17H7A5 5 0 0 1 7 7h2M15 7h2a5 5 0 0 1 0 10h-2M8 12h8"/></svg></div><h3>Real interactions</h3><p>Links persist with the doc — not a throwaway preview mode.</p></div>
+        <div class="card"><div class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v10H4z"/><path d="M8 19h8"/></svg></div><h3>Any device</h3><p>Preview on the web — Mac, Windows, Linux, phone. No app needed to view.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── COMPARE ── -->
+  <section id="compare">
+    <div class="wrap">
+      <div class="feat-head">
+        <p class="eyebrow">Compare</p>
+        <h2>What makes Draften different.</h2>
+        <p class="sub">The same primitives as Figma and Sketch — plus the things only a free, local,
+          git-native, AI-first tool can do.</p>
+      </div>
+      <table class="cmp">
+        <thead><tr><th>&nbsp;</th><th class="draften">Draften</th><th>Figma</th><th>Sketch</th></tr></thead>
+        <tbody>
+          <tr><td>Price</td><td class="y draften">Free · MIT</td><td class="n">Freemium</td><td class="n">Subscription</td></tr>
+          <tr><td>Platforms</td><td class="y draften">Mac · Win · Linux · Web</td><td class="n">Web + apps</td><td class="n">macOS only</td></tr>
+          <tr><td>Files live in</td><td class="y draften">Your git repo</td><td class="n">Figma cloud</td><td class="n">Sketch cloud</td></tr>
+          <tr><td>Works offline</td><td class="y draften">Yes</td><td class="n">Limited</td><td class="n">Yes (Mac)</td></tr>
+          <tr><td>Opens Sketch / PDF</td><td class="y draften">Yes</td><td class="n">Partial</td><td class="n">Sketch only</td></tr>
+          <tr><td>On-device AI</td><td class="y draften">Yes · keyless</td><td class="n">Cloud</td><td class="n">Cloud client</td></tr>
+          <tr><td>MCP server</td><td class="y draften">Yes</td><td class="n">—</td><td class="n">Yes</td></tr>
+          <tr><td>Export a runnable app</td><td class="y draften">Yes</td><td class="n">Plugins</td><td class="n">—</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ── FREE BAND ── -->
+  <section>
+    <div class="wrap">
+      <div class="band">
+        <p class="eyebrow">Free, for real</p>
+        <h2>Not free-until-the-good-part. Free by design.</h2>
         <ul>
-          <li><b>Local-first files</b> — no cloud to pay for</li>
-          <li><b>Git is the backend</b> — no servers we run</li>
-          <li><b>AI on your device</b> — no per-use API bills</li>
-          <li><b>Open source (MIT)</b> — anyone can use + improve it</li>
+          <li><span class="ck">✓</span><span><b>Local-first files</b> — no cloud for us to charge for</span></li>
+          <li><span class="ck">✓</span><span><b>Git is the backend</b> — no servers we run</span></li>
+          <li><span class="ck">✓</span><span><b>AI on your device</b> — no per-use API bills</span></li>
+          <li><span class="ck">✓</span><span><b>Open source (MIT)</b> — use it, fork it, make it yours</span></li>
         </ul>
       </div>
-    </section>
+    </div>
+  </section>
 
-    <section>
-      <h2>Built for people who can't pay the subscription</h2>
-      <p class="sub">Students, indie designers, folks between jobs, anyone anywhere — a real,
-        capable design tool that opens the files everyone else sends you, without a paywall.
-        Use it, and help make it better.</p>
-      <div class="cta" style="justify-content:flex-start">
-        <a class="btn primary" href="https://github.com/sinhaankur/Draften">Contribute on GitHub</a>
-        <a class="btn ghost" href="https://sinhaankur.github.io/Draften/app/">Try it now →</a>
+  <!-- ── DOWNLOAD ── -->
+  <section id="download">
+    <div class="wrap" style="text-align:center">
+      <p class="eyebrow">Download</p>
+      <h2>Get Draften for your machine.</h2>
+      <p class="sub" style="margin:0 auto">Every platform, every chip. Free forever. Or use it in the browser.</p>
+      <div class="dls" id="downloads">
+        <a class="dl" data-os="mac" href="https://github.com/sinhaankur/Draften/releases"><span class="os">🍎</span><span><b>macOS</b><small>Apple Silicon &amp; Intel · .dmg</small></span></a>
+        <a class="dl" data-os="windows" href="https://github.com/sinhaankur/Draften/releases"><span class="os">🪟</span><span><b>Windows</b><small>x64 &amp; ARM · .msi</small></span></a>
+        <a class="dl" data-os="linux" href="https://github.com/sinhaankur/Draften/releases"><span class="os">🐧</span><span><b>Linux</b><small>x64 &amp; ARM · AppImage &amp; .deb</small></span></a>
+        <a class="dl" data-os="web" href="https://sinhaankur.github.io/Draften/app/"><span class="os">🌐</span><span><b>Web app</b><small>Any device · no install</small></span></a>
       </div>
-    </section>
+    </div>
+  </section>
+</main>
+
+<!-- ── FINAL CTA ── -->
+<div class="final">
+  <p class="eyebrow">Built for everyone shut out by the paywall</p>
+  <h2>A real design tool should be free.</h2>
+  <p class="sub" style="margin:0 auto 26px">Students, indie designers, folks between jobs, anyone anywhere.
+    Use it — and help make it better.</p>
+  <div class="cta" style="justify-content:center;display:flex;gap:12px;flex-wrap:wrap">
+    <a class="btn primary" href="#download">Get Draften — free</a>
+    <a class="btn ghost" href="https://github.com/sinhaankur/Draften">Contribute on GitHub</a>
   </div>
+</div>
 
-  <footer>
-    Draften — free &amp; open source (MIT) · built by <a href="https://sinhaankur.com">Ankur Sinha</a><br/>
-    <a href="https://github.com/sinhaankur/Draften">github.com/sinhaankur/Draften</a>
-  </footer>
+<!-- ── FOOTER ── -->
+<footer>
+  <div class="foot">
+    <div class="col about">
+      <a class="brand" href="/Draften/"><img class="mk" src="./logo.svg" alt="" width="28" height="28" /><span>Draften</span></a>
+      <p>A free, open-source, git-backed design tool with an on-device AI companion. Built so no one has to pay to design.</p>
+    </div>
+    <div class="col">
+      <h4>Product</h4>
+      <a href="#design">Design</a>
+      <a href="#prototype">Prototype</a>
+      <a href="#git">Git-backed</a>
+      <a href="#compare">Compare</a>
+      <a href="#download">Download</a>
+    </div>
+    <div class="col">
+      <h4>Learn</h4>
+      <a href="./docs/">Documentation</a>
+      <a href="./docs/#flow">Getting started</a>
+      <a href="https://sinhaankur.github.io/Draften/app/">Open web app</a>
+      <a href="https://github.com/sinhaankur/Draften/blob/main/CHANGELOG.md">Changelog</a>
+    </div>
+    <div class="col">
+      <h4>Project</h4>
+      <a href="https://github.com/sinhaankur/Draften">GitHub</a>
+      <a href="https://github.com/sinhaankur/Draften/issues">Report an issue</a>
+      <a href="https://github.com/sinhaankur/Draften/blob/main/LICENSE">License (MIT)</a>
+      <a href="https://sinhaankur.com">About the maker</a>
+    </div>
+  </div>
+  <div class="foot-base">
+    <span>Draften — free &amp; open source (MIT) · built by <a href="https://sinhaankur.com">Ankur Sinha</a></span>
+    <span>© 2026 Ankur Sinha</span>
+  </div>
+</footer>
 
-  <script>
-    // Spec detection — detect the OS AND the chip (Apple Silicon / Intel / ARM),
-    // for every platform + family, so a visitor gets the exact build in one tap.
-    (async function () {
-      var ua = navigator.userAgent || "";
-      var uaData = navigator.userAgentData || null;
-      var platform = (uaData && uaData.platform) || navigator.platform || "";
-      var p = (platform + " " + ua).toLowerCase();
+<script>
+  // Spec detection — detect OS + chip, so a visitor gets the exact build in one tap.
+  (async function () {
+    var ua = navigator.userAgent || "";
+    var uaData = navigator.userAgentData || null;
+    var platform = (uaData && uaData.platform) || navigator.platform || "";
+    var p = (platform + " " + ua).toLowerCase();
 
-      // OS
-      var os = "unknown";
-      if (/mac|iphone|ipad|ipod/.test(p)) os = /iphone|ipad|ipod/.test(p) ? "ios" : "mac";
-      else if (/win/.test(p)) os = "windows";
-      else if (/linux|x11|cros/.test(p)) os = "linux";
-      if (/android/.test(p)) os = "android";
+    var os = "unknown";
+    if (/mac|iphone|ipad|ipod/.test(p)) os = /iphone|ipad|ipod/.test(p) ? "ios" : "mac";
+    else if (/win/.test(p)) os = "windows";
+    else if (/linux|x11|cros/.test(p)) os = "linux";
+    if (/android/.test(p)) os = "android";
 
-      // Chip / architecture — best effort (UA hints, then heuristics).
-      var arch = "";
-      try {
-        if (uaData && uaData.getHighEntropyValues) {
-          var hv = await uaData.getHighEntropyValues(["architecture", "bitness"]);
-          if (hv.architecture === "arm") arch = "ARM64";
-          else if (hv.architecture === "x86") arch = hv.bitness === "64" ? "Intel (x64)" : "Intel (x86)";
-        }
-      } catch (e) {}
-      if (!arch) {
-        if (os === "mac") arch = (navigator.maxTouchPoints > 1 || /arm|apple/.test(p)) ? "Apple Silicon" : "Apple Silicon or Intel";
-        else if (/aarch64|arm64|arm/.test(p)) arch = "ARM64";
-        else if (/x86_64|win64|x64|wow64/.test(p)) arch = "Intel / AMD (x64)";
+    var arch = "";
+    try {
+      if (uaData && uaData.getHighEntropyValues) {
+        var hv = await uaData.getHighEntropyValues(["architecture", "bitness"]);
+        if (hv.architecture === "arm") arch = "ARM64";
+        else if (hv.architecture === "x86") arch = hv.bitness === "64" ? "Intel (x64)" : "Intel (x86)";
       }
+    } catch (e) {}
+    if (!arch) {
+      if (os === "mac") arch = (navigator.maxTouchPoints > 1 || /arm|apple/.test(p)) ? "Apple Silicon" : "Apple Silicon or Intel";
+      else if (/aarch64|arm64|arm/.test(p)) arch = "ARM64";
+      else if (/x86_64|win64|x64|wow64/.test(p)) arch = "Intel / AMD (x64)";
+    }
 
-      var RELEASES = "https://github.com/sinhaankur/Draften/releases";
-      var WEB = "https://sinhaankur.github.io/Draften/app/";
-      var map = {
-        mac:     { icon: "🍎", label: "Download for macOS",   href: RELEASES, note: (arch || "Apple Silicon &amp; Intel") + " · .dmg" },
-        windows: { icon: "🪟", label: "Download for Windows", href: RELEASES, note: (arch || "x64 &amp; ARM64") + " · .msi" },
-        linux:   { icon: "🐧", label: "Download for Linux",   href: RELEASES, note: (arch || "x64 &amp; ARM64") + " · AppImage &amp; .deb" },
-        ios:     { icon: "🌐", label: "Open the web app",     href: WEB,      note: "Runs right here — no install on iOS" },
-        android: { icon: "🌐", label: "Open the web app",     href: WEB,      note: "Runs right here — no install" },
-        unknown: { icon: "⬇", label: "Download Draften",     href: RELEASES, note: "Mac · Windows · Linux — all chips. Or use it in the browser." }
-      };
+    var RELEASES = "https://github.com/sinhaankur/Draften/releases";
+    var WEB = "https://sinhaankur.github.io/Draften/app/";
+    var names = { mac: "macOS", windows: "Windows", linux: "Linux" };
+    var label = names[os] ? ("Download for " + names[os] + (arch ? " · " + arch : "")) : "Get Draften — free";
+    var href = (os === "ios" || os === "android" || os === "unknown") ? (os === "unknown" ? "#download" : WEB) : RELEASES;
 
-      var m = map[os] || map.unknown;
-      document.getElementById("primaryLabel").textContent = m.label + (arch && (os === "mac" || os === "windows" || os === "linux") ? " · " + arch : "");
-      document.getElementById("primaryOsIcon").textContent = m.icon;
-      document.getElementById("primaryDownload").setAttribute("href", m.href);
-      document.getElementById("osNote").innerHTML = m.note + (os === "mac" || os === "windows" || os === "linux"
-        ? " · <a href='" + WEB + "'>or use it in the browser</a>"
-        : "");
+    var pl = document.getElementById("primaryLabel");
+    var pd = document.getElementById("primaryDownload");
+    if (pl) pl.textContent = label;
+    if (pd) pd.setAttribute("href", href);
+    var note = document.getElementById("osNote");
+    if (note && names[os]) note.innerHTML = "For " + names[os] + (arch ? " · " + arch : "") + " · <a href='" + WEB + "'>or run it in the browser</a>";
 
-      // highlight the matching download chip
-      var chipOs = (os === "ios" || os === "android") ? "web" : os;
-      var chip = document.querySelector('.dl[data-os="' + chipOs + '"]');
-      if (chip) { chip.classList.add("current"); var t = document.createElement("span"); t.className = "tag"; t.textContent = "YOUR DEVICE"; chip.appendChild(t); }
-    })();
-  </script>
+    // highlight the matching download chip
+    var chipOs = (os === "ios" || os === "android") ? "web" : os;
+    var chip = document.querySelector('.dl[data-os="' + chipOs + '"]');
+    if (chip) { chip.classList.add("current"); var t = document.createElement("span"); t.className = "tag"; t.textContent = "YOUR DEVICE"; chip.appendChild(t); }
+  })();
+</script>
 </body>
 </html>
