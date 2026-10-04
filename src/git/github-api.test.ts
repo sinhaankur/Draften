@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { listRepos, listCommits, commitFile, openPull } from "./github-api";
+import { listRepos, listCommits, commitFile, openPull, listTree } from "./github-api";
 
 afterEach(() => vi.restoreAllMocks());
 const json = (o: unknown, status = 200) => new Response(JSON.stringify(o), { status, headers: { "Content-Type": "application/json" } });
@@ -65,5 +65,20 @@ describe("github-api", () => {
   it("surfaces GitHub errors honestly", async () => {
     vi.stubGlobal("fetch", vi.fn(async () => json({ message: "Bad credentials" }, 401)));
     await expect(listRepos("bad")).rejects.toThrow(/GitHub 401/);
+  });
+
+  it("listTree returns blobs + trees and flags truncation", async () => {
+    vi.stubGlobal("fetch", vi.fn(async () => json({
+      tree: [
+        { path: "src", type: "tree" },
+        { path: "src/App.tsx", type: "blob", size: 2000 },
+        { path: ".git/HEAD", type: "commit" }, // non blob/tree → filtered out
+      ],
+      truncated: true,
+    })));
+    const { entries, truncated } = await listTree("t", "r/x", "main");
+    expect(truncated).toBe(true);
+    expect(entries.map((e) => e.type)).toEqual(["tree", "blob"]);
+    expect(entries[1]).toEqual({ path: "src/App.tsx", type: "blob", size: 2000 });
   });
 });

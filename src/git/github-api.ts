@@ -39,6 +39,31 @@ export function listBranches(token: string, repo: string): Promise<Branch[]> {
   return gh<Branch[]>(token, `/repos/${repo}/branches?per_page=50`);
 }
 
+export interface TreeEntry {
+  /** full path from the repo root, e.g. "src/ui/App.tsx" */
+  path: string;
+  /** "blob" = file, "tree" = directory */
+  type: "blob" | "tree";
+  /** file size in bytes (blobs only) */
+  size?: number;
+}
+
+/**
+ * The repo's whole file tree on a branch (recursive, one call). This is the raw
+ * material for the Git diagram — every folder + file, so we can visualise a
+ * project's architecture to understand it. GitHub truncates very large trees;
+ * we surface that honestly.
+ */
+export async function listTree(token: string, repo: string, branch: string): Promise<{ entries: TreeEntry[]; truncated: boolean }> {
+  const res = await gh<{ tree: Array<{ path: string; type: string; size?: number }>; truncated: boolean }>(
+    token, `/repos/${repo}/git/trees/${encodeURIComponent(branch)}?recursive=1`,
+  );
+  const entries = (res.tree ?? [])
+    .filter((e) => e.type === "blob" || e.type === "tree")
+    .map((e) => ({ path: e.path, type: e.type as "blob" | "tree", size: e.size }));
+  return { entries, truncated: !!res.truncated };
+}
+
 /** Recent commits on a branch, flattened to what the panel shows. */
 export async function listCommits(token: string, repo: string, branch: string): Promise<Commit[]> {
   const raw = await gh<Array<{ sha: string; commit: { message: string; author: { name: string; date: string } } }>>(

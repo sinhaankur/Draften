@@ -1,8 +1,11 @@
 import { useEffect, useState } from "react";
-import { GitBranch, GitPullRequest, RefreshCw, Download, GitFork } from "lucide-react";
+import { GitBranch, GitPullRequest, RefreshCw, Download, GitFork, Network } from "lucide-react";
 import { useGitSession } from "../git/session";
-import { listRepos, listBranches, listCommits, listPulls, commitFile, openPull, readDraftenFromRepo, listDraftenFiles, type Repo, type Commit, type PullRequest } from "../git/github-api";
+import { listRepos, listBranches, listCommits, listPulls, commitFile, openPull, readDraftenFromRepo, listDraftenFiles, listTree, type Repo, type Commit, type PullRequest } from "../git/github-api";
 import { useEditor } from "../state/store";
+import { buildGitDiagram } from "../ai/gitdiagram";
+import { documentToSkeleton } from "../import/to-canvas";
+import { drawSkeletonOnCanvas } from "../canvas/apply-action";
 
 /**
  * SourceControlPanel — the "lives in your git repo" panel (from the v2 mockup).
@@ -111,6 +114,24 @@ export function SourceControlPanel() {
     finally { setBusy(false); }
   }
 
+  // Diagram this repo: read its file tree and render the architecture as an
+  // editable Draften diagram — understand a project at a glance (à la gitdiagram).
+  async function doDiagram() {
+    if (!token || !repo || !branch) return;
+    setBusy(true); setStatus("Reading repo tree…");
+    try {
+      const { entries, truncated } = await listTree(token, repo, branch);
+      if (!entries.length) { setStatus("Repo tree was empty."); return; }
+      const diagram = buildGitDiagram(entries, { repo, branch });
+      loadDocument(diagram);
+      await drawSkeletonOnCanvas(documentToSkeleton(diagram), true);
+      const groups = diagram.boards[0]?.children.length ?? 0;
+      setStatus(`Diagrammed ${repo}@${branch} · ${entries.filter((e) => e.type === "blob").length} files${truncated ? " (truncated by GitHub)" : ""}`);
+      void groups;
+    } catch (e) { setStatus((e as Error).message); }
+    finally { setBusy(false); }
+  }
+
   async function doPR() {
     if (!token || !repo) return;
     const def = repos.find((r) => r.full_name === repo)?.default_branch ?? "main";
@@ -179,6 +200,7 @@ export function SourceControlPanel() {
         </button>
         <button className="tb-btn" disabled={busy} onClick={doPull} title="Pull latest from this branch"><Download size={13} /> Pull</button>
         <button className="tb-btn" disabled={busy} onClick={doPR} title="Open a pull request"><GitPullRequest size={13} /> PR</button>
+        <button className="tb-btn" disabled={busy || !repo} onClick={doDiagram} title="Diagram this repo's architecture on the canvas"><Network size={13} /> Diagram</button>
       </div>
 
       {status && <div style={{ fontSize: 11.5, color: "var(--t2)", marginTop: 6 }}>{status}</div>}

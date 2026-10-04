@@ -120,11 +120,18 @@ artboard frame so multi-page docs don't stack at the origin.
 
 ---
 
-## Git (real, not a chip)  ← Ankur wants this
-- 🟡 "⑂ main" is decorative today
-- ⬜ **Real Git** — init/commit/branch/diff the document (JSON) so designs are
-   versioned + shareable like code; GitHub-backed collaboration
-- ⬜ Open a design from a GitHub repo; push/pull changes
+## Git (real — designs live in your repo)
+- ✅ **Real Git connect** — device-flow OAuth OR paste a Personal Access Token
+  (account menu). Signed in → the Source Control panel lists repos/branches/
+  commits/PRs, **commits the document** (`draften/<name>.draften.json`) via the
+  GitHub API, **clones/pulls** a design out of a repo, and **opens a PR**. Every
+  action reports success/failure; nothing faked. (`src/git/*`, SourceControlPanel.)
+- ✅ **Git Diagram** — "Diagram" button reads the repo's file tree
+  (`listTree`) and renders its ARCHITECTURE as an editable Draften diagram
+  (top-level folders = grouped frames, files = shapes, src→components/packages
+  connectors), to understand a project at a glance. Inspired by gitdiagram.com,
+  native + deterministic. `src/ai/gitdiagram.ts`.
+- ⬜ Visual commit diff of the document.
 
 ## Accounts & collaboration  ← Ankur wants this
 - ⬜ **Account mode** — optional sign-in (keep guest/local-first default)
