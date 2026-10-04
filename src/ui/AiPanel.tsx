@@ -12,6 +12,9 @@ import { useEditor } from "../state/store";
 import { useChangelog } from "../state/changelog";
 import { automate, AUTOMATIONS } from "../ai/automate";
 import { drawSkeletonOnCanvas } from "../canvas/apply-action";
+import { outline, buildPresentation } from "../ai/presentation";
+import { autoNameLayers } from "../ai/layer-namer";
+import { documentToSkeleton } from "../import/to-canvas";
 import { overlay, scrim } from "./motion";
 
 // Prompt starters — so a designer isn't staring at a blank box. Easy to use:
@@ -36,6 +39,7 @@ const STARTERS = [
  */
 export function AiPanel({ onClose, docked = false }: { onClose: () => void; docked?: boolean }) {
   const setDesignSystem = useEditor((s) => s.setDesignSystem);
+  const loadDocument = useEditor((s) => s.loadDocument);
   const doc = useEditor((s) => s.doc);
 
   const entries = useChangelog((s) => s.entries);
@@ -156,6 +160,33 @@ export function AiPanel({ onClose, docked = false }: { onClose: () => void; dock
     });
   }
 
+  // Turn the CURRENT document (an imported PDF/Word) into a themed slide deck.
+  // Deterministic — works on any tier — and promptable: the prompt text seeds the
+  // theme/vibe. This is the "import a doc, make it a good presentation" path.
+  async function makePresentation() {
+    const items = outline(doc);
+    if (!items.length) {
+      setTurns((t) => [...t, { role: "ai", text: "Import a PDF or Word document first (Import file), then I can turn it into a presentation." }]);
+      return;
+    }
+    setBusy(true);
+    try {
+      const vibe = /\b(dark|bold|night|midnight|editorial|calm|playful|minimal)\b/i.exec(prompt)?.[1];
+      const deck = buildPresentation(items, { title: doc.name || "Presentation", theme: vibe, footer: doc.name });
+      const renamed = autoNameLayers(deck); // AI-named layers, not "Rectangle"/"Text"
+      loadDocument(deck);
+      await drawSkeletonOnCanvas(documentToSkeleton(deck), true);
+      useChangelog.getState().record({
+        author: "ai", via: "deterministic",
+        summary: `Built a ${deck.boards.length}-slide presentation${vibe ? ` (${vibe})` : ""} from ${items.length} outline items`,
+        actions: [{ op: "layout", detail: "presentation", payload: { slides: deck.boards.length } }],
+      });
+      setTurns((t) => [...t, { role: "ai", text: `Built a ${deck.boards.length}-slide deck and named ${renamed} layers. Each slide is an editable artboard — edit any text or shape, then File ▸ Export PDF.` }]);
+    } finally {
+      setBusy(false);
+    }
+  }
+
   async function onAttach(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -233,6 +264,7 @@ export function AiPanel({ onClose, docked = false }: { onClose: () => void; dock
             {attachment ? `📎 ${attachment.name}` : "Attach a document"}
           </button>
           <button className="ghost small" onClick={quickSystem}>Quick design system</button>
+          <button className="ghost small" onClick={makePresentation} disabled={busy}>Make presentation</button>
         </div>
 
         <div className="ai-actions">
