@@ -6,7 +6,7 @@ import type { ExcalidrawImperativeAPI } from "@excalidraw/excalidraw/types";
 import { AnimatePresence, motion } from "motion/react";
 import {
   PanelLeft, PanelRight, GitBranch, LayoutTemplate, Puzzle,
-  Moon, Sun, Sparkles, Play, History, Package, Server, Maximize2,
+  Moon, Sun, Sparkles, History, Package, Server, Maximize2,
 } from "lucide-react";
 
 import { ExcalidrawCanvas, toElements } from "./canvas/ExcalidrawCanvas";
@@ -35,6 +35,7 @@ import { RailAccount } from "./ui/RailAccount";
 import { StylesPanel } from "./ui/StylesPanel";
 import { AlignBar } from "./ui/AlignBar";
 import { McpPanel } from "./ui/McpPanel";
+import { PrototypePanel } from "./ui/PrototypePanel";
 import { importFile, canImportFile } from "./import/import-file";
 import "./App.css";
 
@@ -547,26 +548,11 @@ export function App() {
           )}
 
           {dsTab === "Prototype" && (
-            <div className="pane-body" style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-              <div style={{ fontSize: 12, color: "var(--t3)", lineHeight: 1.5 }}>
-                Select a layer to make it interactive. Links show as lines on the canvas while this tab is open.
-              </div>
-              <button className="ai-btn" style={{ width: "100%", justifyContent: "center", gap: 6 }}
-                onClick={() => canvasReady && excalidrawApi.current && setPlaying(true)}>
-                <Play size={14} /> Play from {activeBoard?.name ?? "Welcome"}
-              </button>
-              <div style={{ fontSize: 11.5, fontWeight: 500, color: "var(--t3)", marginTop: 4 }}>Links on this page</div>
-              {[
-                { from: "Welcome / Get started", to: "Create account", anim: "Smart animate", ms: 450 },
-                { from: "Create account / Continue", to: "Connect repository", anim: "Push", ms: 380 },
-                { from: "Connect repository / GitHub row", to: "Welcome", anim: "Dissolve", ms: 300 },
-              ].map((l, i) => (
-                <div key={i} style={{ border: "1px solid var(--line)", borderRadius: 10, padding: "10px 12px", background: "var(--surf)" }}>
-                  <div style={{ fontSize: 12.5, color: "var(--t1)" }}>{l.from} → {l.to}</div>
-                  <div style={{ fontSize: 11.5, color: "var(--t3)", marginTop: 3 }}>On tap · {l.anim} · {l.ms}ms</div>
-                </div>
-              ))}
-            </div>
+            <PrototypePanel
+              api={canvasReady ? excalidrawApi.current : null}
+              onPlay={() => canvasReady && excalidrawApi.current && setPlaying(true)}
+              activeBoardName={activeBoard?.name ?? "Welcome"}
+            />
           )}
           {dsTab === "Inspect" && (
             <div className="pane-body" style={{ padding: 0 }}>
