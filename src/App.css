@@ -702,6 +702,19 @@
 .excalidraw .footer-center a[href*="twitter.com"],
 .excalidraw .footer-center a[href*="discord"] { display: none !important; }
 
+/* Sketch-grade tool strip: give the shape-tool Island our card look (soft
+   shadow, hairline, tighter radius) so it reads as part of Draften's chrome,
+   not a default Excalidraw bar. Tools stay Excalidraw's; only the shell changes. */
+.excalidraw .App-toolbar.Island {
+  box-shadow: 0 6px 20px -8px rgba(0,0,0,.18), 0 0 0 1px var(--border);
+  border-radius: 11px;
+  padding: 5px 7px;
+  background: var(--panel);
+}
+/* steadier hover/active on the tool buttons (micro-interaction parity) */
+.excalidraw .App-toolbar .ToolIcon__icon { border-radius: 8px; }
+.excalidraw .App-toolbar .ToolIcon_type_button:active { transform: translateY(0.5px); }
+
 /* page rows: delete × only on hover (clean until you need it) */
 .page-row .page-del { opacity: 0; transition: opacity .12s; }
 .page-row:hover .page-del { opacity: 1; }

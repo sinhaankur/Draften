@@ -26,6 +26,7 @@ type El = {
   width: number; height: number;
   angle?: number;
   strokeColor?: string;
+  strokeWidth?: number;
   backgroundColor?: string;
   opacity?: number;
   roundness?: { type: number } | null;
@@ -136,9 +137,9 @@ export function InspectPanel({ api }: Props) {
         )}
       </Section>
 
-      {/* Appearance (Figma): opacity · blend */}
+      {/* Appearance: opacity as a Sketch-style slider + number */}
       <Section title="Appearance">
-        <Field label="Opacity" value={Math.round(el.opacity ?? 100)} suffix="%" onChange={(v) => patch({ opacity: Math.min(100, Math.max(0, v)) })} />
+        <OpacityRow value={Math.round(el.opacity ?? 100)} onChange={(v) => patch({ opacity: Math.min(100, Math.max(0, v)) })} />
       </Section>
 
       {/* Fill (Figma): color hex + opacity */}
@@ -148,9 +149,13 @@ export function InspectPanel({ api }: Props) {
         </Section>
       )}
 
-      {/* Stroke (Figma): color + width */}
+      {/* Stroke (Sketch/Figma): color + width */}
       <Section title="Stroke">
         <FillRow value={el.strokeColor ?? "#1d1d1b"} onChange={(v) => patch({ strokeColor: v })} api={api} />
+        <div style={{ ...grid2, marginTop: 6 }}>
+          <Field label="Weight" value={el.strokeWidth ?? 1} suffix="px" onChange={(v) => patch({ strokeWidth: Math.max(0, v) })} />
+          <div />
+        </div>
       </Section>
 
       {/* Text */}
@@ -252,6 +257,23 @@ function Section({ title, children }: { title: string; children: React.ReactNode
   );
 }
 
+/* Opacity: a Sketch-style slider + a number box that stay in sync. */
+function OpacityRow({ value, onChange }: { value: number; onChange: (v: number) => void }) {
+  return (
+    <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+      <input type="range" min={0} max={100} value={value}
+        onChange={(e) => onChange(parseInt(e.target.value))}
+        style={{ flex: 1, accentColor: "var(--accent, #3d6b5f)", height: 4, cursor: "pointer" }} />
+      <div style={{ display: "flex", alignItems: "center", gap: 2, background: "var(--canvas, #efeeeb)", borderRadius: 7, padding: "5px 8px", width: 64 }}>
+        <input type="number" min={0} max={100} value={value}
+          onChange={(e) => { const v = parseInt(e.target.value); if (!Number.isNaN(v)) onChange(Math.min(100, Math.max(0, v))); }}
+          style={{ width: "100%", minWidth: 0, border: 0, background: "transparent", fontSize: 12.5, color: "var(--t1, #1d1d1b)", fontFamily: "var(--font-mono, monospace)", outline: "none", textAlign: "right" }} />
+        <span style={{ fontSize: 11, color: "var(--text-3, #8e8d88)" }}>%</span>
+      </div>
+    </div>
+  );
+}
+
 /* A labelled numeric field (Figma style: label inside, light fill). */
 function Field({ label, value, suffix, onChange }: { label: string; value: number; suffix?: string; onChange: (v: number) => void }) {
   return (
@@ -323,7 +345,7 @@ function sameSel(a: El[], b: El[]): boolean {
   for (let i = 0; i < a.length; i++) {
     const x = a[i], y = b[i];
     if (x.id !== y.id || x.x !== y.x || x.y !== y.y || x.width !== y.width || x.height !== y.height ||
-      x.strokeColor !== y.strokeColor || x.backgroundColor !== y.backgroundColor || x.text !== y.text ||
+      x.strokeColor !== y.strokeColor || x.strokeWidth !== y.strokeWidth || x.backgroundColor !== y.backgroundColor || x.text !== y.text ||
       x.angle !== y.angle || x.opacity !== y.opacity || x.fontSize !== y.fontSize) return false;
   }
   return true;
