@@ -39,7 +39,11 @@ export function ExcalidrawCanvas({
           currentItemRoughness: 0, // crisp, precise shapes (not hand-drawn)
           currentItemFontFamily: 2, // Nunito — the normal (non-handwritten) font
           currentItemStrokeColor: "#3d6b5f",
-          viewBackgroundColor: (saved?.appState?.viewBackgroundColor as string) ?? (theme === "dark" ? "#151514" : "#efeeeb"),
+          // Sketch-accurate canvas: a neutral cool grey (not the old warm beige),
+          // so white artboards read as cards on it the way Sketch shows them.
+          // Migrate the old beige/near-black saved values to the new greys so
+          // existing documents update, not just fresh ones.
+          viewBackgroundColor: sketchCanvasBg(saved?.appState?.viewBackgroundColor as string | undefined, theme),
           gridSize: 20,
         },
         files: saved?.files as Record<string, never> | undefined,
@@ -97,6 +101,16 @@ export function ExcalidrawCanvas({
 // real content + the teal primary button, so the canvas opens populated like the
 // screenshot instead of an empty flowchart.
 const INK = "#1d1d1b", MUTED = "#8e8d88", LINE = "#e7e6e2", ACC = "#3d6b5f", SURF = "#ffffff";
+
+/** The Sketch/Figma-accurate canvas grey, migrating old/legacy saved values.
+ *  Figma/Sketch light canvas is a neutral ~#f5f5f5 (not a warm beige); dark is a
+ *  flat ~#2c2c2c. */
+function sketchCanvasBg(saved: string | undefined, theme: "light" | "dark" | undefined): string {
+  const light = "#f5f5f5", dark = "#2c2c2c";
+  const legacy = new Set(["#efeeeb", "#f0f0f0", "#151514", "#1a1a19", "#2b2b2b", ""]); // old beige + near-blacks + my first pass
+  if (!saved || legacy.has(saved.toLowerCase())) return theme === "dark" ? dark : light;
+  return saved;
+}
 const AW = 393, AH = 852; // artboard size — iPhone 16 Pro (matches v2: 393×852)
 
 // Each artboard is a REAL frame; children are listed in the frame's `children`
@@ -155,8 +169,9 @@ function seedSkeleton() {
   // reads as a CARD on the grey canvas (Sketch-style), distinct from the
   // background. Excalidraw frames are transparent containers, so the sheet is
   // what gives the artboard its paper colour. Drawn first = behind the content.
+  // Sketch artboards are white cards with a faint 1px border on the grey canvas.
   const sheet = (id: string, x: number) =>
-    ({ id, type: "rectangle" as const, x, y: 80, width: AW, height: AH, roughness: 0, strokeColor: "transparent", backgroundColor: SURF, strokeWidth: 0, customData: { name: "Artboard" } });
+    ({ id, type: "rectangle" as const, x, y: 80, width: AW, height: AH, roughness: 0, strokeColor: "#e3e3e3", backgroundColor: SURF, strokeWidth: 1, customData: { name: "Artboard" } });
   const sw = sheet(sid("sheet"), x1), sa = sheet(sid("sheet"), x2), sc = sheet(sid("sheet"), x3);
 
   return [
