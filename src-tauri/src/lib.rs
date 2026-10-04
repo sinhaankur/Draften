@@ -84,6 +84,15 @@ fn app_version() -> String {
     env!("CARGO_PKG_VERSION").to_string()
 }
 
+/// Read a file the user DROPPED onto the window. Tauri's native drag-drop gives
+/// the frontend file PATHS (not File objects), so this hands back the raw bytes
+/// for the path the drop reported — the frontend then runs its normal importer.
+/// This is why drag-and-drop works in the desktop app, not just the browser.
+#[tauri::command]
+fn read_dropped_file(path: String) -> Result<Vec<u8>, String> {
+    std::fs::read(&path).map_err(|e| format!("Couldn't read {path}: {e}"))
+}
+
 /// Apple Intelligence bridge (stub).
 ///
 /// On supported Apple silicon, this will call Apple's on-device Foundation Models
@@ -113,7 +122,8 @@ pub fn run() {
         .invoke_handler(tauri::generate_handler![
             decode_omnigraffle,
             app_version,
-            ai_apple_generate
+            ai_apple_generate,
+            read_dropped_file
         ])
         .run(tauri::generate_context!())
         .expect("error while running Draften");

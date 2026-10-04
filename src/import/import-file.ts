@@ -39,3 +39,53 @@ export function canImportFile(filename: string): boolean {
   const lower = filename.toLowerCase();
   return importers.all().some((i) => i.extensions.some((ext) => lower.endsWith(ext)));
 }
+
+/**
+ * Open a file the desktop app received by PATH (native drag-drop gives paths, not
+ * File objects). Reads the bytes via the Rust `read_dropped_file` command, wraps
+ * them in a File, and runs the normal import.
+ */
+export async function importFileByPath(path: string): Promise<string> {
+  const name = path.split(/[\\/]/).pop() || path;
+  try {
+    const { invoke } = await import("@tauri-apps/api/core");
+    const bytes = await invoke<number[] | Uint8Array>("read_dropped_file", { path });
+    const u8 = bytes instanceof Uint8Array ? bytes : new Uint8Array(bytes);
+    const file = new File([u8.buffer as ArrayBuffer], name);
+    return await importFile(file);
+  } catch (err) {
+    return `Couldn't open "${name}": ${(err as Error).message}`;
+  }
+}
+
+/**
+ * Wire native desktop drag-drop (Tauri). The webview's drag-drop event reports
+ * dropped file PATHS; we open the first supported one. Returns an unlisten fn.
+ * A no-op (returns undefined) outside Tauri — the HTML onDrop handles the web.
+ * `onStatus`/`onHover` let the UI show the drop cue + result.
+ */
+export async function registerDesktopDrop(
+  onStatus: (msg: string) => void,
+  onHover?: (over: boolean) => void,
+): Promise<(() => void) | undefined> {
+  const w = window as unknown as { __TAURI_INTERNALS__?: unknown; __TAURI__?: unknown };
+  if (!w.__TAURI_INTERNALS__ && !w.__TAURI__) return undefined;
+  try {
+    const { getCurrentWebview } = await import("@tauri-apps/api/webview");
+    const webview = getCurrentWebview();
+    const unlisten = await webview.onDragDropEvent(async (event) => {
+      const p = event.payload as { type: string; paths?: string[] };
+      if (p.type === "over" || p.type === "enter") { onHover?.(true); return; }
+      if (p.type === "leave" || p.type === "cancel") { onHover?.(false); return; }
+      if (p.type === "drop" && p.paths?.length) {
+        onHover?.(false);
+        const path = p.paths.find((x) => canImportFile(x)) ?? p.paths[0];
+        onStatus(`Opening ${path.split(/[\\/]/).pop()}…`);
+        onStatus(await importFileByPath(path));
+      }
+    });
+    return unlisten;
+  } catch {
+    return undefined;
+  }
+}

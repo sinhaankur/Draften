@@ -44,7 +44,7 @@ import { AlignBar } from "./ui/AlignBar";
 import { BooleanBar } from "./ui/BooleanBar";
 import { McpPanel } from "./ui/McpPanel";
 import { PrototypePanel } from "./ui/PrototypePanel";
-import { importFile, canImportFile } from "./import/import-file";
+import { importFile, canImportFile, registerDesktopDrop } from "./import/import-file";
 import "./App.css";
 
 const LEVELS: AtomicLevel[] = ["atom", "molecule", "organism", "template", "page"];
@@ -86,6 +86,15 @@ export function App() {
   };
   const [pasteNote, setPasteNote] = useState<string | null>(null);
   const [dragOver, setDragOver] = useState(false);
+
+  // Native desktop drag-drop (Tauri): the OS drop reports file PATHS, which the
+  // browser onDrop never sees. This wires the webview drag-drop event → importer,
+  // so dropping a file onto the app window actually opens it. No-op on the web.
+  useEffect(() => {
+    let unlisten: (() => void) | undefined;
+    registerDesktopDrop((msg) => setPasteNote(msg), (over) => setDragOver(over)).then((u) => { unlisten = u; });
+    return () => unlisten?.();
+  }, []);
   // Responsive drawers (below md the rails slide over the canvas — Hick's Law).
   const [leftOpen, setLeftOpen] = useState(false);
   const [leftMode, setLeftMode] = useState<"layers" | "git" | "components" | "history">("layers");

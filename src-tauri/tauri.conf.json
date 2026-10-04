@@ -20,7 +20,7 @@
         "minHeight": 680,
         "center": true,
         "titleBarStyle": "Overlay",
-        "dragDropEnabled": false,
+        "dragDropEnabled": true,
         "windowEffects": {
           "effects": [
             "sidebar"
