@@ -1,6 +1,20 @@
 import { describe, expect, it } from "vitest";
-import { documentToSkeleton } from "./to-canvas";
+import { documentToSkeleton, flattenPathD } from "./to-canvas";
 import { createEmptyDocument } from "../model/document";
+
+describe("flattenPathD", () => {
+  it("flattens M/L/Z into polyline points", () => {
+    const pts = flattenPathD("M 0 0 L 10 0 L 10 10 Z");
+    expect(pts[0]).toEqual([0, 0]);
+    expect(pts[1]).toEqual([10, 0]);
+    expect(pts[pts.length - 1]).toEqual([0, 0]); // Z returns to start
+  });
+  it("samples a cubic bezier into multiple points", () => {
+    const pts = flattenPathD("M 0 0 C 0 10 10 10 10 0");
+    expect(pts.length).toBeGreaterThan(3);
+    expect(pts[pts.length - 1][0]).toBeCloseTo(10);
+  });
+});
 
 describe("documentToSkeleton — imported doc → canvas", () => {
   it("converts frame, rect, ellipse and text nodes", () => {
@@ -74,6 +88,26 @@ describe("documentToSkeleton — imported doc → canvas", () => {
     expect(img._dataURL).toBe(dataUrl); // carried for drawSkeletonOnCanvas to register
     expect(img.status).toBe("saved"); // REQUIRED — a "pending" image renders blank
     expect(img.width).toBe(612);
+  });
+
+  it("renders a path node as an editable line (polyline points, relative to origin)", () => {
+    const doc = createEmptyDocument("test");
+    doc.nodes = {
+      p1: {
+        id: "p1", type: "path", name: "Path",
+        frame: { x: 50, y: 500, width: 350, height: 150 },
+        d: "M 50 600 L 400 650 L 300 500",
+        fills: [{ kind: "none" }],
+        stroke: { paint: { kind: "solid", color: "#0000ff" }, width: 3 },
+      } as never,
+    };
+    const [line] = documentToSkeleton(doc) as Array<Record<string, unknown>>;
+    expect(line.type).toBe("line");
+    expect(line.strokeColor).toBe("#0000ff");
+    expect(line.strokeWidth).toBe(3);
+    const pts = line.points as Array<[number, number]>;
+    expect(pts[0]).toEqual([0, 100]); // (50,600) - origin (50,500)
+    expect(pts[1]).toEqual([350, 150]); // (400,650) - (50,500)
   });
 
   it("draws the artboard sheet in the board's real background colour", () => {

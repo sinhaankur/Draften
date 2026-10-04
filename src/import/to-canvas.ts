@@ -144,13 +144,76 @@ export function documentToSkeleton(doc: DraftenDocument): Skeleton {
         });
         break;
       }
+      case "path": {
+        // SVG `d` → an editable Excalidraw line (polyline). Curves are flattened
+        // to short segments; points are relative to the element origin (x,y).
+        const d = (node as { d?: string }).d ?? "";
+        const fills = (node as { fills?: Paint[] }).fills;
+        const abs = flattenPathD(d);
+        if (abs.length >= 2) {
+          const pts = abs.map(([px, py]) => [px - x, py - y]);
+          const fill = solid(fills, "transparent");
+          out.push({
+            ...base, type: "line", x, y,
+            points: pts,
+            strokeColor: sp.strokeColor ?? (fill !== "transparent" ? darken(fill) : INK),
+            strokeWidth: (sp.strokeWidth as number) ?? 1,
+            backgroundColor: fill,
+            ...xf,
+          });
+        } else {
+          out.push({ ...base, type: "rectangle", x, y, width: w, height: h, strokeColor: LINE, backgroundColor: solid(fills, "transparent"), ...xf, ...sp });
+        }
+        break;
+      }
       default:
-        // paths/unknown → a hairline frame so nothing silently vanishes
+        // unknown → a hairline frame so nothing silently vanishes
         out.push({ ...base, type: "rectangle", x, y, width: w, height: h, strokeColor: LINE, backgroundColor: "transparent", ...xf, ...sp });
         break;
     }
   }
   return out;
+}
+
+/**
+ * Flatten an absolute SVG path `d` (M/L/C/Q/Z, as our PDF extractor emits) into a
+ * list of [x,y] points for an Excalidraw polyline. Beziers are sampled into a few
+ * line segments — enough to read the shape; the node stays fully editable.
+ */
+export function flattenPathD(d: string): Array<[number, number]> {
+  const pts: Array<[number, number]> = [];
+  const re = /([MLCQZ])([^MLCQZ]*)/gi;
+  let m: RegExpExecArray | null;
+  let cur: [number, number] = [0, 0];
+  let start: [number, number] | null = null;
+  const nums = (s: string) => (s.match(/-?\d*\.?\d+(?:e-?\d+)?/gi) ?? []).map(Number);
+  while ((m = re.exec(d))) {
+    const cmd = m[1].toUpperCase();
+    const n = nums(m[2]);
+    if (cmd === "M") { cur = [n[0], n[1]]; start = cur; pts.push(cur); }
+    else if (cmd === "L") { cur = [n[0], n[1]]; pts.push(cur); }
+    else if (cmd === "C") {
+      const [x1, y1, x2, y2, x, y] = n;
+      for (let t = 1; t <= 6; t++) pts.push(cubic(cur, [x1, y1], [x2, y2], [x, y], t / 6));
+      cur = [x, y];
+    } else if (cmd === "Q") {
+      const [x1, y1, x, y] = n;
+      for (let t = 1; t <= 5; t++) pts.push(quad(cur, [x1, y1], [x, y], t / 5));
+      cur = [x, y];
+    } else if (cmd === "Z") { if (start) { pts.push(start); cur = start; } }
+  }
+  return pts;
+}
+
+function cubic(p0: number[], p1: number[], p2: number[], p3: number[], t: number): [number, number] {
+  const u = 1 - t;
+  const b0 = u * u * u, b1 = 3 * u * u * t, b2 = 3 * u * t * t, b3 = t * t * t;
+  return [b0 * p0[0] + b1 * p1[0] + b2 * p2[0] + b3 * p3[0], b0 * p0[1] + b1 * p1[1] + b2 * p2[1] + b3 * p3[1]];
+}
+function quad(p0: number[], p1: number[], p2: number[], t: number): [number, number] {
+  const u = 1 - t;
+  const b0 = u * u, b1 = 2 * u * t, b2 = t * t;
+  return [b0 * p0[0] + b1 * p1[0] + b2 * p2[0], b0 * p0[1] + b1 * p1[1] + b2 * p2[1]];
 }
 
 /** A slightly darker stroke than the fill, so flat shapes still read an edge. */

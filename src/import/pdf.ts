@@ -2,19 +2,22 @@
  * PDF importer — brings a PDF in as editable artboards (REAL extraction via pdf.js).
  *
  * PDF is a common "here's the design/spec" hand-off, so importing it is
- * first-class. Each page becomes an ARTBOARD that keeps its look:
- *   1. the page is RASTERIZED to a high-DPI image node (so vectors, images, fills,
- *      logos — everything — are preserved pixel-for-pixel, the way Figma/Sketch
- *      import PDFs), drawn as the page background;
- *   2. each text run becomes a positioned, EDITABLE text node on top (PDF's
- *      bottom-left origin flipped to the app's top-left).
- * Both the page image and the text are parented to the board, so they group as
- * one artboard and carry the page's real background colour. In a headless/test
- * environment (no 2D canvas) rasterization is skipped and text still imports.
+ * first-class. Each page becomes an ARTBOARD of REAL, EDITABLE nodes — the way
+ * Sketch lets you edit every shape:
+ *   1. VECTORS → editable rectangle / path nodes (fills, strokes, line widths)
+ *      extracted from the page's drawing operators (`src/import/pdf-vectors.ts`);
+ *   2. TEXT → editable text nodes with their real size/position (PDF's bottom-left
+ *      origin flipped to the app's top-left).
+ * All nodes are parented to the page board, so they group as one artboard and
+ * carry the page's real background colour. Only when a page yields NO vectors and
+ * NO text (a scanned/image-only PDF) do we fall back to rasterizing it to an image
+ * so nothing is lost. In a headless/test env (no 2D canvas) the raster fallback is
+ * skipped; vector + text extraction still runs.
  */
 
 import { createEmptyDocument } from "../model/document";
 import type { DraftenDocument } from "../model/document";
+import { extractNodes, IDENTITY, type OperatorList, type OpsMap } from "./pdf-vectors";
 import type { ImportInput, ImportResult, Importer } from "./importer";
 
 export class PdfImporter implements Importer {
@@ -68,10 +71,12 @@ export class PdfImporter implements Importer {
     const pdf = await (pdfjs as unknown as { getDocument: (o: Record<string, unknown>) => { promise: Promise<PdfDoc> } })
       .getDocument({ data, isEvalSupported: false, useSystemFonts: true }).promise;
 
-    // Render crisp on HiDPI without ballooning memory on big docs.
+    const OPS = (pdfjs as unknown as { OPS: Record<string, number> }).OPS;
+    const opsMap = this.opsMap(OPS);
     const RASTER_SCALE = 2;
-    let rasterized = 0;
+    let vectorCount = 0;
     let textRuns = 0;
+    let scannedPages = 0;
 
     for (let p = 1; p <= pdf.numPages; p++) {
       const page = await pdf.getPage(p);
@@ -80,22 +85,23 @@ export class PdfImporter implements Importer {
       const children: string[] = [];
       const pageX = (p - 1) * (vp.width + 60);
 
-      // 1) Rasterize the whole page → an image node (the background). Keeps every
-      //    vector/fill/image exactly as drawn. Skipped if no 2D canvas (tests).
-      const dataUrl = await this.renderPageToDataUrl(page, RASTER_SCALE);
-      if (dataUrl) {
-        const imgId = crypto.randomUUID();
-        doc.nodes[imgId] = {
-          id: imgId, type: "image", name: `Page ${p}`,
-          // frame is in BOARD space (relative to the board origin) → 0,0
-          frame: { x: 0, y: 0, width: vp.width, height: vp.height },
-          src: dataUrl, fit: "fill", parentId: boardId,
-        } as DraftenDocument["nodes"][string];
-        children.push(imgId);
-        rasterized++;
-      }
+      // 1) VECTORS → editable rectangle/path nodes from the drawing operators.
+      //    Coords are PDF user space (bottom-left); flip Y with pageHeight so they
+      //    share the text's top-left space. (identity CTM; viewport scale is 1.)
+      let vectorNodesOnPage = 0;
+      try {
+        const ol = (await page.getOperatorList()) as unknown as OperatorList;
+        const vectors = extractNodes(ol, opsMap, { baseCtm: IDENTITY, pageHeight: vp.height, parentId: boardId });
+        for (const n of vectors) {
+          doc.nodes[n.id] = n as DraftenDocument["nodes"][string];
+          children.push(n.id);
+        }
+        vectorNodesOnPage = vectors.length;
+        vectorCount += vectors.length;
+      } catch { /* a page that won't decode shouldn't kill the import */ }
 
-      // 2) Editable text on top, parented to the same board (so they group).
+      // 2) Editable text, parented to the same board (so they group).
+      let textOnPage = 0;
       const content = await page.getTextContent();
       for (const raw of content.items) {
         const it = raw as PdfTextItem;
@@ -112,7 +118,24 @@ export class PdfImporter implements Importer {
           parentId: boardId,
         } as DraftenDocument["nodes"][string];
         children.push(id);
+        textOnPage++;
         textRuns++;
+      }
+
+      // 3) Scanned/image-only page (no vectors, no text) → raster fallback so
+      //    nothing is lost. Skipped where no 2D canvas exists (tests).
+      if (vectorNodesOnPage === 0 && textOnPage === 0) {
+        const dataUrl = await this.renderPageToDataUrl(page, RASTER_SCALE);
+        if (dataUrl) {
+          const imgId = crypto.randomUUID();
+          doc.nodes[imgId] = {
+            id: imgId, type: "image", name: `Page ${p}`,
+            frame: { x: 0, y: 0, width: vp.width, height: vp.height },
+            src: dataUrl, fit: "fill", parentId: boardId,
+          } as DraftenDocument["nodes"][string];
+          children.push(imgId);
+          scannedPages++;
+        }
       }
 
       doc.boards.push({
@@ -126,17 +149,26 @@ export class PdfImporter implements Importer {
 
     if (!doc.boards.length) {
       doc.boards.push({ id: crypto.randomUUID(), name: "Page 1", kind: "design", children: [], viewport: { x: 0, y: 0, zoom: 1 } });
-      warnings.push("No extractable text found — the PDF may be scanned images (OCR not wired).");
+      warnings.push("Nothing extractable found in this PDF.");
     } else {
       const pageWord = pdf.numPages === 1 ? "page" : "pages";
-      warnings.push(
-        rasterized
-          ? `Imported ${pdf.numPages} ${pageWord} (full page kept) · ${textRuns} editable text runs.`
-          : `Imported ${pdf.numPages} ${pageWord} · ${textRuns} text runs (page raster unavailable here).`,
-      );
+      const bits = [`Imported ${pdf.numPages} ${pageWord}`, `${vectorCount} editable shapes`, `${textRuns} editable text runs`];
+      if (scannedPages) bits.push(`${scannedPages} scanned page(s) kept as image`);
+      warnings.push(bits.join(" · ") + ".");
     }
 
     return { document: doc, warnings };
+  }
+
+  /** Map pdf.js's OPS enum to the subset the vector extractor needs. */
+  private opsMap(OPS: Record<string, number>): OpsMap {
+    return {
+      save: OPS.save, restore: OPS.restore, transform: OPS.transform,
+      constructPath: OPS.constructPath,
+      fill: OPS.fill, stroke: OPS.stroke, eoFill: OPS.eoFill, fillStroke: OPS.fillStroke, eoFillStroke: OPS.eoFillStroke,
+      setFillRGBColor: OPS.setFillRGBColor, setStrokeRGBColor: OPS.setStrokeRGBColor,
+      setLineWidth: OPS.setLineWidth,
+    };
   }
 
   /**
@@ -209,6 +241,7 @@ interface PdfViewport { width: number; height: number }
 interface PdfPage {
   getViewport(o: { scale: number }): PdfViewport;
   getTextContent(): Promise<{ items: unknown[] }>;
+  getOperatorList(): Promise<{ fnArray: number[]; argsArray: unknown[][] }>;
   render(o: { canvas?: HTMLCanvasElement | null; canvasContext?: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D; viewport: PdfViewport }): { promise: Promise<void> };
 }
 interface PdfTextItem { str: string; width: number; transform: number[]; }

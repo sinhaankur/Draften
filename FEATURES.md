@@ -34,11 +34,15 @@ Reference app for UX/UI standard: **Sketch.app** (native macOS feel).
   text style** (weight / align / line-height / letter-spacing).
 - ✅ **Figma / Sketch paste** — clipboard handler parses `figma`/`figmeta` + the
   readable HTML payload → nodes (`src/import/paste.ts`).
-- ✅ **PDF** importer — each page → an **artboard** that keeps its look: the page
-  is rasterized to a high-DPI image (vectors/images/fills preserved pixel-for-pixel,
-  the way Figma/Sketch import PDFs) as the background, with extracted text kept as
-  **editable** nodes on top. Page image + text are grouped under the board and
-  carry the page's real background colour; pages lay out side by side (no overlap).
+- ✅ **PDF** importer — each page → an **artboard of REAL, EDITABLE nodes**, the
+  way Sketch lets you edit every shape. Vectors are extracted from the page's
+  drawing operators into editable **rectangle / path** nodes (fills, strokes, line
+  widths; `src/import/pdf-vectors.ts`), and text into editable **text** nodes with
+  their real size/position — so you can click any shape or word and change it, with
+  no baked-in "ghost" text underneath. All nodes group under the page board and
+  carry its real background colour; pages lay out side by side (no overlap). Only a
+  scanned/image-only page (no vectors, no text) falls back to a rasterized image so
+  nothing is lost.
 - ⬜ **OmniGraffle** importer (Rust `decode_omnigraffle` exists → wire to model)
 - ⬜ Generic image paste (PNG/SVG from clipboard → canvas)
 
