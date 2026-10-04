@@ -59,8 +59,10 @@ export const capabilities = {
   get omnigraffle() {
     return isTauri();
   },
-  /** Apple Intelligence on-device model bridge (macOS Tauri build) */
+  /** Apple Intelligence on-device model bridge — macOS ONLY (the API doesn't
+   *  exist on Windows/Linux). Everyone else uses WebLLM / LM Studio / the keyless
+   *  deterministic engine — all cross-platform, so AI works on every OS. */
   get appleIntelligence() {
-    return isTauri();
+    return isTauri() && detectOS() === "macos";
   },
 } as const;
