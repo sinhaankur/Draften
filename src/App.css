@@ -715,6 +715,14 @@
 .excalidraw .App-toolbar .ToolIcon__icon { border-radius: 8px; }
 .excalidraw .App-toolbar .ToolIcon_type_button:active { transform: translateY(0.5px); }
 
+/* Hide Excalidraw's OWN left-floating properties panel (selected-shape-actions):
+   Draften has its own inspector on the right, so this duplicate panel over the
+   canvas was pure clutter (the big quality gap vs Sketch/Figma, which have ONE
+   inspector). The toolbar (.App-toolbar) is separate and stays. */
+.excalidraw .App-menu__left,
+.excalidraw .selected-shape-actions,
+.excalidraw .panelColumn { display: none !important; }
+
 /* page rows: delete × only on hover (clean until you need it) */
 .page-row .page-del { opacity: 0; transition: opacity .12s; }
 .page-row:hover .page-del { opacity: 1; }
