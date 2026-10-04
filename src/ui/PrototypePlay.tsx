@@ -58,7 +58,7 @@ export function PrototypePlay({ api, onClose }: { api: ExcalidrawImperativeAPI; 
           ))}
         </div>
         <span style={{ marginLeft: "auto", fontSize: 12, color: "rgba(255,255,255,.5)" }}>Esc to close</span>
-        <button onClick={onClose} style={{ border: 0, background: "rgba(255,255,255,.1)", color: "#fff", borderRadius: 8, width: 30, height: 30, display: "grid", placeItems: "center", cursor: "pointer" }}>
+        <button onClick={onClose} title="Close (Esc)" aria-label="Close preview" style={{ border: 0, background: "rgba(255,255,255,.1)", color: "#fff", borderRadius: 8, width: 30, height: 30, display: "grid", placeItems: "center", cursor: "pointer" }}>
           <X size={16} />
         </button>
       </div>

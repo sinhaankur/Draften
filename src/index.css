@@ -55,17 +55,22 @@
   --warn: #b97f14;
   --danger: #d0453b;
 
-  /* type — Geist (the mockup's UI face), falling back to the system stack */
-  --font-ui: "Geist Sans", "Geist", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  /* type — a Sketch-grade UI face: lead with the NATIVE system font (SF Pro on
+     macOS, Segoe UI on Windows, Roboto on Android) the way Sketch.app does, so
+     the app feels native on every OS, with Geist as a consistent fallback. */
+  --font-ui: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", system-ui, "Geist Sans", Roboto, "Helvetica Neue", Arial, sans-serif;
   --font-serif: "Source Serif 4 Variable", "Source Serif 4", Georgia, serif;
-  --font-code: "Geist Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  --font-code: ui-monospace, "SF Mono", "Geist Mono", Menlo, Consolas, monospace;
   --font-design: "Inter Variable", "Inter", -apple-system, system-ui, sans-serif; /* canvas text */
-  --fs-2xs: 10px;
-  --fs-xs: 11px;
-  --fs-sm: 12px;
-  --fs-md: 13px;
-  --fs-lg: 15px;
-  --fs-xl: 18px;
+  /* FLUID type — font-size adapts to the viewport (screen resolution) via clamp:
+     a min (small screens), a vw-based middle, and a max (large screens). So text
+     is legible on a phone and comfortable on a 4K display without media queries. */
+  --fs-2xs: clamp(9px, 0.55vw + 7px, 11px);
+  --fs-xs:  clamp(10px, 0.6vw + 8px, 12px);
+  --fs-sm:  clamp(11px, 0.7vw + 9px, 13px);
+  --fs-md:  clamp(12px, 0.8vw + 10px, 15px);
+  --fs-lg:  clamp(14px, 1vw + 11px, 17px);
+  --fs-xl:  clamp(17px, 1.4vw + 13px, 22px);
   --lh-ui: 1.35;
   --lh-code: 1.75;
 

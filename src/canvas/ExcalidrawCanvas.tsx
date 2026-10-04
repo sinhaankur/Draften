@@ -56,7 +56,11 @@ export function ExcalidrawCanvas({
       <Excalidraw
         initialData={initialData}
         excalidrawAPI={(api) => {
-          onReady?.(api);
+          // Defer onReady to a microtask: this callback fires DURING Excalidraw's
+          // own mount, so calling the parent's setState synchronously here warns
+          // ("setState on a component not yet mounted"). A microtask runs it just
+          // after mount completes — same frame, no warning.
+          queueMicrotask(() => onReady?.(api));
           // Frame all the artboards nicely on open (spacious, like the mockup)
           setTimeout(() => {
             try { api.scrollToContent(api.getSceneElements(), { fitToContent: true, animate: false }); } catch { /* ignore */ }

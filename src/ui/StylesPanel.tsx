@@ -169,7 +169,7 @@ const applyBtn: React.CSSProperties = {
   border: 0, background: "transparent", cursor: "pointer", padding: "5px 6px",
   borderRadius: 6, fontSize: 12.5, color: "var(--t1, #1d1d1b)",
 };
-const iconBtn: React.CSSProperties = { border: 0, background: "transparent", cursor: "pointer", color: "var(--text-3,#8e8d88)", display: "grid", placeItems: "center", width: 24, height: 24, flex: "none", borderRadius: 5 };
+const iconBtn: React.CSSProperties = { border: 0, background: "transparent", cursor: "pointer", color: "var(--text-3,#8e8d88)", display: "grid", placeItems: "center", width: 28, height: 28, flex: "none", borderRadius: 6 };
 const mono: React.CSSProperties = { fontFamily: "var(--font-mono, monospace)", fontSize: 10.5, color: "var(--text-3, #8e8d88)", flex: "none" };
 const editBox: React.CSSProperties = { border: "1px solid var(--accent,#3d6b5f)", borderRadius: 8, padding: 8, background: "var(--surf,#fff)" };
 const inp: React.CSSProperties = { width: "100%", border: "1px solid var(--line,#e7e6e2)", borderRadius: 6, padding: "4px 7px", fontSize: 12.5, background: "var(--canvas,#efeeeb)", color: "var(--t1,#1d1d1b)", outline: "none" };

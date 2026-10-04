@@ -75,14 +75,14 @@ export function PresentMode({ api, onClose }: { api: ExcalidrawImperativeAPI; on
     return (
       <div style={backdrop}>
         <div style={{ color: "#aaa", fontSize: 15 }}>No slides to present. Import a document and “Make presentation”, or add boards.</div>
-        <button onClick={onClose} style={closeBtn}><X size={18} /></button>
+        <button onClick={onClose} title="Exit (Esc)" aria-label="Exit present mode" style={closeBtn}><X size={18} /></button>
       </div>
     );
   }
 
   return (
     <div style={backdrop}>
-      <button onClick={onClose} title="Exit (Esc)" style={closeBtn}><X size={18} /></button>
+      <button onClick={onClose} title="Exit (Esc)" aria-label="Exit present mode" style={closeBtn}><X size={18} /></button>
 
       {/* the slide */}
       <div style={{ position: "absolute", inset: 0, display: "grid", placeItems: "center", padding: showRail ? "3vh 4vw 16vh" : "4vh 4vw" }}>

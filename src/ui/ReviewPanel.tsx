@@ -91,7 +91,7 @@ export function ReviewPanel({ boardName }: { boardName: string }) {
                 {c.resolved ? "✓" : ""}
               </button>
               <span style={{ flex: 1, fontSize: 12.5, textDecoration: c.resolved ? "line-through" : "none", color: "var(--t1, #1d1d1b)" }}>{c.text}</span>
-              <button onClick={() => remove(c.id)} title="Delete" style={{ flex: "none", border: 0, background: "transparent", color: "var(--text-3, #8e8d88)", cursor: "pointer", fontSize: 14 }}>×</button>
+              <button onClick={() => remove(c.id)} title="Delete" aria-label="Delete comment" style={{ flex: "none", border: 0, background: "transparent", color: "var(--text-3, #8e8d88)", cursor: "pointer", fontSize: 14, minWidth: 28, minHeight: 28 }}>×</button>
             </div>
           ))}
         </div>

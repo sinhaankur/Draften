@@ -147,8 +147,8 @@ export function LayersPanel({ api }: { api: ExcalidrawImperativeAPI | null }) {
     <div style={{ padding: "0 4px 8px" }}>
         <div style={{ display: "flex", alignItems: "center", padding: "4px 8px", position: "relative" }}>
           <span style={{ flex: 1, fontSize: 11.5, fontWeight: 500, color: "var(--text-3, #8e8d88)" }}>Artboards</span>
-          <button title="New artboard" onClick={() => setAddMenu((v) => !v)}
-            style={{ width: 20, height: 20, border: 0, borderRadius: 5, background: "transparent", color: "var(--text-3, #8e8d88)", cursor: "pointer", display: "grid", placeItems: "center" }}>
+          <button title="New artboard" aria-label="New artboard" onClick={() => setAddMenu((v) => !v)} className="row-icon-btn"
+            style={{ width: 28, height: 28, border: 0, borderRadius: 6, background: "transparent", color: "var(--text-3, #8e8d88)", cursor: "pointer", display: "grid", placeItems: "center" }}>
             <Plus size={14} />
           </button>
           {addMenu && (
@@ -235,13 +235,12 @@ export function LayersPanel({ api }: { api: ExcalidrawImperativeAPI | null }) {
               <span style={{ flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{r.label}</span>
             )}
             {/* lock — always visible when locked, on hover otherwise (CSS class) */}
-            <button onClick={(e) => { e.stopPropagation(); toggleLock(r.id); }} title={locked ? "Unlock" : "Lock"}
-              className={locked ? "" : "on-hover"}
-              style={{ flex: "none", border: 0, background: "transparent", cursor: "pointer", color: "var(--text-3, #8e8d88)", display: "grid", placeItems: "center", width: 20, height: 20, padding: 0 }}>
+            <button onClick={(e) => { e.stopPropagation(); toggleLock(r.id); }} title={locked ? "Unlock" : "Lock"} aria-label={locked ? "Unlock layer" : "Lock layer"}
+              className={`row-icon-btn ${locked ? "" : "on-hover"}`} style={rowIconBtn}>
               {locked ? <Lock size={13} /> : <Unlock size={13} />}
             </button>
-            <button onClick={(e) => { e.stopPropagation(); toggleVisible(r.id); }} title={hidden ? "Show" : "Hide"}
-              style={{ flex: "none", border: 0, background: "transparent", cursor: "pointer", color: "var(--text-3, #8e8d88)", display: "grid", placeItems: "center", width: 20, height: 20, padding: 0 }}>
+            <button onClick={(e) => { e.stopPropagation(); toggleVisible(r.id); }} title={hidden ? "Show" : "Hide"} aria-label={hidden ? "Show layer" : "Hide layer"}
+              className="row-icon-btn" style={rowIconBtn}>
               {hidden ? <EyeOff size={14} /> : <Eye size={14} />}
             </button>
           </div>
@@ -329,6 +328,13 @@ function nameOf(e: El, all: El[]): string {
 }
 const trim = (s: string) => { const one = s.replace(/\s+/g, " ").trim(); return one.length > 28 ? one.slice(0, 28) + "…" : one; };
 const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
+
+// A 28×28 hit area around a 13–14px icon (Fitts/WCAG tap target), icon stays small.
+const rowIconBtn: React.CSSProperties = {
+  flex: "none", border: 0, background: "transparent", cursor: "pointer",
+  color: "var(--text-3, #8e8d88)", display: "grid", placeItems: "center",
+  width: 28, height: 28, padding: 0, borderRadius: 6,
+};
 
 /** A real vector (lucide) icon per element type — matches the design system. */
 function Glyph({ type }: { type: string }) {
