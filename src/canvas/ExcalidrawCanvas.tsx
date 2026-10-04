@@ -151,11 +151,20 @@ function seedSkeleton() {
     note: text(sid("c"), x3 + PAD, top + 388, "You stay in the flow with your code.", 12, MUTED, "Footnote"),
   };
 
+  // A white "sheet" rectangle behind each artboard's content, so the artboard
+  // reads as a CARD on the grey canvas (Sketch-style), distinct from the
+  // background. Excalidraw frames are transparent containers, so the sheet is
+  // what gives the artboard its paper colour. Drawn first = behind the content.
+  const sheet = (id: string, x: number) =>
+    ({ id, type: "rectangle" as const, x, y: 80, width: AW, height: AH, roughness: 0, strokeColor: "transparent", backgroundColor: SURF, strokeWidth: 0, customData: { name: "Artboard" } });
+  const sw = sheet(sid("sheet"), x1), sa = sheet(sid("sheet"), x2), sc = sheet(sid("sheet"), x3);
+
   return [
+    sw, sa, sc,
     ...Object.values(w), ...Object.values(a), ...Object.values(c),
-    { type: "frame" as const, name: "Welcome", x: x1, y: 80, width: AW, height: AH, children: Object.values(w).map((e) => e.id) },
-    { type: "frame" as const, name: "Create account", x: x2, y: 80, width: AW, height: AH, children: Object.values(a).map((e) => e.id) },
-    { type: "frame" as const, name: "Connect repository", x: x3, y: 80, width: AW, height: AH, children: Object.values(c).map((e) => e.id) },
+    { type: "frame" as const, name: "Welcome", x: x1, y: 80, width: AW, height: AH, children: [sw.id, ...Object.values(w).map((e) => e.id)] },
+    { type: "frame" as const, name: "Create account", x: x2, y: 80, width: AW, height: AH, children: [sa.id, ...Object.values(a).map((e) => e.id)] },
+    { type: "frame" as const, name: "Connect repository", x: x3, y: 80, width: AW, height: AH, children: [sc.id, ...Object.values(c).map((e) => e.id)] },
   ];
 }
 

@@ -505,7 +505,13 @@
   margin-left: auto;
   display: flex;
   gap: var(--s5);
+  align-items: center;
 }
+.status-toggle {
+  border: 0; background: transparent; color: inherit; font: inherit; cursor: pointer;
+  padding: 2px 6px; border-radius: 5px; transition: background var(--t-fast);
+}
+.status-toggle:hover { background: var(--hover); }
 
 /* ── ✦ AI dialog ─────────────────────────────────────────────────────────── */
 .ai-overlay {

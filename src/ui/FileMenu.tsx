@@ -62,33 +62,39 @@ export function FileMenu({ api, name, onOpened, onToast }: {
       <button className="tb-btn" onClick={() => setOpen((v) => !v)} title="File — save, open, export">
         File <ChevronDown size={12} />
       </button>
-      {open && api && (
+      {open && (
         <div style={{ position: "absolute", top: "calc(100% + 6px)", left: 0, zIndex: 100, width: 240,
           background: "var(--panel, #fbfbfa)", border: "1px solid var(--line, #e7e6e2)", borderRadius: 10,
           boxShadow: "0 10px 30px -10px rgba(0,0,0,.25)", padding: 4 }}>
-          {item(<FolderOpen size={15} />, "Open…", "⌘O", () => openFile(api).then((n) => n && onOpened?.(n)))}
-          {sep}
-          {groupLabel("Save")}
-          {item(<Save size={15} />, "Save (.draften.json)", "⌘S", () => saveDraften(api, name))}
-          {item(<Save size={15} />, "Save as .excalidraw", "", () => saveExcalidraw(api, name))}
-          {sep}
-          {groupLabel("Build app")}
-          {item(<Package size={15} />, "Export runnable app (.zip)", "", () => { void downloadProject(api, name); })}
-          {item(<FileCode size={15} />, "Export standalone HTML", "", () => downloadStandaloneHtml(api, name))}
-          {sep}
-          {groupLabel("Export image · selection or whole page")}
-          {item(<Download size={15} />, "Export SVG (vector)", "", () => exportSvg(api, name))}
-          {item(<Download size={15} />, "Export PNG", "@1x", () => exportPng(api, name, 1))}
-          {item(<Download size={15} />, "Export PNG", "@2x", () => exportPng(api, name, 2))}
-          {item(<Download size={15} />, "Export PNG", "@3x", () => exportPng(api, name, 3))}
-          {item(<FileText size={15} />, "Export PDF (editable)", "vector", () => { void exportVectorPdf(api, name).then((m) => onToast?.(m)); })}
-          {item(<FileText size={15} />, "Export PDF (image)", "raster", () => { void exportPdf(api, name); })}
-          {sep}
-          {groupLabel("Developer handoff")}
-          {item(<Code2 size={15} />, "Copy CSS of selection", "", () => { void copyLayerCss(api).then((m) => onToast?.(m)); })}
-          <div style={{ padding: "8px 12px 4px", fontSize: 11, color: "var(--text-3, #8e8d88)", lineHeight: 1.5 }}>
-            Open formats only — your file stays yours, and the GitHub panel commits the project.
-          </div>
+          {!api ? (
+            <div style={{ padding: "10px 12px", fontSize: 11.5, color: "var(--text-3, #8e8d88)" }}>Canvas is loading…</div>
+          ) : (
+            <>
+              {item(<FolderOpen size={15} />, "Open…", "⌘O", () => openFile(api).then((n) => n && onOpened?.(n)))}
+              {sep}
+              {groupLabel("Save")}
+              {item(<Save size={15} />, "Save (.draften.json)", "⌘S", () => saveDraften(api, name))}
+              {item(<Save size={15} />, "Save as .excalidraw", "", () => saveExcalidraw(api, name))}
+              {sep}
+              {groupLabel("Build app")}
+              {item(<Package size={15} />, "Export runnable app (.zip)", "", () => { void downloadProject(api, name); })}
+              {item(<FileCode size={15} />, "Export standalone HTML", "", () => downloadStandaloneHtml(api, name))}
+              {sep}
+              {groupLabel("Export image · selection or whole page")}
+              {item(<Download size={15} />, "Export SVG (vector)", "", () => exportSvg(api, name))}
+              {item(<Download size={15} />, "Export PNG", "@1x", () => exportPng(api, name, 1))}
+              {item(<Download size={15} />, "Export PNG", "@2x", () => exportPng(api, name, 2))}
+              {item(<Download size={15} />, "Export PNG", "@3x", () => exportPng(api, name, 3))}
+              {item(<FileText size={15} />, "Export PDF (editable)", "vector", () => { void exportVectorPdf(api, name).then((m) => onToast?.(m)); })}
+              {item(<FileText size={15} />, "Export PDF (image)", "raster", () => { void exportPdf(api, name); })}
+              {sep}
+              {groupLabel("Developer handoff")}
+              {item(<Code2 size={15} />, "Copy CSS of selection", "", () => { void copyLayerCss(api).then((m) => onToast?.(m)); })}
+              <div style={{ padding: "8px 12px 4px", fontSize: 11, color: "var(--text-3, #8e8d88)", lineHeight: 1.5 }}>
+                Open formats only — your file stays yours, and the GitHub panel commits the project.
+              </div>
+            </>
+          )}
         </div>
       )}
     </div>

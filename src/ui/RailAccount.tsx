@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { User, LogOut, GitBranch, Key, IdCard } from "lucide-react";
+import { User, LogOut, GitBranch, Key, IdCard, Settings as SettingsIcon } from "lucide-react";
 
 import { useGitSession } from "../git/session";
 import { signInWithGitHub } from "../git/github-auth";
@@ -10,7 +10,7 @@ import { signInWithGitHub } from "../git/github-auth";
  * (name · open on GitHub · sign out). Signed out → an account icon that starts
  * the GitHub device-flow sign-in.
  */
-export function RailAccount() {
+export function RailAccount({ onOpenSettings }: { onOpenSettings?: () => void } = {}) {
   const user = useGitSession((s) => s.user);
   const token = useGitSession((s) => s.token);
   const setToken = useGitSession((s) => s.setToken);
@@ -132,6 +132,7 @@ export function RailAccount() {
                   <GitBranch size={14} /> Open on GitHub
                 </a>
               )}
+              <button onClick={() => { setOpen(false); onOpenSettings?.(); }} style={{ ...item, ...itemBtn }}><SettingsIcon size={14} /> Settings…</button>
               <button onClick={() => setSub("identity")} style={{ ...item, ...itemBtn }}><IdCard size={14} /> Git identity</button>
               <button onClick={() => setSub("pat")} style={{ ...item, ...itemBtn }}><Key size={14} /> Personal access token</button>
               {token && (

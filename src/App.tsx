@@ -34,6 +34,7 @@ import { PrototypePlay } from "./ui/PrototypePlay";
 import { PresentMode } from "./ui/PresentMode";
 import { LayersPanel } from "./ui/LayersPanel";
 import { RailAccount } from "./ui/RailAccount";
+import { SettingsPanel, type SettingsValues } from "./ui/SettingsPanel";
 import { StylesPanel } from "./ui/StylesPanel";
 import { AlignBar } from "./ui/AlignBar";
 import { BooleanBar } from "./ui/BooleanBar";
@@ -55,7 +56,9 @@ export function App() {
 
   const [view, setView] = useState<"Design" | "Split" | "Code" | "Console">("Design");
   const [dsTab, setDsTab] = useState<"Design" | "Prototype" | "Inspect" | "Assistant" | "Review">("Design");
-  const [theme, setTheme] = useState<"light" | "dark">("light");
+  const [theme, setTheme] = useState<"light" | "dark">(() => {
+    try { return (localStorage.getItem("draften-theme") as "light" | "dark") || "light"; } catch { return "light"; }
+  });
   const [pluginsOpen, setPluginsOpen] = useState(false);
   const [templatesOpen, setTemplatesOpen] = useState(false);
   const [mcpOpen, setMcpOpen] = useState(false);
@@ -68,6 +71,15 @@ export function App() {
   });
   const dismissWelcome = () => { setWelcome(false); try { localStorage.setItem("draften-welcomed", "1"); } catch { /* ignore */ } };
   const [dotGrid, setDotGrid] = useState(true);
+  const [snap, setSnap] = useState(true);
+  const [aiProvider, setAiProvider] = useState(() => { try { return localStorage.getItem("draften-ai-provider") || "deterministic"; } catch { return "deterministic"; } });
+  const [settingsOpen, setSettingsOpen] = useState(false);
+  const applySettings = (patch: Partial<SettingsValues>) => {
+    if (patch.theme) { setTheme(patch.theme); try { localStorage.setItem("draften-theme", patch.theme); } catch { /* ok */ } }
+    if (patch.dotGrid !== undefined) { setDotGrid(patch.dotGrid); excalidrawApi.current?.updateScene({ appState: { ...excalidrawApi.current.getAppState(), gridModeEnabled: patch.dotGrid } }); }
+    if (patch.snap !== undefined) setSnap(patch.snap);
+    if (patch.aiProvider) { setAiProvider(patch.aiProvider); try { localStorage.setItem("draften-ai-provider", patch.aiProvider); } catch { /* ok */ } }
+  };
   const [pasteNote, setPasteNote] = useState<string | null>(null);
   const [dragOver, setDragOver] = useState(false);
   // Responsive drawers (below md the rails slide over the canvas — Hick's Law).
@@ -274,7 +286,7 @@ export function App() {
         {/* trailing cluster: appearance · reset view · export · panel toggle */}
         <button
           className="tb-btn tb-icon"
-          onClick={() => setTheme((t) => (t === "light" ? "dark" : "light"))}
+          onClick={() => setTheme((t) => { const next = t === "light" ? "dark" : "light"; try { localStorage.setItem("draften-theme", next); } catch { /* ok */ } return next; })}
           title="Toggle appearance"
         >
           {theme === "light" ? <Moon size={15} /> : <Sun size={15} />}
@@ -304,6 +316,14 @@ export function App() {
 
       {presenting && canvasReady && excalidrawApi.current && (
         <PresentMode api={excalidrawApi.current} onClose={() => setPresenting(false)} />
+      )}
+
+      {settingsOpen && (
+        <SettingsPanel
+          onClose={() => setSettingsOpen(false)}
+          values={{ theme, dotGrid, snap, aiProvider }}
+          onChange={applySettings}
+        />
       )}
 
       <AnimatePresence>
@@ -340,7 +360,7 @@ export function App() {
 
           {/* account — pinned at the bottom of the rail (v2's avatar) */}
           <div style={{ flex: 1 }} />
-          <RailAccount />
+          <RailAccount onOpenSettings={() => setSettingsOpen(true)} />
         </nav>
 
         {/* left: Artboards & layers — ported from design/Draften v2.dc.html
@@ -606,8 +626,10 @@ export function App() {
         <span>Drag from a port to connect · ⌥ drag duplicates</span>
         <div className="right">
           <span>{isTauri() ? "Desktop" : "Web"}</span>
-          <span>Snap on</span>
-          <span>Grid 24</span>
+          <button className="status-toggle" title="Toggle the dot grid"
+            onClick={() => { setDotGrid((v) => { const next = !v; excalidrawApi.current?.updateScene({ appState: { ...excalidrawApi.current.getAppState(), gridModeEnabled: next } }); return next; }); }}>
+            Grid {dotGrid ? "on" : "off"}
+          </button>
         </div>
       </footer>
     </div>
