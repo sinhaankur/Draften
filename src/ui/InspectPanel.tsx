@@ -240,18 +240,19 @@ export function InspectPanel({ api }: Props) {
 
 /* ── small presentational helpers ─────────────────────────────────────────── */
 
-const pane: React.CSSProperties = { padding: 16, fontSize: 13, color: "var(--t1, #1d1d1b)" };
+const pane: React.CSSProperties = { padding: "10px 12px", fontSize: 12.5, color: "var(--sk-text-1, #1d1d1b)" };
 const grid2: React.CSSProperties = { display: "grid", gridTemplateColumns: "1fr 1fr", gap: 6 };
 
 function Empty({ text }: { text: string }) {
-  return <div style={{ padding: 16, fontSize: 12.5, lineHeight: 1.6, color: "var(--text-3, #8e8d88)" }}>{text}</div>;
+  return <div style={{ padding: 16, fontSize: 12, lineHeight: 1.6, color: "var(--sk-text-3, #8e8d88)" }}>{text}</div>;
 }
 
-/* Figma-style inspector sections: a titled block with a hairline divider above. */
+/* Sketch-style inspector section: a small UPPERCASE muted header (clr-sidebar-
+   label tier) + a hairline divider above, with Sketch's compact row rhythm. */
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div style={{ padding: "12px 0", borderTop: "1px solid var(--line, #e7e6e2)" }}>
-      <div style={{ fontSize: 12.5, fontWeight: 600, color: "var(--t1, #1d1d1b)", marginBottom: 8 }}>{title}</div>
+    <div style={{ padding: "10px 0", borderTop: "1px solid var(--sk-inspector-separator, rgba(0,0,0,.07))" }}>
+      <div style={{ fontSize: 10.5, fontWeight: 600, letterSpacing: "0.055em", textTransform: "uppercase", color: "var(--sk-text-3, #8e8d88)", marginBottom: 8 }}>{title}</div>
       {children}
     </div>
   );
@@ -264,25 +265,27 @@ function OpacityRow({ value, onChange }: { value: number; onChange: (v: number) 
       <input type="range" min={0} max={100} value={value}
         onChange={(e) => onChange(parseInt(e.target.value))}
         style={{ flex: 1, accentColor: "var(--accent, #3d6b5f)", height: 4, cursor: "pointer" }} />
-      <div style={{ display: "flex", alignItems: "center", gap: 2, background: "var(--canvas, #efeeeb)", borderRadius: 7, padding: "5px 8px", width: 64 }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 2, background: "var(--sk-inspector-field, #ededed)", borderRadius: 6, padding: "0 8px", height: 26, width: 60 }}>
         <input type="number" min={0} max={100} value={value}
           onChange={(e) => { const v = parseInt(e.target.value); if (!Number.isNaN(v)) onChange(Math.min(100, Math.max(0, v))); }}
-          style={{ width: "100%", minWidth: 0, border: 0, background: "transparent", fontSize: 12.5, color: "var(--t1, #1d1d1b)", fontFamily: "var(--font-mono, monospace)", outline: "none", textAlign: "right" }} />
-        <span style={{ fontSize: 11, color: "var(--text-3, #8e8d88)" }}>%</span>
+          style={{ width: "100%", minWidth: 0, border: 0, background: "transparent", fontSize: 12, color: "var(--sk-text-1, #1d1d1b)", fontFamily: "var(--font-mono, monospace)", outline: "none", textAlign: "right" }} />
+        <span style={{ fontSize: 11, color: "var(--sk-text-3, #8e8d88)" }}>%</span>
       </div>
     </div>
   );
 }
 
-/* A labelled numeric field (Figma style: label inside, light fill). */
+/* A labelled numeric field (Sketch style: label glyph inside, #ededed fill, 26px
+   row, mono value). */
+const skField: React.CSSProperties = { display: "flex", alignItems: "center", gap: 6, background: "var(--sk-inspector-field, #ededed)", borderRadius: 6, padding: "0 8px", height: 26 };
 function Field({ label, value, suffix, onChange }: { label: string; value: number; suffix?: string; onChange: (v: number) => void }) {
   return (
-    <div style={{ display: "flex", alignItems: "center", gap: 6, background: "var(--canvas, #efeeeb)", borderRadius: 7, padding: "5px 8px" }}>
-      <span style={{ fontSize: 11, color: "var(--text-3, #8e8d88)", flex: "none", minWidth: 14 }}>{label}</span>
+    <div style={skField}>
+      <span style={{ fontSize: 11, color: "var(--sk-text-3, #8e8d88)", flex: "none", minWidth: 14 }}>{label}</span>
       <input type="number" value={Number.isFinite(value) ? Math.round(value * 100) / 100 : 0}
         onChange={(e) => { const v = parseFloat(e.target.value); if (!Number.isNaN(v)) onChange(v); }}
-        style={{ flex: 1, minWidth: 0, border: 0, background: "transparent", fontSize: 12.5, color: "var(--t1, #1d1d1b)", fontFamily: "var(--font-mono, monospace)", outline: "none" }} />
-      {suffix && <span style={{ fontSize: 11, color: "var(--text-3, #8e8d88)" }}>{suffix}</span>}
+        style={{ flex: 1, minWidth: 0, border: 0, background: "transparent", fontSize: 12, color: "var(--sk-text-1, #1d1d1b)", fontFamily: "var(--font-mono, monospace)", outline: "none" }} />
+      {suffix && <span style={{ fontSize: 11, color: "var(--sk-text-3, #8e8d88)" }}>{suffix}</span>}
     </div>
   );
 }
@@ -302,14 +305,14 @@ function FillRow({ value, onChange, api: _api }: { value: string; onChange: (v: 
     } catch { /* user cancelled */ }
   };
   return (
-    <div style={{ display: "flex", alignItems: "center", gap: 8, background: "var(--canvas, #efeeeb)", borderRadius: 7, padding: "5px 8px" }}>
+    <div style={{ display: "flex", alignItems: "center", gap: 8, background: "var(--sk-inspector-field, #ededed)", borderRadius: 6, padding: "0 8px", height: 26 }}>
       <input type="color" value={toHex(value)} onChange={(e) => onChange(e.target.value)} title="Open the system color panel"
-        style={{ width: 20, height: 20, border: "1px solid rgba(0,0,0,.12)", borderRadius: 4, padding: 0, background: "none", cursor: "pointer", flex: "none" }} />
+        style={{ width: 18, height: 18, border: "1px solid rgba(0,0,0,.12)", borderRadius: 4, padding: 0, background: "none", cursor: "pointer", flex: "none" }} />
       <input value={value.replace(/^#/, "").toUpperCase()} onChange={(e) => onChange("#" + e.target.value.replace(/[^0-9a-f]/gi, ""))}
-        style={{ flex: 1, minWidth: 0, border: 0, background: "transparent", fontSize: 12.5, color: "var(--t1, #1d1d1b)", fontFamily: "var(--font-mono, monospace)", outline: "none", textTransform: "uppercase" }} />
+        style={{ flex: 1, minWidth: 0, border: 0, background: "transparent", fontSize: 12, color: "var(--sk-text-1, #1d1d1b)", fontFamily: "var(--font-mono, monospace)", outline: "none", textTransform: "uppercase" }} />
       {canPick && (
         <button onClick={pick} title="Sample a colour from anywhere on screen (eyedropper)"
-          style={{ border: 0, background: "transparent", cursor: "pointer", color: "var(--text-3, #8e8d88)", display: "grid", placeItems: "center", flex: "none", padding: 0 }}>
+          style={{ border: 0, background: "transparent", cursor: "pointer", color: "var(--sk-text-3, #8e8d88)", display: "grid", placeItems: "center", flex: "none", padding: 0 }}>
           <Pipette size={13} />
         </button>
       )}
