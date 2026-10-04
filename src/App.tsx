@@ -11,7 +11,6 @@ import {
 
 import { ExcalidrawCanvas, toElements } from "./canvas/ExcalidrawCanvas";
 import { registerCanvasApplier } from "./canvas/apply-action";
-import { GitHubSignIn } from "./ui/GitHubSignIn";
 import { SourceControlPanel } from "./ui/SourceControlPanel";
 import { parsePaste, toExcalidrawSkeleton } from "./import/paste";
 import { isTauri } from "./env";
@@ -53,7 +52,6 @@ export function App() {
   const [view, setView] = useState<"Design" | "Split" | "Code" | "Console">("Design");
   const [dsTab, setDsTab] = useState<"Design" | "Prototype" | "Inspect" | "Assistant" | "Review">("Design");
   const [theme, setTheme] = useState<"light" | "dark">("light");
-  const [aiOpen, setAiOpen] = useState(false);
   const [pluginsOpen, setPluginsOpen] = useState(false);
   const [templatesOpen, setTemplatesOpen] = useState(false);
   const [mcpOpen, setMcpOpen] = useState(false);
@@ -236,8 +234,6 @@ export function App() {
         {/* File — real Save/Open/Export in open formats (replaces the dead branch btn) */}
         <FileMenu api={canvasReady ? excalidrawApi.current : null} name={doc.name} onOpened={(n) => rename(n)} />
 
-        {/* GitHub sign-in (device flow) — unlocks the git features */}
-        <GitHubSignIn />
 
         <button className="tb-btn" onClick={() => setTemplatesOpen(true)} title="Templates">
           <LayoutTemplate size={14} /> Templates
@@ -273,7 +269,6 @@ export function App() {
       </header>
 
       <AnimatePresence>
-        {aiOpen && <AiPanel key="ai" onClose={() => setAiOpen(false)} />}
         {pluginsOpen && <PluginsPanel key="plugins" onClose={() => setPluginsOpen(false)} />}
         {templatesOpen && <TemplatesPanel key="templates" onClose={() => setTemplatesOpen(false)} onPick={pickTemplate} />}
         {mcpOpen && <McpPanel key="mcp" onClose={() => setMcpOpen(false)} />}
