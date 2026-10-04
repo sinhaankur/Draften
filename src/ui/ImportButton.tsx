@@ -55,7 +55,10 @@ export function ImportButton() {
 
   return (
     <div className="import-wrap">
-      <button className="row small" onClick={() => inputRef.current?.click()} title="Import a design file">
+      {/* The supported-formats note is a tooltip, not persistent body text, so the
+          left panel stays clean (Sketch keeps import to a single action). */}
+      <button className="row small" onClick={() => inputRef.current?.click()}
+        title="Import a design file — Sketch · PDF · Word. Figma via link + token; OmniGraffle via the desktop app.">
         ⤓ Import file
       </button>
       <input
@@ -66,10 +69,6 @@ export function ImportButton() {
         style={{ display: "none" }}
       />
       {status && <div className="import-status muted small">{status}</div>}
-      <div className="import-note muted small">
-        Sketch · PDF supported. Figma needs a link + token (coming); OmniGraffle
-        via the desktop app.
-      </div>
     </div>
   );
 }

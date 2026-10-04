@@ -249,7 +249,7 @@
 .section-title {
   font-size: var(--fs-2xs);
   text-transform: uppercase;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.07em;
   color: var(--text-3);
   font-weight: 600;
   margin: 0 0 var(--s3);
@@ -257,6 +257,11 @@
   align-items: center;
   justify-content: space-between;
 }
+/* Sketch-like breathing room: space each section from the one above (the first
+   in a pane keeps its tight top). */
+.pane-body .section-title { margin-top: 18px; }
+.pane-body > .section-title:first-child,
+.pane-body .divider + .section-title { margin-top: 0; }
 
 /* Layer-row hover affordances (lock icon) — show only when hovering the row,
    the Figma/Sketch pattern so the tree stays quiet until you reach for it. */

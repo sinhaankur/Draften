@@ -515,7 +515,15 @@ export function App() {
                 <>
                 <div className="divider" />
 
-                {/* Page (v2) */}
+                {/* No-selection state: a quiet hint (Sketch shows the Document/Page
+                    inspector here, not a wall of reference). Shortcuts live in the
+                    ? Help button, not the inspector. */}
+                <div style={{ textAlign: "center", padding: "6px 0 14px", color: "var(--text-3, #8e8d88)" }}>
+                  <div style={{ fontSize: 12.5, lineHeight: 1.6 }}>Nothing selected</div>
+                  <div style={{ fontSize: 11.5, marginTop: 2 }}>Pick a layer to inspect it, or press <span style={{ fontFamily: "var(--font-mono, monospace)" }}>?</span> for shortcuts.</div>
+                </div>
+
+                {/* Page */}
                 <div className="section-title">Page</div>
                 <div style={{ width: "100%", borderRadius: 8, border: "1px solid var(--line, #e7e6e2)", padding: "7px 10px", fontSize: 13, background: "var(--surf, #fff)", color: "var(--t1, #1d1d1b)", marginBottom: 8 }}>
                   {activeBoard?.name ?? doc.name}
@@ -524,21 +532,6 @@ export function App() {
                   <input type="checkbox" checked={dotGrid} onChange={(e) => { setDotGrid(e.target.checked); excalidrawApi.current?.updateScene({ appState: { ...excalidrawApi.current.getAppState(), gridModeEnabled: e.target.checked } }); }} />
                   Show dot grid
                 </label>
-
-                {/* Shortcuts (v2) — the real key map */}
-                <div className="section-title">Shortcuts</div>
-                <div style={{ display: "flex", flexDirection: "column", gap: 2, marginBottom: 12 }}>
-                  {([
-                    ["Duplicate", "⌘D"], ["Copy / paste", "⌘C ⌘V"], ["Group / ungroup", "⌘G"],
-                    ["Move", "V"], ["Rectangle", "R"], ["Ellipse", "O"], ["Text", "T"],
-                    ["Pan", "Space"], ["Zoom to fit", "⇧1"], ["Undo / redo", "⌘Z"],
-                  ] as const).map(([label, key]) => (
-                    <div key={label} style={{ display: "flex", justifyContent: "space-between", fontSize: 12.5, padding: "3px 0", color: "var(--t1, #1d1d1b)" }}>
-                      <span>{label}</span>
-                      <span style={{ fontFamily: "var(--font-mono, monospace)", fontSize: 11, color: "var(--text-3, #8e8d88)" }}>{key}</span>
-                    </div>
-                  ))}
-                </div>
 
                 <div className="divider" />
 
