@@ -1,7 +1,7 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img" aria-label="Draften">
   <rect width="512" height="512" rx="116" fill="#3d6b5f"/>
-  <!-- refined "D" monogram — a framed D (draft page + the letterform), matching the app -->
-  <path d="M170 140 h96 a106 106 0 0 1 0 232 h-96 z"
-        fill="none" stroke="#fff" stroke-width="30" stroke-linejoin="round"/>
-  <path d="M220 200 v112" fill="none" stroke="#fff" stroke-width="30" stroke-linecap="round"/>
+  <!-- Solid geometric 'D' monogram. Optically centred; the counter (inner hole)
+       is balanced so the mark reads as a clear D at 16px and in one colour. -->
+  <path fill="#ffffff" fill-rule="evenodd"
+        d="M150 128h96a128 132 0 0 1 0 256h-96V128zm74 68v120h22a66 66 0 0 0 0-120h-22z"/>
 </svg>

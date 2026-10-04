@@ -6,7 +6,7 @@ import type { ExcalidrawImperativeAPI } from "@excalidraw/excalidraw/types";
 import { AnimatePresence, motion } from "motion/react";
 import {
   PanelLeft, PanelRight, GitBranch, LayoutTemplate, Puzzle,
-  Moon, Sun, Sparkles, Play, History, Package, Server,
+  Moon, Sun, Sparkles, Play, History, Package, Server, Maximize2,
 } from "lucide-react";
 
 import { ExcalidrawCanvas, toElements } from "./canvas/ExcalidrawCanvas";
@@ -205,10 +205,9 @@ export function App() {
         <button className="rail-toggle" title="Boards & layers" onClick={() => { setLeftOpen((v) => !v); setRightOpen(false); }}><PanelLeft size={16} /></button>
         <div className="brand">
           <span className="logo" style={{ display: "inline-grid", placeItems: "center", width: 22, height: 22, borderRadius: 6, background: "var(--accent)", flex: "none" }}>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-label="Draften">
-              {/* refined 'D' monogram: a framed D — a draft page + the letterform */}
-              <path d="M6 4h7a7 8 0 0 1 0 16H6V4z" stroke="#fff" strokeWidth="2.2" strokeLinejoin="round" fill="none"/>
-              <path d="M10 9v6" stroke="#fff" strokeWidth="2.2" strokeLinecap="round"/>
+            {/* solid geometric D monogram */}
+            <svg width="14" height="14" viewBox="0 0 24 24" aria-label="Draften">
+              <path d="M6 4h6.5a7.5 8 0 0 1 0 16H6V4zm3.5 3.2v9.6h2.8a4.8 4.8 0 0 0 0-9.6z" fill="#fff"/>
             </svg>
           </span>
           <span>Draften</span>
@@ -259,6 +258,11 @@ export function App() {
         {/* primary action, trailing-most */}
         <button className="ai-btn" onClick={() => { setDsTab("Assistant"); setRightOpen(true); }}>
           <Sparkles size={14} /> AI
+        </button>
+        {/* Reset view — fit all content to the viewport */}
+        <button className="tb-btn tb-icon" title="Reset view (fit to content)"
+          onClick={() => { const api = excalidrawApi.current; if (api) { api.scrollToContent(api.getSceneElements(), { fitToContent: true, animate: true }); api.updateScene({ appState: { ...api.getAppState() } }); } }}>
+          <Maximize2 size={15} />
         </button>
         {/* Export — build the runnable app (v2's green Export button) */}
         <button className="export-btn" title="Export a runnable app (.zip)"
