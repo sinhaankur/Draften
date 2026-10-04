@@ -35,6 +35,7 @@ import { PresentMode } from "./ui/PresentMode";
 import { LayersPanel } from "./ui/LayersPanel";
 import { RailAccount } from "./ui/RailAccount";
 import { SettingsPanel, type SettingsValues } from "./ui/SettingsPanel";
+import { MeasureOverlay } from "./ui/MeasureOverlay";
 import { StylesPanel } from "./ui/StylesPanel";
 import { AlignBar } from "./ui/AlignBar";
 import { BooleanBar } from "./ui/BooleanBar";
@@ -461,6 +462,8 @@ export function App() {
           {/* canvas — hidden (not unmounted) in pure Code/Console view */}
           <div style={{ position: "relative", flex: view === "Split" ? "1 1 50%" : "1 1 100%", display: view === "Code" || view === "Console" ? "none" : "block" }}>
             <ExcalidrawCanvas theme={theme} onReady={(api) => { excalidrawApi.current = api; registerCanvasApplier(api); setCanvasReady(true); }} />
+            {/* Spacing guides (Alt/Option-hover) over the canvas — Figma/Sketch-style. */}
+            {canvasReady && <MeasureOverlay api={excalidrawApi.current} />}
           </div>
           {/* code panel — Code (full) or Split (half) */}
           {(view === "Code" || view === "Split") && (

@@ -2,9 +2,11 @@ import { useEffect, useState } from "react";
 import {
   AlignHorizontalJustifyStart, AlignHorizontalJustifyCenter, AlignHorizontalJustifyEnd,
   AlignVerticalJustifyStart, AlignVerticalJustifyCenter, AlignVerticalJustifyEnd,
-  AlignHorizontalSpaceBetween, AlignVerticalSpaceBetween,
+  AlignHorizontalSpaceBetween, AlignVerticalSpaceBetween, Wand2, Rows3, Columns3,
 } from "lucide-react";
 import type { ExcalidrawImperativeAPI } from "@excalidraw/excalidraw/types";
+
+import { distribute as tidyDistribute, averageGap, snapToScale, type Box } from "../canvas/measure";
 
 /**
  * AlignBar — align & distribute the selection (Sketch/Figma core, v2's Align).
@@ -76,6 +78,21 @@ export function AlignBar({ api }: { api: ExcalidrawImperativeAPI | null }) {
     write(p);
   };
 
+  // Auto-spacing / "Tidy up" (Figma): pack the selection with an EVEN gap. Works
+  // with 2+ (unlike space-between). `gap` lets you set it; otherwise the current
+  // average gap, snapped to the 8-grid, so it tidies to a sensible value.
+  const [gap, setGap] = useState<number | "">("");
+  const tidy = (axis: "horizontal" | "vertical") => {
+    const els = selected();
+    if (els.length < 2) return;
+    const boxes = els.map((e) => ({ id: e.id, x: e.x, y: e.y, width: e.width, height: e.height } as { id: string } & Box));
+    const g = gap === "" ? snapToScale(averageGap([...boxes].sort((a, b) => (axis === "horizontal" ? a.x - b.x : a.y - b.y)), axis)) : gap;
+    const moved = tidyDistribute(boxes, axis, g);
+    const p = new Map<string, { x?: number; y?: number }>();
+    for (const id in moved) p.set(id, moved[id]);
+    write(p);
+  };
+
   const btn = (title: string, onClick: () => void, icon: React.ReactNode) => (
     <button title={title} onClick={onClick}
       style={{ flex: 1, display: "grid", placeItems: "center", height: 28, border: "1px solid var(--line,#e7e6e2)", background: "var(--surf,#fff)", color: "var(--t1,#1d1d1b)", borderRadius: 7, cursor: "pointer" }}>
@@ -97,6 +114,21 @@ export function AlignBar({ api }: { api: ExcalidrawImperativeAPI | null }) {
         {btn("Align middle", () => alignV("middle"), <AlignVerticalJustifyCenter size={15} />)}
         {btn("Align bottom", () => alignV("bottom"), <AlignVerticalJustifyEnd size={15} />)}
         {btn("Distribute vertically", () => distribute("v"), <AlignVerticalSpaceBetween size={15} />)}
+      </div>
+
+      {/* Auto-spacing / Tidy up — pack with an even gap (Figma). */}
+      <div className="section-title" style={{ marginTop: 10, display: "flex", alignItems: "center", gap: 6 }}>
+        <Wand2 size={12} /> Auto spacing
+      </div>
+      <div style={{ display: "flex", gap: 4, marginTop: 4, alignItems: "center" }}>
+        {btn("Tidy up horizontally (even gap)", () => tidy("horizontal"), <Columns3 size={15} />)}
+        {btn("Tidy up vertically (even gap)", () => tidy("vertical"), <Rows3 size={15} />)}
+        <div style={{ display: "flex", alignItems: "center", gap: 4, flex: 1, background: "var(--canvas,#efeeeb)", borderRadius: 7, padding: "0 8px", height: 28 }}>
+          <span style={{ fontSize: 11, color: "var(--text-3,#8e8d88)" }}>gap</span>
+          <input type="number" value={gap} placeholder="auto" min={0}
+            onChange={(e) => setGap(e.target.value === "" ? "" : Math.max(0, parseInt(e.target.value) || 0))}
+            style={{ width: "100%", minWidth: 0, border: 0, background: "transparent", fontSize: 12.5, color: "var(--t1,#1d1d1b)", outline: "none", fontFamily: "var(--font-mono, monospace)" }} />
+        </div>
       </div>
     </div>
   );
