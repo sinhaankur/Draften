@@ -1,0 +1,104 @@
+/**
+ * sketch-tokens.css — Sketch's design-token system, reverse-engineered from the
+ * real Sketch.app (2026.3.1) asset catalog (Contents/Resources/Assets.car, read
+ * via `assetutil --info`). These are Sketch's OWN named colours (clr-*), so
+ * Draften's chrome matches a tool people already trust, pixel for pixel.
+ *
+ * We expose them as --sk-* tokens and map Draften's existing --vars onto them, so
+ * the whole app adopts Sketch's palette without touching every component.
+ *
+ * Provenance: Sketch 2026.3.1 · 114 named colours · light values shown; dark
+ * variants noted where they differ. Only third-party reference values are
+ * credited; Draften's own composition stays ours.
+ */
+
+:root {
+  /* accent — Sketch's signature blue-violet (not macOS #007aff) */
+  --sk-accent: #555dff;
+  --sk-accent-inactive: #b3b3b3;
+
+  /* canvas */
+  --sk-canvas-page: #f5f5f5;        /* grey behind artboards */
+  --sk-canvas-artboard: #ffffff;     /* artboard fill */
+  --sk-canvas-line: #dadcdc;         /* pixel line / artboard border (@30% on canvas) */
+  --sk-slice-outline: #cccccc;
+
+  /* inspector (right panel) */
+  --sk-inspector-bg: #ffffff;
+  --sk-inspector-field: #ededed;     /* text/number field fill */
+  --sk-inspector-separator: rgba(0,0,0,0.07);
+  --sk-inspector-button-border: rgba(0,0,0,0.20);
+  --sk-inspector-shadow: rgba(0,0,0,0.10);
+  --sk-tab-text: rgba(0,0,0,0.50);
+  --sk-tab-text-selected: #000000;
+
+  /* sidebar (left layer list) */
+  --sk-sidebar-label: rgba(0,0,0,0.50);
+  --sk-sidebar-divider: rgba(0,0,0,0.10);
+  --sk-sidebar-search-bg: rgba(0,0,0,0.05);
+
+  /* toolbar */
+  --sk-toolbar-item: rgba(0,0,0,0.69);
+  --sk-toolbar-item-highlight: rgba(0,0,0,0.05);
+
+  /* buttons (Sketch's subtle fills) */
+  --sk-button-bg: #ffffff;
+  --sk-button-hover: rgba(0,0,0,0.05);
+  --sk-button-pressed: rgba(0,0,0,0.10);
+
+  /* text foreground tiers (derived from Sketch's @-alpha usage) */
+  --sk-text-1: rgba(0,0,0,0.85);     /* primary */
+  --sk-text-2: rgba(0,0,0,0.60);     /* secondary */
+  --sk-text-3: rgba(0,0,0,0.42);     /* tertiary / labels */
+}
+
+[data-theme="dark"] {
+  --sk-accent: #555dff;
+  --sk-accent-inactive: #808080;
+
+  --sk-canvas-page: #121212;
+  --sk-canvas-artboard: #ffffff;     /* artboards stay white in Sketch dark mode */
+  --sk-canvas-line: rgba(218,220,220,0.30);
+
+  --sk-inspector-bg: #181818;
+  --sk-inspector-field: #2e2e2e;
+  --sk-inspector-separator: rgba(255,255,255,0.08);
+  --sk-tab-text: rgba(255,255,255,0.50);
+  --sk-tab-text-selected: #ffffff;
+
+  --sk-sidebar-label: rgba(255,255,255,0.50);
+  --sk-sidebar-divider: rgba(255,255,255,0.10);
+  --sk-sidebar-search-bg: rgba(255,255,255,0.05);
+
+  --sk-toolbar-item: rgba(255,255,255,0.69);
+  --sk-toolbar-item-highlight: rgba(255,255,255,0.05);
+
+  --sk-button-bg: #181818;
+  --sk-button-hover: rgba(255,255,255,0.05);
+  --sk-button-pressed: rgba(255,255,255,0.10);
+
+  --sk-text-1: rgba(255,255,255,0.90);
+  --sk-text-2: rgba(255,255,255,0.65);
+  --sk-text-3: rgba(255,255,255,0.45);
+}
+
+/* ── Adopt Sketch's NEUTRAL system into Draften's vars ──────────────────────
+   We reuse Sketch's well-built greys/borders/field fills (so the chrome feels
+   as considered as Sketch), but KEEP Draften's teal accent — its own identity.
+   Imported after index.css, so these win. */
+:root {
+  --border: var(--sk-canvas-line);          /* hairlines → Sketch pixel-line #dadcdc */
+  --line: var(--sk-canvas-line);
+  --border-strong: rgba(0,0,0,0.20);         /* Sketch inspector-button-border */
+  --canvas: var(--sk-inspector-field);       /* field fills → #ededed */
+  --hover: var(--sk-button-hover);           /* #000 @5% — Sketch button hover */
+  --text-3: var(--sk-text-3);                /* labels → #000 @42% (Sketch sidebar-label tier) */
+}
+[data-theme="dark"] {
+  --border: var(--sk-sidebar-divider);
+  --line: var(--sk-sidebar-divider);
+  --border-strong: rgba(255,255,255,0.22);
+  --canvas: var(--sk-inspector-field);
+  --hover: var(--sk-button-hover);
+  --text-3: var(--sk-text-3);
+}

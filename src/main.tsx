@@ -17,6 +17,7 @@ import { Shell } from "./Shell";
 import { applyPlatformClass } from "./env";
 import { registerBuiltins } from "./plugins/builtins";
 import "./index.css";
+import "./sketch-tokens.css"; // Sketch's reverse-engineered neutral palette (after index.css so it wins)
 
 // Tag the OS + shell so the window chrome adapts per platform (mac/win/linux/web).
 applyPlatformClass();
