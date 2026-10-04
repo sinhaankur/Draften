@@ -22,6 +22,7 @@ import type {
   Node,
   Paint,
   RectangleNode,
+  Stroke,
   TextNode,
 } from "../model/node";
 import type { ImportInput, ImportResult, Importer } from "./importer";
@@ -38,15 +39,29 @@ interface SketchRect {
   width: number;
   height: number;
 }
+/** One run of attributes inside an attributedString (font, size, colour). */
+interface SketchTextAttribute {
+  MSAttributedStringFontAttribute?: { attributes?: { name?: string; size?: number } };
+  MSAttributedStringColorAttribute?: SketchColor;
+  kerning?: number;
+}
 interface SketchLayer {
   do_objectID: string;
   _class: string;
   name?: string;
   frame?: SketchRect & { _class: string };
   layers?: SketchLayer[];
-  style?: { fills?: Array<{ color?: SketchColor; isEnabled?: boolean }> };
+  rotation?: number; // degrees, clockwise-positive in Sketch
+  style?: {
+    fills?: Array<{ color?: SketchColor; isEnabled?: boolean }>;
+    borders?: Array<{ color?: SketchColor; isEnabled?: boolean; thickness?: number }>;
+    contextSettings?: { opacity?: number };
+  };
   isVisible?: boolean;
-  attributedString?: { string?: string };
+  attributedString?: {
+    string?: string;
+    attributes?: Array<{ attributes?: SketchTextAttribute }>;
+  };
   fixedRadius?: number;
 }
 
@@ -124,20 +139,25 @@ export class SketchImporter implements Importer {
     const frame = layer.frame
       ? { x: layer.frame.x, y: layer.frame.y, width: layer.frame.width, height: layer.frame.height }
       : { x: 0, y: 0, width: 100, height: 100 };
+    const opacity = layer.style?.contextSettings?.opacity;
     const base = {
       id,
       name: layer.name ?? layer._class,
       frame,
       visible: layer.isVisible !== false,
       parentId,
+      // Sketch rotation is degrees clockwise; the model stores radians.
+      ...(layer.rotation ? { rotation: (-layer.rotation * Math.PI) / 180 } : {}),
+      ...(opacity !== undefined && opacity < 1 ? { opacity } : {}),
     };
+    const stroke = this.stroke(layer);
 
     let node: Node;
     switch (layer._class) {
       case "artboard":
       case "group":
       case "symbolMaster": {
-        node = { ...base, type: "frame", fills: this.fills(layer), children: [] } as FrameNode;
+        node = { ...base, type: "frame", fills: this.fills(layer), ...(stroke ? { stroke } : {}), children: [] } as FrameNode;
         doc.nodes[id] = node;
         for (const child of layer.layers ?? []) {
           const c = this.mapLayer(child, doc, warnings, id);
@@ -151,29 +171,35 @@ export class SketchImporter implements Importer {
           type: "rectangle",
           fills: this.fills(layer),
           cornerRadius: layer.fixedRadius,
+          ...(stroke ? { stroke } : {}),
         } as RectangleNode;
         break;
       case "oval":
-        node = { ...base, type: "ellipse", fills: this.fills(layer) } as EllipseNode;
+        node = { ...base, type: "ellipse", fills: this.fills(layer), ...(stroke ? { stroke } : {}) } as EllipseNode;
         break;
-      case "text":
+      case "text": {
+        const attr = layer.attributedString?.attributes?.[0]?.attributes;
+        const font = attr?.MSAttributedStringFontAttribute?.attributes;
+        const color = attr?.MSAttributedStringColorAttribute;
         node = {
           ...base,
           type: "text",
           text: layer.attributedString?.string ?? "",
-          fills: this.fills(layer, "#000000"),
+          fills: color ? [{ kind: "solid", color: this.color(color) }] : this.fills(layer, "#000000"),
           style: {
-            fontFamily: "Inter",
-            fontSize: 16,
-            fontWeight: 400,
+            fontFamily: this.fontFamily(font?.name) ?? "Inter",
+            fontSize: font?.size ?? 16,
+            fontWeight: this.fontWeight(font?.name),
             lineHeight: 1.4,
+            ...(attr?.kerning ? { letterSpacing: attr.kerning } : {}),
           },
         } as TextNode;
         break;
+      }
       default:
         // unknown → a plain frame so nothing vanishes; note it once per class
         warnings.push(`Approximated unsupported Sketch layer "${layer._class}" as a frame.`);
-        node = { ...base, type: "frame", fills: this.fills(layer), children: [] } as FrameNode;
+        node = { ...base, type: "frame", fills: this.fills(layer), ...(stroke ? { stroke } : {}), children: [] } as FrameNode;
         break;
     }
     doc.nodes[id] = node;
@@ -184,6 +210,32 @@ export class SketchImporter implements Importer {
     const f = layer.style?.fills?.find((x) => x.isEnabled !== false && x.color);
     if (f?.color) return [{ kind: "solid", color: this.color(f.color) }];
     return fallback ? [{ kind: "solid", color: fallback }] : [{ kind: "none" }];
+  }
+
+  /** First enabled border → a model Stroke. */
+  private stroke(layer: SketchLayer): Stroke | undefined {
+    const b = layer.style?.borders?.find((x) => x.isEnabled !== false && x.color);
+    if (!b?.color) return undefined;
+    return { paint: { kind: "solid", color: this.color(b.color) }, width: b.thickness ?? 1 };
+  }
+
+  /** Sketch font PostScript names are like "Inter-SemiBold"; take the family. */
+  private fontFamily(psName?: string): string | undefined {
+    if (!psName) return undefined;
+    return psName.split("-")[0].replace(/([a-z])([A-Z])/g, "$1 $2");
+  }
+  /** Map a weight word in the PostScript name to a numeric weight. */
+  private fontWeight(psName?: string): number {
+    const n = (psName ?? "").toLowerCase();
+    if (n.includes("thin")) return 100;
+    if (n.includes("extralight") || n.includes("ultralight")) return 200;
+    if (n.includes("light")) return 300;
+    if (n.includes("medium")) return 500;
+    if (n.includes("semibold") || n.includes("demibold")) return 600;
+    if (n.includes("extrabold") || n.includes("ultrabold")) return 800;
+    if (n.includes("black") || n.includes("heavy")) return 900;
+    if (n.includes("bold")) return 700;
+    return 400;
   }
 
   private color(c: SketchColor): string {

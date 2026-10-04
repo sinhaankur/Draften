@@ -9,16 +9,40 @@
  */
 
 import type { DraftenDocument } from "../model/document";
-import type { Node, Paint } from "../model/node";
+import type { Node, Paint, Stroke } from "../model/node";
 
 type Skeleton = Array<Record<string, unknown>>;
 
 const INK = "#1d1d1b";
 const LINE = "#e7e6e2";
 
+/** Resolve a fill to a single display colour: solid as-is, a linear gradient to
+ *  its middle stop (Excalidraw has no gradient fill, so we approximate it). */
 function solid(fills: Paint[] | undefined, fallback = "transparent"): string {
-  const f = fills?.find((p) => p.kind === "solid") as { kind: "solid"; color: string } | undefined;
-  return f?.color ?? fallback;
+  const f = fills?.find((p) => p.kind === "solid" || p.kind === "linear");
+  if (!f) return fallback;
+  if (f.kind === "solid") return f.color;
+  if (f.kind === "linear" && f.stops.length) {
+    return f.stops[Math.floor((f.stops.length - 1) / 2)]?.color ?? f.stops[0].color;
+  }
+  return fallback;
+}
+
+/** Stroke → { strokeColor, strokeWidth } overrides, or {} when there's none. */
+function strokeProps(stroke: Stroke | undefined): Record<string, unknown> {
+  if (!stroke || stroke.paint.kind === "none") return {};
+  const color = stroke.paint.kind === "solid" ? stroke.paint.color
+    : stroke.paint.kind === "linear" ? solid([stroke.paint]) : undefined;
+  if (!color) return {};
+  return { strokeColor: color, strokeWidth: Math.max(0.5, stroke.width) };
+}
+
+/** opacity (0..1) + rotation (radians) shared by every node type. */
+function transformProps(node: Node): Record<string, unknown> {
+  const out: Record<string, unknown> = {};
+  if (typeof node.opacity === "number" && node.opacity < 1) out.opacity = Math.round(node.opacity * 100);
+  if (typeof node.rotation === "number" && node.rotation !== 0) out.angle = node.rotation;
+  return out;
 }
 
 /** World (x,y) of a node by walking parent frames. */
@@ -54,6 +78,9 @@ export function documentToSkeleton(doc: DraftenDocument): Skeleton {
     const w = Math.max(1, node.frame.width);
     const h = Math.max(1, node.frame.height);
 
+    const xf = transformProps(node);
+    const sp = strokeProps((node as { stroke?: Stroke }).stroke);
+
     switch (node.type) {
       case "frame":
       case "rectangle": {
@@ -61,29 +88,40 @@ export function documentToSkeleton(doc: DraftenDocument): Skeleton {
         const radius = (node as { cornerRadius?: number }).cornerRadius;
         out.push({
           ...base, type: "rectangle", x, y, width: w, height: h,
+          // a real stroke wins; else a faint edge so flat shapes still read
           strokeColor: fill === "transparent" ? LINE : fill === "#ffffff" ? LINE : darken(fill),
           backgroundColor: fill,
           ...(radius ? { roundness: { type: 3 } } : {}),
+          ...xf, ...sp,
         });
         break;
       }
       case "ellipse":
-        out.push({ ...base, type: "ellipse", x, y, width: w, height: h, backgroundColor: solid((node as { fills?: Paint[] }).fills), strokeColor: LINE });
+        out.push({ ...base, type: "ellipse", x, y, width: w, height: h, backgroundColor: solid((node as { fills?: Paint[] }).fills), strokeColor: LINE, ...xf, ...sp });
         break;
+      case "image": {
+        // No bitmap bytes in the skeleton path → a labelled placeholder box so the
+        // layout reads (the real pixels come later via the asset store).
+        out.push({ ...base, type: "rectangle", x, y, width: w, height: h, backgroundColor: "#f1f0ec", strokeColor: LINE, ...xf });
+        out.push({ ...base, type: "text", x: x + 6, y: y + Math.max(0, h / 2 - 8), text: node.name || "Image", fontSize: 12, fontFamily: 2, strokeColor: "#8e8d88", ...xf });
+        break;
+      }
       case "text": {
-        const t = node as { text: string; style?: { fontSize?: number }; fills?: Paint[] };
+        const t = node as { text: string; style?: { fontSize?: number; align?: string }; fills?: Paint[] };
         out.push({
           ...base, type: "text", x, y,
           text: t.text || node.name || "",
           fontSize: t.style?.fontSize ?? 16,
           fontFamily: 2,
+          textAlign: t.style?.align ?? "left",
           strokeColor: solid(t.fills, INK),
+          ...xf,
         });
         break;
       }
       default:
-        // paths/images/unknown → a hairline frame so nothing silently vanishes
-        out.push({ ...base, type: "rectangle", x, y, width: w, height: h, strokeColor: LINE, backgroundColor: "transparent" });
+        // paths/unknown → a hairline frame so nothing silently vanishes
+        out.push({ ...base, type: "rectangle", x, y, width: w, height: h, strokeColor: LINE, backgroundColor: "transparent", ...xf, ...sp });
         break;
     }
   }

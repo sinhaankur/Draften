@@ -21,6 +21,47 @@ describe("documentToSkeleton — imported doc → canvas", () => {
     expect(text.fontSize).toBe(18);
   });
 
+  it("carries stroke, opacity and rotation onto the canvas element", () => {
+    const doc = createEmptyDocument("test");
+    doc.nodes = {
+      r1: {
+        id: "r1", type: "rectangle", name: "Box",
+        frame: { x: 0, y: 0, width: 100, height: 40 },
+        fills: [{ kind: "solid", color: "#3d6b5f" }],
+        stroke: { paint: { kind: "solid", color: "#ff0000" }, width: 3 },
+        opacity: 0.5, rotation: Math.PI / 4,
+      } as never,
+    };
+    const [rect] = documentToSkeleton(doc) as Array<Record<string, unknown>>;
+    expect(rect.strokeColor).toBe("#ff0000");
+    expect(rect.strokeWidth).toBe(3);
+    expect(rect.opacity).toBe(50); // 0..1 → 0..100
+    expect(rect.angle).toBeCloseTo(Math.PI / 4);
+  });
+
+  it("approximates a linear gradient fill as its middle stop", () => {
+    const doc = createEmptyDocument("test");
+    doc.nodes = {
+      r1: {
+        id: "r1", type: "rectangle", name: "Grad",
+        frame: { x: 0, y: 0, width: 100, height: 40 },
+        fills: [{ kind: "linear", angle: 90, stops: [{ offset: 0, color: "#000000" }, { offset: 1, color: "#ffffff" }] }],
+      } as never,
+    };
+    const [rect] = documentToSkeleton(doc) as Array<Record<string, unknown>>;
+    expect(rect.backgroundColor).toBe("#000000"); // mid of a 2-stop gradient
+  });
+
+  it("renders an image node as a labelled placeholder box", () => {
+    const doc = createEmptyDocument("test");
+    doc.nodes = {
+      i1: { id: "i1", type: "image", name: "Avatar", frame: { x: 0, y: 0, width: 80, height: 80 }, src: "figma://image/abc" } as never,
+    };
+    const sk = documentToSkeleton(doc) as Array<Record<string, unknown>>;
+    expect(sk.map((s) => s.type)).toEqual(["rectangle", "text"]);
+    expect(sk[1].text).toBe("Avatar");
+  });
+
   it("flattens child coordinates to world space (parent offset added)", () => {
     const doc = createEmptyDocument("test");
     doc.nodes = {

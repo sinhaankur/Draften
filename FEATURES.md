@@ -1,17 +1,11 @@
 # Draften — Features (source of truth)
 
-## 🐞 BUG AUDIT (2026-09-10, from the running app)
-Dead/decorative UI that makes it feel unfinished — fix these:
-1. **Boards "+" does nothing** — no onClick; can't add a board.
-2. **"⑂ main" branch button is decorative** — no Git behind it.
-3. **Split view = broken** — the segmented control sets `view` but only "Design"
-   renders; Split shows nothing (no split layout), Code shows nothing (no editor).
-4. **Inspect tab is a placeholder** — "Select a node to inspect" never populates;
-   not wired to Excalidraw selection.
-5. **Layers = placeholder** — "Managed on the canvas"; no real layers panel.
-6. **Component cards aren't draggable** — can't drag a component onto the canvas.
-7. **Figma paste unhandled** — no clipboard listener (the #1 complaint).
-8. **App icon is default Tauri** — not the Draften logo yet.
+## ✅ CLEARED — 2026-09-10 bug audit (all 8 fixed since)
+The dead/decorative UI from the first audit is now real: Boards "+" adds a board ·
+Git panel + branch wired · Split/Code views render · Inspect reads & edits the live
+selection · Layers panel wired to the canvas · components drag onto the canvas ·
+Figma/Sketch paste has a real clipboard handler (`src/import/paste.ts`) · the app
+ships the Draften icon. Kept here as a record, not a to-do.
 
 ---
 
@@ -32,13 +26,23 @@ Reference app for UX/UI standard: **Sketch.app** (native macOS feel).
 - ✅ Light-default theme + Draften Violet brand + full token system in CSS
 
 ## Opening / importing other tools' files ("opens their files")
-- ✅ **Sketch** importer (.sketch ZIP/JSON → model, tested)
-- 🟡 **PDF** importer (page → board, stub)
-- ⬜ **Figma paste** — paste copied Figma layers (clipboard `figmeta`/`figma`
-  format) → Draften. **BROKEN today: no clipboard handler at all.** ← top gap
-- ⬜ **Figma file** import (REST API + token → node tree)
+- ✅ **Sketch** importer (.sketch ZIP/JSON → model, tested). Now carries
+  **stroke/border, opacity, rotation, corner radius, and real text style**
+  (family/size/weight/colour from the attributedString) — not just solid fills.
+- ✅ **Figma file** import (REST API + token → node tree). Now carries
+  **stroke + weight, opacity, rotation, linear gradients, image fills, and full
+  text style** (weight / align / line-height / letter-spacing).
+- ✅ **Figma / Sketch paste** — clipboard handler parses `figma`/`figmeta` + the
+  readable HTML payload → nodes (`src/import/paste.ts`).
+- 🟡 **PDF** importer (page → board)
 - ⬜ **OmniGraffle** importer (Rust `decode_omnigraffle` exists → wire to model)
 - ⬜ Generic image paste (PNG/SVG from clipboard → canvas)
+
+**Import fidelity (shared, `src/import/to-canvas.ts`):** imported nodes render on
+the canvas with their real stroke width/colour, opacity, rotation, true corner
+radius, a gradient approximated to its mid stop, and labelled image placeholders —
+so an opened Sketch/Figma file reads like it did in the source tool, and the
+Inspect panel reads those same fields back.
 
 ## Design system
 - ✅ AI-generated design system (deterministic: tokens + atomic components)

@@ -26,14 +26,29 @@ async function makeSketchZip(): Promise<Uint8Array> {
           name: "Box",
           frame: { _class: "rect", x: 10, y: 20, width: 100, height: 50 },
           fixedRadius: 6,
-          style: { fills: [{ isEnabled: true, color: { red: 1, green: 0, blue: 0, alpha: 1 } }] },
+          rotation: 90, // Sketch degrees, clockwise-positive
+          style: {
+            fills: [{ isEnabled: true, color: { red: 1, green: 0, blue: 0, alpha: 1 } }],
+            borders: [{ isEnabled: true, thickness: 2, color: { red: 0, green: 0, blue: 1, alpha: 1 } }],
+            contextSettings: { opacity: 0.4 },
+          },
         },
         {
           do_objectID: "TEXT-1",
           _class: "text",
           name: "Label",
           frame: { _class: "rect", x: 10, y: 90, width: 200, height: 24 },
-          attributedString: { string: "Hello" },
+          attributedString: {
+            string: "Hello",
+            attributes: [
+              {
+                attributes: {
+                  MSAttributedStringFontAttribute: { attributes: { name: "Inter-SemiBold", size: 22 } },
+                  MSAttributedStringColorAttribute: { red: 0, green: 0.5, blue: 1, alpha: 1 },
+                },
+              },
+            ],
+          },
         },
         {
           do_objectID: "GROUP-1",
@@ -82,10 +97,19 @@ describe("SketchImporter", () => {
     expect(rect.frame).toEqual({ x: 10, y: 20, width: 100, height: 50 });
     expect((rect as any).cornerRadius).toBe(6);
     expect((rect as any).fills[0]).toEqual({ kind: "solid", color: "#ff0000" });
+    // border → stroke, context opacity, and rotation (deg CW → rad CCW) carry through
+    expect((rect as any).stroke).toEqual({ paint: { kind: "solid", color: "#0000ff" }, width: 2 });
+    expect((rect as any).opacity).toBe(0.4);
+    expect((rect as any).rotation).toBeCloseTo((-90 * Math.PI) / 180);
 
     const text = document.nodes["TEXT-1"];
     expect(text.type).toBe("text");
     expect((text as any).text).toBe("Hello");
+    // real text attributes, not the hardcoded Inter/16/400
+    expect((text as any).style.fontFamily).toBe("Inter");
+    expect((text as any).style.fontSize).toBe(22);
+    expect((text as any).style.fontWeight).toBe(600); // "SemiBold"
+    expect((text as any).fills[0]).toEqual({ kind: "solid", color: "#0080ff" });
 
     // nested oval reachable via the group frame's children
     const group = document.nodes["GROUP-1"];

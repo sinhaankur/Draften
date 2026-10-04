@@ -12,11 +12,20 @@
  */
 
 import { createEmptyDocument, type Board, type DraftenDocument } from "../model/document";
-import type { EllipseNode, FrameNode, Node, Paint, RectangleNode, TextNode } from "../model/node";
+import type { EllipseNode, FrameNode, ImageNode, Node, Paint, RectangleNode, Stroke, TextNode } from "../model/node";
 import type { ImportInput, ImportResult, Importer } from "./importer";
 
 interface FigmaColor { r: number; g: number; b: number; a: number }
-interface FigmaPaint { type: string; color?: FigmaColor; opacity?: number; visible?: boolean }
+interface FigmaGradientStop { position: number; color: FigmaColor }
+interface FigmaPaint {
+  type: string; // SOLID, GRADIENT_LINEAR, GRADIENT_RADIAL, IMAGE…
+  color?: FigmaColor;
+  opacity?: number;
+  visible?: boolean;
+  gradientStops?: FigmaGradientStop[];
+  gradientHandlePositions?: Array<{ x: number; y: number }>;
+  imageRef?: string;
+}
 interface FigmaNode {
   id: string;
   name: string;
@@ -24,9 +33,13 @@ interface FigmaNode {
   children?: FigmaNode[];
   absoluteBoundingBox?: { x: number; y: number; width: number; height: number } | null;
   fills?: FigmaPaint[];
+  strokes?: FigmaPaint[];
+  strokeWeight?: number;
+  opacity?: number;
+  rotation?: number; // radians, around the node centre
   characters?: string;
   cornerRadius?: number;
-  style?: { fontFamily?: string; fontSize?: number; fontWeight?: number; lineHeightPx?: number; textAlignHorizontal?: string };
+  style?: { fontFamily?: string; fontSize?: number; fontWeight?: number; lineHeightPx?: number; textAlignHorizontal?: string; letterSpacing?: number };
   visible?: boolean;
 }
 
@@ -101,11 +114,18 @@ export class FigmaImporter implements Importer {
   private mapNode(fn: FigmaNode, doc: DraftenDocument, warnings: string[], parentId: string | undefined): Node | undefined {
     const bb = fn.absoluteBoundingBox;
     const frame = bb ? { x: bb.x, y: bb.y, width: bb.width, height: bb.height } : { x: 0, y: 0, width: 100, height: 100 };
-    const base = { id: fn.id, name: fn.name || fn.type, frame, parentId, visible: fn.visible !== false };
+    const base = {
+      id: fn.id, name: fn.name || fn.type, frame, parentId,
+      visible: fn.visible !== false,
+      // Figma opacity is 0..1; the model uses the same. rotation is radians.
+      ...(fn.opacity !== undefined && fn.opacity !== 1 ? { opacity: fn.opacity } : {}),
+      ...(fn.rotation ? { rotation: fn.rotation } : {}),
+    };
+    const stroke = this.stroke(fn);
 
     switch (fn.type) {
       case "FRAME": case "GROUP": case "COMPONENT": case "COMPONENT_SET": case "INSTANCE": case "SECTION": {
-        const node: FrameNode = { ...base, type: "frame", fills: this.fills(fn), cornerRadius: fn.cornerRadius, children: [] };
+        const node: FrameNode = { ...base, type: "frame", fills: this.fills(fn), cornerRadius: fn.cornerRadius, ...(stroke ? { stroke } : {}), children: [] };
         doc.nodes[fn.id] = node;
         for (const child of fn.children ?? []) {
           const c = this.mapNode(child, doc, warnings, fn.id);
@@ -114,25 +134,34 @@ export class FigmaImporter implements Importer {
         return node;
       }
       case "RECTANGLE": case "VECTOR": case "LINE": case "STAR": case "REGULAR_POLYGON": {
-        const node: RectangleNode = { ...base, type: "rectangle", fills: this.fills(fn), cornerRadius: fn.cornerRadius };
+        // A rectangle whose only fill is an image → an image node (so it renders as bitmap).
+        const img = (fn.fills ?? []).find((p) => p.visible !== false && p.type === "IMAGE" && p.imageRef);
+        if (img?.imageRef) {
+          const node: ImageNode = { ...base, type: "image", src: `figma://image/${img.imageRef}`, fit: "cover" };
+          doc.nodes[fn.id] = node;
+          return node;
+        }
+        const node: RectangleNode = { ...base, type: "rectangle", fills: this.fills(fn), cornerRadius: fn.cornerRadius, ...(stroke ? { stroke } : {}) };
         doc.nodes[fn.id] = node;
         return node;
       }
       case "ELLIPSE": {
-        const node: EllipseNode = { ...base, type: "ellipse", fills: this.fills(fn) };
+        const node: EllipseNode = { ...base, type: "ellipse", fills: this.fills(fn), ...(stroke ? { stroke } : {}) };
         doc.nodes[fn.id] = node;
         return node;
       }
       case "TEXT": {
+        const size = fn.style?.fontSize ?? 16;
         const node: TextNode = {
           ...base, type: "text", text: fn.characters ?? "",
           fills: this.fills(fn, "#1d1d1b"),
           style: {
             fontFamily: fn.style?.fontFamily ?? "Inter",
-            fontSize: fn.style?.fontSize ?? 16,
+            fontSize: size,
             fontWeight: fn.style?.fontWeight ?? 400,
-            lineHeight: fn.style?.lineHeightPx ? fn.style.lineHeightPx / (fn.style?.fontSize ?? 16) : 1.4,
+            lineHeight: fn.style?.lineHeightPx ? fn.style.lineHeightPx / size : 1.4,
             align: (fn.style?.textAlignHorizontal?.toLowerCase() as "left" | "center" | "right") ?? "left",
+            ...(fn.style?.letterSpacing ? { letterSpacing: fn.style.letterSpacing } : {}),
           },
         };
         doc.nodes[fn.id] = node;
@@ -140,7 +169,7 @@ export class FigmaImporter implements Importer {
       }
       default: {
         warnings.push(`Approximated unsupported Figma node "${fn.type}" as a frame.`);
-        const node: FrameNode = { ...base, type: "frame", fills: this.fills(fn), children: [] };
+        const node: FrameNode = { ...base, type: "frame", fills: this.fills(fn), ...(stroke ? { stroke } : {}), children: [] };
         doc.nodes[fn.id] = node;
         for (const child of fn.children ?? []) {
           const c = this.mapNode(child, doc, warnings, fn.id);
@@ -152,10 +181,36 @@ export class FigmaImporter implements Importer {
   }
 
   private fills(fn: FigmaNode, fallback?: string): Paint[] {
-    const f = (fn.fills ?? []).find((x) => x.visible !== false && x.type === "SOLID" && x.color);
-    if (f?.color) return [{ kind: "solid", color: this.hex(f.color) }];
+    const visible = (fn.fills ?? []).filter((x) => x.visible !== false);
+    // Prefer a solid fill, then a linear gradient — the two the canvas renders.
+    const solid = visible.find((x) => x.type === "SOLID" && x.color);
+    if (solid?.color) return [{ kind: "solid", color: this.hex(solid.color) }];
+    const grad = visible.find((x) => x.type === "GRADIENT_LINEAR" && (x.gradientStops?.length ?? 0) > 0);
+    if (grad?.gradientStops) {
+      return [{
+        kind: "linear",
+        angle: this.gradientAngle(grad.gradientHandlePositions),
+        stops: grad.gradientStops.map((s) => ({ offset: s.position, color: this.hex(s.color) })),
+      }];
+    }
     return fallback ? [{ kind: "solid", color: fallback }] : [{ kind: "none" }];
   }
+
+  /** The first visible solid/gradient stroke → a model Stroke. */
+  private stroke(fn: FigmaNode): Stroke | undefined {
+    const s = (fn.strokes ?? []).find((x) => x.visible !== false && x.type === "SOLID" && x.color);
+    if (!s?.color) return undefined;
+    return { paint: { kind: "solid", color: this.hex(s.color) }, width: fn.strokeWeight ?? 1 };
+  }
+
+  /** Approximate a CSS-style angle (deg) from Figma's two gradient handles. */
+  private gradientAngle(handles?: Array<{ x: number; y: number }>): number {
+    if (!handles || handles.length < 2) return 90;
+    const [a, b] = handles;
+    const deg = (Math.atan2(b.y - a.y, b.x - a.x) * 180) / Math.PI;
+    return Math.round(((deg % 360) + 360) % 360);
+  }
+
   private hex(c: FigmaColor): string {
     const to = (v: number) => Math.round(v * 255).toString(16).padStart(2, "0");
     return `#${to(c.r)}${to(c.g)}${to(c.b)}`;
