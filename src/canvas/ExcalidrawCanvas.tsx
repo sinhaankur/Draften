@@ -102,12 +102,12 @@ export function ExcalidrawCanvas({
 // screenshot instead of an empty flowchart.
 const INK = "#1d1d1b", MUTED = "#8e8d88", LINE = "#e7e6e2", ACC = "#3d6b5f", SURF = "#ffffff";
 
-/** The Sketch/Figma-accurate canvas grey, migrating old/legacy saved values.
- *  Figma/Sketch light canvas is a neutral ~#f5f5f5 (not a warm beige); dark is a
- *  flat ~#2c2c2c. */
+/** The EXACT Sketch canvas-page-background, read from Sketch.app's own asset
+ *  catalog (clr-canvas-page-background): light 0.9607 → #f5f5f5, dark 0.0706 →
+ *  #121212. Migrates old/legacy saved values so existing docs update too. */
 function sketchCanvasBg(saved: string | undefined, theme: "light" | "dark" | undefined): string {
-  const light = "#f5f5f5", dark = "#2c2c2c";
-  const legacy = new Set(["#efeeeb", "#f0f0f0", "#151514", "#1a1a19", "#2b2b2b", ""]); // old beige + near-blacks + my first pass
+  const light = "#f5f5f5", dark = "#121212";
+  const legacy = new Set(["#efeeeb", "#f0f0f0", "#151514", "#1a1a19", "#2b2b2b", "#2c2c2c", ""]);
   if (!saved || legacy.has(saved.toLowerCase())) return theme === "dark" ? dark : light;
   return saved;
 }
@@ -169,9 +169,10 @@ function seedSkeleton() {
   // reads as a CARD on the grey canvas (Sketch-style), distinct from the
   // background. Excalidraw frames are transparent containers, so the sheet is
   // what gives the artboard its paper colour. Drawn first = behind the content.
-  // Sketch artboards are white cards with a faint 1px border on the grey canvas.
+  // Sketch artboards: white fill (clr-canvas-background) + a faint 1px border
+  // (clr-canvas-pixel-line #dadbdb) on the grey canvas — exact Sketch values.
   const sheet = (id: string, x: number) =>
-    ({ id, type: "rectangle" as const, x, y: 80, width: AW, height: AH, roughness: 0, strokeColor: "#e3e3e3", backgroundColor: SURF, strokeWidth: 1, customData: { name: "Artboard" } });
+    ({ id, type: "rectangle" as const, x, y: 80, width: AW, height: AH, roughness: 0, strokeColor: "#dadbdb", backgroundColor: SURF, strokeWidth: 1, customData: { name: "Artboard" } });
   const sw = sheet(sid("sheet"), x1), sa = sheet(sid("sheet"), x2), sc = sheet(sid("sheet"), x3);
 
   return [

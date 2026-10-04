@@ -9,7 +9,7 @@
   /* Draften v2 design system — applied verbatim from the approved mockup
      (Design system for local LLM app · Draften v2.dc.html). Warm-neutral
      surfaces, a deep teal-green accent, Geist type, soft 14px controls. */
-  --canvas: #efeeeb;             /* warm-neutral canvas */
+  --canvas: #ededed;             /* neutral field fill — Sketch clr-inspector-text-background */
   --bg: #f6f6f4;                 /* app background */
   --raised: #fbfbfa;             /* panels */
   --overlay: #ffffff;            /* top-elevation surface */
