@@ -523,7 +523,7 @@ export function App() {
                 <div className="divider" />
 
                 {/* Color styles + Text styles — apply to selection (v2 spine) */}
-                <StylesPanel api={canvasReady ? excalidrawApi.current : null} colors={genColors} />
+                <StylesPanel api={canvasReady ? excalidrawApi.current : null} />
 
                 <div className="divider" />
 

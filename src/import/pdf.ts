@@ -43,14 +43,26 @@ export class PdfImporter implements Importer {
     const warnings: string[] = [];
 
     const pdfjs = await import("pdfjs-dist");
+    // Worker setup is the #1 cause of "PDF won't open" in a packaged/static app.
+    // The ONLY approach that works identically in the browser, the Tauri webview,
+    // and Node is to load the worker SOURCE as text and run it from a Blob URL —
+    // no external module path to resolve, no "fake worker" dynamic import to crash
+    // on. We try that first; if even that isn't available (e.g. in a test env),
+    // we set a `workerPort` so pdf.js never reaches its failing fallback path.
+    const GWO = (pdfjs as unknown as { GlobalWorkerOptions: { workerSrc?: string; workerPort?: Worker | null } }).GlobalWorkerOptions;
     try {
-      const workerUrl = (await import("pdfjs-dist/build/pdf.worker.mjs?url")).default;
-      (pdfjs as unknown as { GlobalWorkerOptions: { workerSrc: string } }).GlobalWorkerOptions.workerSrc = workerUrl;
-    } catch { /* fall back to the main-thread fake worker (slower, still works) */ }
+      const src = (await import("pdfjs-dist/build/pdf.worker.min.mjs?raw")).default as string;
+      GWO.workerSrc = URL.createObjectURL(new Blob([src], { type: "text/javascript" }));
+    } catch {
+      try {
+        // bundled URL (Vite emits the worker as an asset) — works in the app
+        GWO.workerSrc = (await import("pdfjs-dist/build/pdf.worker.min.mjs?url")).default as unknown as string;
+      } catch { /* last resort handled by getDocument opts below */ }
+    }
 
     const data = input.bytes instanceof Uint8Array ? input.bytes : new Uint8Array(input.bytes);
-    const pdf = await (pdfjs as unknown as { getDocument: (o: { data: Uint8Array }) => { promise: Promise<PdfDoc> } })
-      .getDocument({ data }).promise;
+    const pdf = await (pdfjs as unknown as { getDocument: (o: Record<string, unknown>) => { promise: Promise<PdfDoc> } })
+      .getDocument({ data, isEvalSupported: false, useSystemFonts: true }).promise;
 
     for (let p = 1; p <= pdf.numPages; p++) {
       const page = await pdf.getPage(p);
