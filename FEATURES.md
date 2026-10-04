@@ -60,6 +60,20 @@ opened Sketch/Figma/PDF file reads like it did in the source tool, and the Inspe
 panel reads those same fields back. Board-parented nodes are offset by the
 artboard frame so multi-page docs don't stack at the origin.
 
+## Presentations (design tool surface — not a separate app)
+- ✅ **Import a PDF/Word → "Make presentation"** → a themed, multi-slide deck of
+  EDITABLE 16:9 artboards (title + section + content slides) on Draften's own
+  tiered AI (deterministic; works offline). `src/ai/presentation.ts`.
+- ✅ **AI-named layers** — every layer gets a human name + description (Hero
+  heading, Accent bar, Bullet dot, Page number…), so the layer list reads like
+  Sketch's, not "Rectangle/Text". `src/ai/layer-namer.ts`.
+- ✅ **Present mode** — fullscreen slide show (`src/ui/PresentMode.tsx`): each
+  board = a slide, arrow-key / click / space nav, thumbnail rail, speaker notes
+  (N), per-slide SVG clipped to its frame. Reached from Prototype ▸ "Present".
+- Framing: presentation is ONE surface of a UI-wireframe / UX design tool — the
+  deck is just artboards + components + the shared document, presented. Next:
+  richer AI layouts (2-col, image, quote), slide reorder, components in decks.
+
 ## Design system
 - ✅ AI-generated design system (deterministic: tokens + atomic components)
 - 🟡 System panel shows generated tokens + components

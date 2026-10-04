@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Play, Link2, Trash2 } from "lucide-react";
+import { Play, Link2, Trash2, Presentation } from "lucide-react";
 import type { ExcalidrawImperativeAPI } from "@excalidraw/excalidraw/types";
 
 import { usePrototype, type Animation } from "../state/prototype";
@@ -15,8 +15,8 @@ const ANIMATIONS: Animation[] = ["Smart animate", "Dissolve", "Push", "Slide", "
 
 type El = { id: string; type: string; name?: string | null; customData?: { name?: string } | null; text?: string; isDeleted?: boolean };
 
-export function PrototypePanel({ api, onPlay, activeBoardName }: {
-  api: ExcalidrawImperativeAPI | null; onPlay: () => void; activeBoardName: string;
+export function PrototypePanel({ api, onPlay, onPresent, activeBoardName }: {
+  api: ExcalidrawImperativeAPI | null; onPlay: () => void; onPresent?: () => void; activeBoardName: string;
 }) {
   const links = usePrototype((s) => s.links);
   const add = usePrototype((s) => s.add);
@@ -61,6 +61,11 @@ export function PrototypePanel({ api, onPlay, activeBoardName }: {
       <button className="ai-btn" style={{ width: "100%", justifyContent: "center", gap: 6 }} onClick={onPlay}>
         <Play size={14} /> Play from {activeBoardName}
       </button>
+      {onPresent && (
+        <button className="ghost small" style={{ width: "100%", justifyContent: "center", gap: 6 }} onClick={onPresent}>
+          <Presentation size={14} /> Present slides (fullscreen)
+        </button>
+      )}
 
       {/* Create a connection from the selected layer */}
       <div style={{ border: "1px solid var(--line)", borderRadius: 10, padding: 12, background: "var(--surf)" }}>

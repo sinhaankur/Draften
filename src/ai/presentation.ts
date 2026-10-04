@@ -161,11 +161,17 @@ export function buildPresentation(items: OutlineItem[], opts: PresentationOption
     // footer page number
     add(text(boardId, "Page number", SLIDE_W - PAD - 40, SLIDE_H - 40, 40, String(i + 1), 12, 400, theme.muted, "right"));
 
+    // speaker notes: the slide's own points, as a prompt for what to say
+    const notes = spec.kind === "content" && spec.bullets.length
+      ? `Talk through: ${spec.bullets.join("; ")}.`
+      : spec.kind === "section" ? `Transition into “${spec.title}”.` : "";
+
     const board: Board = {
       id: boardId, name: slideName(spec, i), kind: "design", children,
       viewport: { x: 0, y: 0, zoom: 1 },
       frame: { x, y: 0, width: SLIDE_W, height: SLIDE_H },
       background: theme.bg,
+      ...(notes ? { notes } : {}),
     };
     doc.boards.push(board);
   });

@@ -44,6 +44,8 @@ export interface Board {
   frame?: { x: number; y: number; width: number; height: number };
   /** artboard paper colour (e.g. a PDF page's background); defaults white */
   background?: string;
+  /** speaker notes shown in Present mode (a board can double as a slide) */
+  notes?: string;
 }
 
 /**

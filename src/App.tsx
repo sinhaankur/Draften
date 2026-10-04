@@ -31,6 +31,7 @@ import { FileMenu } from "./ui/FileMenu";
 import { WelcomeScreen } from "./ui/WelcomeScreen";
 import { downloadProject } from "./export/project";
 import { PrototypePlay } from "./ui/PrototypePlay";
+import { PresentMode } from "./ui/PresentMode";
 import { LayersPanel } from "./ui/LayersPanel";
 import { RailAccount } from "./ui/RailAccount";
 import { StylesPanel } from "./ui/StylesPanel";
@@ -59,6 +60,7 @@ export function App() {
   const [templatesOpen, setTemplatesOpen] = useState(false);
   const [mcpOpen, setMcpOpen] = useState(false);
   const [playing, setPlaying] = useState(false);
+  const [presenting, setPresenting] = useState(false);
   // Welcome / start screen — the front door. Shown until the user starts (first
   // run), then reopenable from the brand. Persisted so it only greets once.
   const [welcome, setWelcome] = useState(() => {
@@ -298,6 +300,10 @@ export function App() {
 
       {playing && canvasReady && excalidrawApi.current && (
         <PrototypePlay api={excalidrawApi.current} onClose={() => setPlaying(false)} />
+      )}
+
+      {presenting && canvasReady && excalidrawApi.current && (
+        <PresentMode api={excalidrawApi.current} onClose={() => setPresenting(false)} />
       )}
 
       <AnimatePresence>
@@ -573,6 +579,7 @@ export function App() {
             <PrototypePanel
               api={canvasReady ? excalidrawApi.current : null}
               onPlay={() => canvasReady && excalidrawApi.current && setPlaying(true)}
+              onPresent={() => canvasReady && excalidrawApi.current && setPresenting(true)}
               activeBoardName={activeBoard?.name ?? "Welcome"}
             />
           )}
