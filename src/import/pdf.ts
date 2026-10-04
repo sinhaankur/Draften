@@ -40,7 +40,7 @@ export class PdfImporter implements Importer {
     const warnings: string[] = [];
 
     const pdfjs = await import("pdfjs-dist");
-    this.setupWorker(pdfjs);
+    await this.setupWorker(pdfjs);
 
     const data = input.bytes instanceof Uint8Array ? input.bytes : new Uint8Array(input.bytes);
     const parsed = await importPdf(data, pdfjs as never, { title: name });
@@ -128,11 +128,27 @@ export class PdfImporter implements Importer {
   }
 
   // ── worker + raster fallback (browser/Tauri only) ──────────────────────────
-  private setupWorker(pdfjs: unknown): void {
+  //
+  // Worker setup is the #1 cause of "PDF won't open" in a packaged/Tauri app.
+  // The ONLY approach that works identically in the browser, the Tauri WKWebView,
+  // and a production bundle is to load the worker SOURCE as text and run it from
+  // a Blob URL — no bare-specifier `new URL(...)` (which Vite does NOT resolve at
+  // runtime), no external module path to 404 on. We try that first, then the
+  // Vite `?url` asset path, and only then the bare-URL as a last resort.
+  private async setupWorker(pdfjs: unknown): Promise<void> {
     const GWO = (pdfjs as { GlobalWorkerOptions: { workerSrc?: string } }).GlobalWorkerOptions;
+    if (GWO.workerSrc) return;
     try {
-      // handled by the importer caller in the app via bundler; a no-op if preset
-      if (!GWO.workerSrc) GWO.workerSrc = new URL("pdfjs-dist/build/pdf.worker.min.mjs", import.meta.url).href;
+      const src = (await import("pdfjs-dist/build/pdf.worker.min.mjs?raw")).default as string;
+      GWO.workerSrc = URL.createObjectURL(new Blob([src], { type: "text/javascript" }));
+      return;
+    } catch { /* fall through */ }
+    try {
+      GWO.workerSrc = (await import("pdfjs-dist/build/pdf.worker.min.mjs?url")).default as unknown as string;
+      return;
+    } catch { /* fall through */ }
+    try {
+      GWO.workerSrc = new URL("pdfjs-dist/build/pdf.worker.min.mjs", import.meta.url).href;
     } catch { /* worker set elsewhere */ }
   }
 
