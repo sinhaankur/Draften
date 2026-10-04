@@ -1,6 +1,18 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 
+// Self-hosted fonts — bundled so they ALWAYS render (offline, desktop, no Google
+// Fonts dependency). Geist (UI), Geist Mono (code), Source Serif 4 (display),
+// Inter (canvas design text). The "amazing fonts", loaded reliably.
+import "@fontsource/geist-sans/400.css";
+import "@fontsource/geist-sans/500.css";
+import "@fontsource/geist-sans/600.css";
+import "@fontsource/geist-sans/700.css";
+import "@fontsource/geist-mono/400.css";
+import "@fontsource/geist-mono/500.css";
+import "@fontsource-variable/source-serif-4";
+import "@fontsource-variable/inter";
+
 import { Shell } from "./Shell";
 import { applyPlatformClass } from "./env";
 import { registerBuiltins } from "./plugins/builtins";

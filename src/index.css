@@ -1,7 +1,8 @@
 /* Draften UI tokens — light-first. Dark is an override, never a rewrite.
  * Verbatim from the frontend UI spec (docs/ui-spec/). Draften Violet is the one
  * brand color; every value here is a token. Light is the default theme. */
-@import url("https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap");
+/* Fonts are self-hosted via @fontsource (imported in main.tsx) so they render
+   reliably offline + on the desktop build — no Google Fonts network dependency. */
 
 :root {
   color-scheme: light;
@@ -55,9 +56,10 @@
   --danger: #d0453b;
 
   /* type — Geist (the mockup's UI face), falling back to the system stack */
-  --font-ui: "Geist", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
-  --font-serif: "Source Serif 4", Georgia, serif;
+  --font-ui: "Geist Sans", "Geist", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  --font-serif: "Source Serif 4 Variable", "Source Serif 4", Georgia, serif;
   --font-code: "Geist Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  --font-design: "Inter Variable", "Inter", -apple-system, system-ui, sans-serif; /* canvas text */
   --fs-2xs: 10px;
   --fs-xs: 11px;
   --fs-sm: 12px;
