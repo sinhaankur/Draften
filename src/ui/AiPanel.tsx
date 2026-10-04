@@ -13,6 +13,7 @@ import { useChangelog } from "../state/changelog";
 import { automate, AUTOMATIONS } from "../ai/automate";
 import { drawSkeletonOnCanvas } from "../canvas/apply-action";
 import { outline, buildPresentation } from "../ai/presentation";
+import { planFlow, buildWireframe } from "../ai/wireframe";
 import { autoNameLayers } from "../ai/layer-namer";
 import { documentToSkeleton } from "../import/to-canvas";
 import { overlay, scrim } from "./motion";
@@ -187,6 +188,33 @@ export function AiPanel({ onClose, docked = false }: { onClose: () => void; dock
     }
   }
 
+  // Wireframe a UX flow from the prompt (the design-thinking core): intent →
+  // multiple linked, editable screens built from real UI blocks, themed.
+  async function wireframeFlow() {
+    const intent = prompt.trim();
+    if (!intent) {
+      setTurns((t) => [...t, { role: "ai", text: "Describe a flow to wireframe — e.g. “onboarding flow for a fitness app” or “checkout flow”." }]);
+      return;
+    }
+    setBusy(true);
+    try {
+      const vibe = /\b(dark|minimal|calm|bold|playful|editorial)\b/i.exec(intent)?.[1];
+      const screens = planFlow(intent);
+      const wf = buildWireframe(screens, { title: intent.slice(0, 48), theme: vibe });
+      autoNameLayers(wf);
+      loadDocument(wf);
+      await drawSkeletonOnCanvas(documentToSkeleton(wf), true);
+      useChangelog.getState().record({
+        author: "ai", via: "deterministic",
+        summary: `Wireframed “${intent}” as ${screens.length} linked screens`,
+        actions: [{ op: "layout", detail: "wireframe", payload: { screens: screens.length } }],
+      });
+      setTurns((t) => [...t, { role: "ai", text: `Wireframed ${screens.length} screens: ${screens.map((s) => s.name).join(" → ")}. Each is an editable artboard — rework any block, then Present or export. Tell me what to change.` }]);
+    } finally {
+      setBusy(false);
+    }
+  }
+
   async function onAttach(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -263,6 +291,7 @@ export function AiPanel({ onClose, docked = false }: { onClose: () => void; dock
           <button className="ghost small" onClick={() => fileRef.current?.click()}>
             {attachment ? `📎 ${attachment.name}` : "Attach a document"}
           </button>
+          <button className="ghost small" onClick={wireframeFlow} disabled={busy}>Wireframe a flow</button>
           <button className="ghost small" onClick={quickSystem}>Quick design system</button>
           <button className="ghost small" onClick={makePresentation} disabled={busy}>Make presentation</button>
         </div>

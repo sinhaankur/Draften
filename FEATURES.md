@@ -60,6 +60,17 @@ opened Sketch/Figma/PDF file reads like it did in the source tool, and the Inspe
 panel reads those same fields back. Board-parented nodes are offset by the
 artboard frame so multi-page docs don't stack at the origin.
 
+## AI design-thinking (the CORE — UI wireframe + UX)
+- ✅ **Wireframe a flow** — a UX intent ("onboarding flow for a fitness app") →
+  MULTIPLE LINKED, EDITABLE SCREENS (phone artboards) built from real low-fi UI
+  blocks (status bar, nav, hero, input, button/CTA, card, list, tab bar, image,
+  stat), themed by the design system, chained with flow connectors.
+  `src/ai/wireframe.ts`. Deterministic (works offline / tiny-LLM); LLM refines copy.
+- Everything is editable nodes + AI-named layers → think with it, don't just look.
+- NEXT (grounded in the Universal Experience Framework, sinhaankur.com/framework):
+  AI that reasons about WHY — placement, grouping/proximity, hierarchy, Hick's/
+  Fitts' — to propose + critique layouts, and a docs page that teaches it.
+
 ## Presentations (design tool surface — not a separate app)
 - ✅ **Import a PDF/Word → "Make presentation"** → a themed, multi-slide deck of
   EDITABLE 16:9 artboards (title + section + content slides) on Draften's own
