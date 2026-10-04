@@ -204,7 +204,13 @@ export function App() {
       <header className="topbar">
         <button className="rail-toggle" title="Boards & layers" onClick={() => { setLeftOpen((v) => !v); setRightOpen(false); }}><PanelLeft size={16} /></button>
         <div className="brand">
-          <span className="logo" style={{ display: "inline-grid", placeItems: "center", width: 18, height: 18, borderRadius: 5, background: "var(--accent)", color: "#fff", fontSize: 12, fontWeight: 700, fontFamily: "var(--font-serif)" }}>d</span>
+          <span className="logo" style={{ display: "inline-grid", placeItems: "center", width: 22, height: 22, borderRadius: 6, background: "var(--accent)", flex: "none" }}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-label="Draften">
+              {/* refined 'D' monogram: a framed D — a draft page + the letterform */}
+              <path d="M6 4h7a7 8 0 0 1 0 16H6V4z" stroke="#fff" strokeWidth="2.2" strokeLinejoin="round" fill="none"/>
+              <path d="M10 9v6" stroke="#fff" strokeWidth="2.2" strokeLinecap="round"/>
+            </svg>
+          </span>
           <span>Draften</span>
           <span className="chip">v{doc.appVersion}</span>
         </div>
