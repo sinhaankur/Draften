@@ -60,6 +60,18 @@ async function makeSketchZip(): Promise<Uint8Array> {
           image: { _class: "MSJSONFileReference", _ref_class: "MSImageData", _ref: "images/img1.png" },
         },
         {
+          do_objectID: "PATH-1",
+          _class: "shapePath",
+          name: "Triangle",
+          frame: { _class: "rect", x: 100, y: 100, width: 200, height: 100 },
+          isClosed: true,
+          points: [
+            { _class: "curvePoint", point: "{0, 0}", hasCurveFrom: false, hasCurveTo: false },
+            { _class: "curvePoint", point: "{1, 0}", hasCurveFrom: false, hasCurveTo: false },
+            { _class: "curvePoint", point: "{0.5, 1}", hasCurveFrom: false, hasCurveTo: false },
+          ],
+        },
+        {
           do_objectID: "GROUP-1",
           _class: "group",
           name: "Group",
@@ -98,8 +110,8 @@ describe("SketchImporter", () => {
     expect(document.boards).toHaveLength(1);
     const board = document.boards[0];
     expect(board.name).toBe("Page 1");
-    // rectangle + text + bitmap + group at root
-    expect(board.children).toHaveLength(4);
+    // rectangle + text + bitmap + shapePath + group at root
+    expect(board.children).toHaveLength(5);
 
     const rect = document.nodes["RECT-1"];
     expect(rect.type).toBe("rectangle");
@@ -124,6 +136,13 @@ describe("SketchImporter", () => {
     const bmp = document.nodes["BMP-1"];
     expect(bmp.type).toBe("image");
     expect((bmp as any).src).toMatch(/^data:image\/png;base64,/);
+
+    // shapePath → an editable path node with absolute SVG d (normalized → scaled)
+    const path = document.nodes["PATH-1"];
+    expect(path.type).toBe("path");
+    // point {0,0} of a 200×100 frame at (100,100) → M 100 100 ; {1,0} → L 300 100;
+    // {0.5,1} → L 200 200; closed back to start + Z
+    expect((path as any).d).toBe("M 100 100 L 300 100 L 200 200 L 100 100 Z");
 
     // nested oval reachable via the group frame's children
     const group = document.nodes["GROUP-1"];

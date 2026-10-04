@@ -65,6 +65,15 @@ interface SketchLayer {
   fixedRadius?: number;
   /** bitmap layers reference an image file inside the archive */
   image?: { _ref?: string };
+  /** shapePath vector geometry: normalized curvePoints + closed flag */
+  isClosed?: boolean;
+  points?: Array<{
+    point?: string;        // "{x, y}" normalized 0..1
+    curveFrom?: string;
+    curveTo?: string;
+    hasCurveFrom?: boolean;
+    hasCurveTo?: boolean;
+  }>;
 }
 
 export class SketchImporter implements Importer {
@@ -173,6 +182,17 @@ export class SketchImporter implements Importer {
         }
         return node;
       }
+      case "shapePath": {
+        // vector shape → an editable path node (SVG d built from normalized curvePoints)
+        const d = this.shapePathD(layer);
+        if (d) {
+          node = { ...base, type: "path", d, fills: this.fills(layer), ...(stroke ? { stroke } : {}) } as Node;
+          doc.nodes[id] = node;
+          return node;
+        }
+        node = { ...base, type: "frame", fills: this.fills(layer), ...(stroke ? { stroke } : {}), children: [] } as FrameNode;
+        break;
+      }
       case "bitmap": {
         // a real image: resolve the referenced file to its data URL
         const ref = layer.image?._ref;
@@ -232,6 +252,46 @@ export class SketchImporter implements Importer {
     }
     doc.nodes[id] = node;
     return node;
+  }
+
+  /**
+   * Build an absolute SVG path `d` from a Sketch shapePath. Sketch stores each
+   * curvePoint's `point`/`curveTo`/`curveFrom` as NORMALISED (0..1) coordinates
+   * of the layer frame; we scale by the frame size + offset to the layer's
+   * position, emitting cubic beziers between consecutive points (honouring each
+   * point's control handles), closing the path when `isClosed`.
+   */
+  private shapePathD(layer: SketchLayer): string | undefined {
+    const pts = layer.points;
+    const f = layer.frame;
+    if (!pts || pts.length < 2 || !f) return undefined;
+    const r = (v: number) => Math.round(v * 100) / 100;
+    const sx = (nx: number) => r(f.x + nx * f.width);
+    const sy = (ny: number) => r(f.y + ny * f.height);
+    const P = (s?: string): [number, number] | null => {
+      const m = /\{\s*(-?[\d.eE]+)\s*,\s*(-?[\d.eE]+)\s*\}/.exec(s ?? "");
+      return m ? [parseFloat(m[1]), parseFloat(m[2])] : null;
+    };
+    const first = P(pts[0].point);
+    if (!first) return undefined;
+    const d: string[] = [`M ${sx(first[0])} ${sy(first[1])}`];
+    const n = pts.length;
+    const last = layer.isClosed ? n : n - 1;
+    for (let i = 0; i < last; i++) {
+      const a = pts[i], b = pts[(i + 1) % n];
+      const pa = P(a.point), pb = P(b.point);
+      if (!pa || !pb) continue;
+      const c1 = a.hasCurveFrom ? P(a.curveFrom) : null;
+      const c2 = b.hasCurveTo ? P(b.curveTo) : null;
+      if (c1 || c2) {
+        const h1 = c1 ?? pa, h2 = c2 ?? pb;
+        d.push(`C ${sx(h1[0])} ${sy(h1[1])} ${sx(h2[0])} ${sy(h2[1])} ${sx(pb[0])} ${sy(pb[1])}`);
+      } else {
+        d.push(`L ${sx(pb[0])} ${sy(pb[1])}`);
+      }
+    }
+    if (layer.isClosed) d.push("Z");
+    return d.join(" ");
   }
 
   /** Read every images/… entry in the archive into a path → data-URL map. */
