@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from "react";
-import { FolderOpen, Save, Download, ChevronDown, Package, FileCode } from "lucide-react";
+import { FolderOpen, Save, Download, ChevronDown, Package, FileCode, Code2, FileText } from "lucide-react";
 import type { ExcalidrawImperativeAPI } from "@excalidraw/excalidraw/types";
 
-import { saveDraften, saveExcalidraw, exportSvg, exportPng, openFile } from "../io/files";
+import { saveDraften, saveExcalidraw, exportSvg, exportPng, exportPdf, copyLayerCss, openFile } from "../io/files";
 import { downloadProject, downloadStandaloneHtml } from "../export/project";
 
 /**
@@ -13,10 +13,11 @@ import { downloadProject, downloadStandaloneHtml } from "../export/project";
  * like Sketch" (a real local file) and still git-controllable (the GitHub panel
  * commits the same document).
  */
-export function FileMenu({ api, name, onOpened }: {
+export function FileMenu({ api, name, onOpened, onToast }: {
   api: ExcalidrawImperativeAPI | null;
   name: string;
   onOpened?: (name: string) => void;
+  onToast?: (msg: string) => void;
 }) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
@@ -75,11 +76,17 @@ export function FileMenu({ api, name, onOpened }: {
           {item(<Package size={15} />, "Export runnable app (.zip)", "", () => { void downloadProject(api, name); })}
           {item(<FileCode size={15} />, "Export standalone HTML", "", () => downloadStandaloneHtml(api, name))}
           {sep}
-          {groupLabel("Export image")}
-          {item(<Download size={15} />, "Export SVG", "", () => exportSvg(api, name))}
-          {item(<Download size={15} />, "Export PNG", "", () => exportPng(api, name))}
+          {groupLabel("Export image · selection or whole page")}
+          {item(<Download size={15} />, "Export SVG (vector)", "", () => exportSvg(api, name))}
+          {item(<Download size={15} />, "Export PNG", "@1x", () => exportPng(api, name, 1))}
+          {item(<Download size={15} />, "Export PNG", "@2x", () => exportPng(api, name, 2))}
+          {item(<Download size={15} />, "Export PNG", "@3x", () => exportPng(api, name, 3))}
+          {item(<FileText size={15} />, "Export PDF", "", () => { void exportPdf(api, name); })}
+          {sep}
+          {groupLabel("Developer handoff")}
+          {item(<Code2 size={15} />, "Copy CSS of selection", "", () => { void copyLayerCss(api).then((m) => onToast?.(m)); })}
           <div style={{ padding: "8px 12px 4px", fontSize: 11, color: "var(--text-3, #8e8d88)", lineHeight: 1.5 }}>
-            Design → runnable app. Open formats only — your file stays yours, and the GitHub panel commits the project.
+            Open formats only — your file stays yours, and the GitHub panel commits the project.
           </div>
         </div>
       )}

@@ -19,13 +19,19 @@ export async function importFile(file: File): Promise<string> {
     const exts = importers.all().flatMap((i) => i.extensions).join(", ");
     return `Can't open "${file.name}". Supported: ${exts || "—"}.`;
   }
-  const { document, warnings } = await importer.import(input);
-  useEditor.getState().loadDocument(document);
-  const drew = await drawSkeletonOnCanvas(documentToSkeleton(document));
-  const layers = Object.keys(document.nodes).length;
-  return warnings.length
-    ? `Opened ${file.name} · ${layers} layers · ${warnings[0]}`
-    : `Opened ${file.name} · ${layers} layers${drew ? " ✓" : ""}`;
+  // Any importer/convert failure becomes a clear message — never an app crash.
+  try {
+    const { document, warnings } = await importer.import(input);
+    useEditor.getState().loadDocument(document);
+    const drew = await drawSkeletonOnCanvas(documentToSkeleton(document));
+    const layers = Object.keys(document.nodes).length;
+    return warnings.length
+      ? `Opened ${file.name} · ${layers} layers · ${warnings[0]}`
+      : `Opened ${file.name} · ${layers} layers${drew ? " ✓" : ""}`;
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    return `Couldn't open "${file.name}" (${importer.label}): ${msg}`;
+  }
 }
 
 /** Can this dropped file be opened by one of our importers? */

@@ -28,8 +28,10 @@ type PlistValue =
   | { [k: string]: PlistValue };
 
 export function parseBinaryPlist(bytes: Uint8Array): PlistValue {
+  if (!bytes || bytes.length < 40) throw new Error("File too small to be a binary plist");
   const dv = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
-  const magic = String.fromCharCode(...bytes.slice(0, 6));
+  let magic = "";
+  for (let i = 0; i < 6; i++) magic += String.fromCharCode(bytes[i]);
   if (magic !== "bplist") throw new Error("Not a binary plist");
 
   // ── trailer (last 32 bytes) ──

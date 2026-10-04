@@ -28,6 +28,7 @@ import { CodeView } from "./ui/CodeView";
 import { ConsoleView } from "./ui/ConsoleView";
 import { ReviewPanel } from "./ui/ReviewPanel";
 import { FileMenu } from "./ui/FileMenu";
+import { WelcomeScreen } from "./ui/WelcomeScreen";
 import { downloadProject } from "./export/project";
 import { PrototypePlay } from "./ui/PrototypePlay";
 import { LayersPanel } from "./ui/LayersPanel";
@@ -58,6 +59,12 @@ export function App() {
   const [templatesOpen, setTemplatesOpen] = useState(false);
   const [mcpOpen, setMcpOpen] = useState(false);
   const [playing, setPlaying] = useState(false);
+  // Welcome / start screen — the front door. Shown until the user starts (first
+  // run), then reopenable from the brand. Persisted so it only greets once.
+  const [welcome, setWelcome] = useState(() => {
+    try { return localStorage.getItem("draften-welcomed") !== "1"; } catch { return true; }
+  });
+  const dismissWelcome = () => { setWelcome(false); try { localStorage.setItem("draften-welcomed", "1"); } catch { /* ignore */ } };
   const [dotGrid, setDotGrid] = useState(true);
   const [pasteNote, setPasteNote] = useState<string | null>(null);
   const [dragOver, setDragOver] = useState(false);
@@ -191,6 +198,28 @@ export function App() {
         setPasteNote("Opening " + file.name + "…");
         try { setPasteNote(await importFile(file)); } catch (err) { setPasteNote("Couldn't open " + file.name + ": " + (err as Error).message); }
       }}>
+      {/* Welcome / start screen — the front door (first run + reopenable). */}
+      {welcome && (
+        <WelcomeScreen
+          onBlank={dismissWelcome}
+          onTemplate={(t) => { dismissWelcome(); setTimeout(() => pickTemplate(t), 60); }}
+          onOpenFile={() => {
+            dismissWelcome();
+            const input = document.createElement("input");
+            input.type = "file";
+            input.accept = ".sketch,.graffle,.pdf,.docx,.svg,.png,.jpg";
+            input.onchange = async () => {
+              const file = input.files?.[0];
+              if (!file) return;
+              setPasteNote("Opening " + file.name + "…");
+              try { setPasteNote(await importFile(file)); } catch (err) { setPasteNote("Couldn't open " + file.name + ": " + (err as Error).message); }
+            };
+            input.click();
+          }}
+          onConnectGit={() => { dismissWelcome(); setLeftMode("git"); setLeftOpen(true); }}
+        />
+      )}
+
       {/* drop-to-open overlay */}
       {dragOver && (
         <div style={{ position: "fixed", inset: 0, zIndex: 9999, background: "rgba(61,107,95,.12)", backdropFilter: "blur(2px)", display: "grid", placeItems: "center", pointerEvents: "none" }}>
@@ -233,29 +262,20 @@ export function App() {
 
         <div className="tb-sep" />
 
-        {/* File — real Save/Open/Export in open formats (replaces the dead branch btn) */}
-        <FileMenu api={canvasReady ? excalidrawApi.current : null} name={doc.name} onOpened={(n) => rename(n)} />
+        {/* File — real Save/Open/Export in open formats. Templates, Plugins, MCP
+            and the Assistant all live in the left rail now, so the top bar stays
+            calm: no duplicate entry points (one home per action). */}
+        <FileMenu api={canvasReady ? excalidrawApi.current : null} name={doc.name} onOpened={(n) => rename(n)} onToast={(m) => setPasteNote(m)} />
 
+        <div className="tb-sep" />
 
-        <button className="tb-btn" onClick={() => setTemplatesOpen(true)} title="Templates">
-          <LayoutTemplate size={14} /> Templates
-        </button>
-        <button className="tb-btn" onClick={() => setPluginsOpen(true)} title="Install plugins from GitHub">
-          <Puzzle size={14} /> Plugins
-        </button>
+        {/* trailing cluster: appearance · reset view · export · panel toggle */}
         <button
           className="tb-btn tb-icon"
           onClick={() => setTheme((t) => (t === "light" ? "dark" : "light"))}
           title="Toggle appearance"
         >
           {theme === "light" ? <Moon size={15} /> : <Sun size={15} />}
-        </button>
-
-        <div className="tb-sep" />
-
-        {/* primary action, trailing-most */}
-        <button className="ai-btn" onClick={() => { setDsTab("Assistant"); setRightOpen(true); }}>
-          <Sparkles size={14} /> AI
         </button>
         {/* Reset view — fit all content to the viewport */}
         <button className="tb-btn tb-icon" title="Reset view (fit to content)"

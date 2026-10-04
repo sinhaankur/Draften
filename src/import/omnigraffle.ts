@@ -53,7 +53,7 @@ export class OmniGraffleImporter implements Importer {
     // gzip magic 1f 8b, or zip "PK", or "bplist"
     if (b[0] === 0x1f && b[1] === 0x8b) return true;
     if (b[0] === 0x50 && b[1] === 0x4b) return true;
-    return String.fromCharCode(b[0], b[1], b[2], b[3], b[4], b[5]) === "bplist";
+    return b.length >= 6 && String.fromCharCode(b[0], b[1], b[2], b[3], b[4], b[5]) === "bplist";
   }
 
   async import(input: ImportInput): Promise<ImportResult> {

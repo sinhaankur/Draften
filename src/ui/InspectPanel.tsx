@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
-import { Square, Circle, Diamond, Type, MoveUpRight, Minus, Image, Frame, Dot } from "lucide-react";
+import { Square, Circle, Diamond, Type, MoveUpRight, Minus, Image, Frame, Dot, Plus, Trash2, Pipette } from "lucide-react";
 import type { ExcalidrawImperativeAPI } from "@excalidraw/excalidraw/types";
+
+import { type LayerEffects, type DropShadow, type BlendMode, DEFAULT_SHADOW, effectStyle } from "../canvas/effects";
 
 /**
  * InspectPanel — the real properties inspector.
@@ -29,7 +31,10 @@ type El = {
   roundness?: { type: number } | null;
   text?: string;
   fontSize?: number;
+  customData?: { effects?: LayerEffects } | null;
 };
+
+const BLEND_MODES: BlendMode[] = ["normal", "multiply", "screen", "overlay", "darken", "lighten", "soft-light", "hard-light", "difference", "exclusion", "color", "luminosity"];
 
 export function InspectPanel({ api }: Props) {
   const [sel, setSel] = useState<El[]>([]);
@@ -82,6 +87,18 @@ export function InspectPanel({ api }: Props) {
   const hasFill = el.type === "rectangle" || el.type === "ellipse" || el.type === "diamond";
   const isText = el.type === "text";
 
+  // Effects live in customData.effects (survive convert/export; emitted as CSS).
+  const fx: LayerEffects = el.customData?.effects ?? {};
+  const patchEffects = (next: LayerEffects) => {
+    patch({ customData: { ...(el.customData ?? {}), effects: next } } as Partial<El>);
+  };
+  const addShadow = () => patchEffects({ ...fx, shadows: [...(fx.shadows ?? []), { ...DEFAULT_SHADOW }] });
+  const updateShadow = (i: number, s: Partial<DropShadow>) => {
+    const shadows = (fx.shadows ?? []).map((sh, j) => (j === i ? { ...sh, ...s } : sh));
+    patchEffects({ ...fx, shadows });
+  };
+  const removeShadow = (i: number) => patchEffects({ ...fx, shadows: (fx.shadows ?? []).filter((_, j) => j !== i) });
+
   return (
     <div style={pane}>
       {/* identity */}
@@ -127,13 +144,13 @@ export function InspectPanel({ api }: Props) {
       {/* Fill (Figma): color hex + opacity */}
       {hasFill && (
         <Section title="Fill">
-          <FillRow value={el.backgroundColor && el.backgroundColor !== "transparent" ? el.backgroundColor : "#ffffff"} onChange={(v) => patch({ backgroundColor: v })} />
+          <FillRow value={el.backgroundColor && el.backgroundColor !== "transparent" ? el.backgroundColor : "#ffffff"} onChange={(v) => patch({ backgroundColor: v })} api={api} />
         </Section>
       )}
 
       {/* Stroke (Figma): color + width */}
       <Section title="Stroke">
-        <FillRow value={el.strokeColor ?? "#1d1d1b"} onChange={(v) => patch({ strokeColor: v })} />
+        <FillRow value={el.strokeColor ?? "#1d1d1b"} onChange={(v) => patch({ strokeColor: v })} api={api} />
       </Section>
 
       {/* Text */}
@@ -150,6 +167,55 @@ export function InspectPanel({ api }: Props) {
           </div>
         </Section>
       )}
+
+      {/* Effects (Sketch/Figma): shadows · blur · blend — stored as data, exported as CSS */}
+      <Section title="Effects">
+        {/* live preview chip so you SEE the shadow/blur/blend */}
+        <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
+          <div style={{ width: 40, height: 28, borderRadius: 6, background: el.backgroundColor && el.backgroundColor !== "transparent" ? el.backgroundColor : "var(--accent,#3d6b5f)", ...effectStyle(fx) }} />
+          <span style={{ fontSize: 11.5, color: "var(--text-3,#8e8d88)" }}>Live preview</span>
+        </div>
+
+        {(fx.shadows ?? []).map((s, i) => (
+          <div key={i} style={{ border: "1px solid var(--line,#e7e6e2)", borderRadius: 8, padding: 8, marginBottom: 6, background: "var(--surf,#fff)" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 6 }}>
+              <select value={s.kind} onChange={(e) => updateShadow(i, { kind: e.target.value as DropShadow["kind"] })}
+                style={{ flex: 1, border: "1px solid var(--line,#e7e6e2)", borderRadius: 6, padding: "3px 6px", fontSize: 11.5, background: "var(--canvas,#efeeeb)", color: "var(--t1,#1d1d1b)" }}>
+                <option value="drop">Drop shadow</option>
+                <option value="inner">Inner shadow</option>
+              </select>
+              <button onClick={() => removeShadow(i)} title="Remove" style={{ border: 0, background: "transparent", color: "var(--text-3,#8e8d88)", cursor: "pointer", display: "grid", placeItems: "center" }}><Trash2 size={13} /></button>
+            </div>
+            <div style={grid2}>
+              <Field label="X" value={s.x} onChange={(v) => updateShadow(i, { x: v })} />
+              <Field label="Y" value={s.y} onChange={(v) => updateShadow(i, { y: v })} />
+            </div>
+            <div style={{ ...grid2, marginTop: 6 }}>
+              <Field label="Blur" value={s.blur} onChange={(v) => updateShadow(i, { blur: Math.max(0, v) })} />
+              <Field label="Spread" value={s.spread} onChange={(v) => updateShadow(i, { spread: v })} />
+            </div>
+            <div style={{ display: "flex", gap: 6, marginTop: 6, alignItems: "center" }}>
+              <div style={{ flex: 1 }}><FillRow value={s.color} onChange={(v) => updateShadow(i, { color: v })} api={api} /></div>
+              <div style={{ width: 72 }}><Field label="%" value={s.opacity} onChange={(v) => updateShadow(i, { opacity: Math.min(100, Math.max(0, v)) })} /></div>
+            </div>
+          </div>
+        ))}
+        <button onClick={addShadow}
+          style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 6, width: "100%", border: "1px dashed var(--line,#e7e6e2)", borderRadius: 7, padding: "6px", fontSize: 12, color: "var(--text-2,#5d5c58)", background: "transparent", cursor: "pointer" }}>
+          <Plus size={13} /> Add shadow
+        </button>
+
+        <div style={{ ...grid2, marginTop: 8 }}>
+          <Field label="Blur" value={fx.blur ?? 0} suffix="px" onChange={(v) => patchEffects({ ...fx, blur: Math.max(0, v) })} />
+          <div style={{ display: "flex", alignItems: "center", gap: 6, background: "var(--canvas,#efeeeb)", borderRadius: 7, padding: "3px 8px" }}>
+            <span style={{ fontSize: 11, color: "var(--text-3,#8e8d88)", flex: "none" }}>Blend</span>
+            <select value={fx.blend ?? "normal"} onChange={(e) => patchEffects({ ...fx, blend: e.target.value as BlendMode })}
+              style={{ flex: 1, minWidth: 0, border: 0, background: "transparent", fontSize: 11.5, color: "var(--t1,#1d1d1b)", outline: "none", textTransform: "capitalize" }}>
+              {BLEND_MODES.map((m) => <option key={m} value={m}>{m.replace("-", " ")}</option>)}
+            </select>
+          </div>
+        </div>
+      </Section>
 
       <button
         onClick={() => {
@@ -199,14 +265,32 @@ function Field({ label, value, suffix, onChange }: { label: string; value: numbe
   );
 }
 
-/* A Figma fill/stroke row: swatch · hex · opacity. */
-function FillRow({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+/* A Figma fill/stroke row: swatch · hex · native eyedropper · opacity.
+   The swatch is a native <input type="color"> — on macOS that opens the real
+   system color panel (P3-aware, with the OS eyedropper). The pipette button uses
+   the native EyeDropper API (WebKit/Chromium) to sample ANY pixel on screen —
+   the prebuilt macOS color-sampling, invoked rather than re-implemented. */
+function FillRow({ value, onChange, api: _api }: { value: string; onChange: (v: string) => void; api?: ExcalidrawImperativeAPI | null }) {
+  const canPick = typeof window !== "undefined" && "EyeDropper" in window;
+  const pick = async () => {
+    try {
+      const Ctor = (window as unknown as { EyeDropper: new () => { open: () => Promise<{ sRGBHex: string }> } }).EyeDropper;
+      const res = await new Ctor().open();
+      if (res?.sRGBHex) onChange(res.sRGBHex);
+    } catch { /* user cancelled */ }
+  };
   return (
     <div style={{ display: "flex", alignItems: "center", gap: 8, background: "var(--canvas, #efeeeb)", borderRadius: 7, padding: "5px 8px" }}>
-      <input type="color" value={toHex(value)} onChange={(e) => onChange(e.target.value)}
+      <input type="color" value={toHex(value)} onChange={(e) => onChange(e.target.value)} title="Open the system color panel"
         style={{ width: 20, height: 20, border: "1px solid rgba(0,0,0,.12)", borderRadius: 4, padding: 0, background: "none", cursor: "pointer", flex: "none" }} />
       <input value={value.replace(/^#/, "").toUpperCase()} onChange={(e) => onChange("#" + e.target.value.replace(/[^0-9a-f]/gi, ""))}
         style={{ flex: 1, minWidth: 0, border: 0, background: "transparent", fontSize: 12.5, color: "var(--t1, #1d1d1b)", fontFamily: "var(--font-mono, monospace)", outline: "none", textTransform: "uppercase" }} />
+      {canPick && (
+        <button onClick={pick} title="Sample a colour from anywhere on screen (eyedropper)"
+          style={{ border: 0, background: "transparent", cursor: "pointer", color: "var(--text-3, #8e8d88)", display: "grid", placeItems: "center", flex: "none", padding: 0 }}>
+          <Pipette size={13} />
+        </button>
+      )}
       <span style={{ fontSize: 11.5, color: "var(--text-3, #8e8d88)" }}>100%</span>
     </div>
   );

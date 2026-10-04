@@ -9,6 +9,8 @@
  * honest: what you see maps 1:1 to what you get.
  */
 
+import { effectsOf, effectCssDecls } from "../canvas/effects";
+
 type El = {
   id: string;
   type: string;
@@ -23,6 +25,7 @@ type El = {
   isDeleted?: boolean;
   boundElements?: { id: string; type: string }[] | null;
   containerId?: string;
+  customData?: { effects?: import("../canvas/effects").LayerEffects } | null;
 };
 
 const esc = (s: string) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
@@ -57,6 +60,8 @@ function styleFor(e: El, minX: number, minY: number): string {
   if (e.fontSize) s.push(`font-size:${Math.round(e.fontSize)}px`);
   if (e.opacity != null && e.opacity < 100) s.push(`opacity:${(e.opacity / 100).toFixed(2)}`);
   if (e.type === "text") s.push("display:flex", "align-items:center");
+  // layer effects (shadow / blur / blend) → real CSS, so what you style exports
+  s.push(...effectCssDecls(effectsOf(e)));
   return s.join(";");
 }
 

@@ -757,3 +757,62 @@
   color: var(--text-2); padding: var(--s2) var(--s3); cursor: pointer; transition: all .14s;
 }
 .ai-starter:hover { border-color: var(--accent); color: var(--text-1); }
+
+/* ── Welcome / start screen — the calm front door (V2 quality) ───────────────
+   A full-bleed warm-neutral surface with one centred column: title, three
+   primary choices, then template cards. Sparse on purpose. */
+.welcome {
+  position: fixed; inset: 0; z-index: 400;
+  background:
+    radial-gradient(60% 50% at 50% 0%, color-mix(in srgb, var(--accent) 12%, transparent), transparent 70%),
+    var(--bg);
+  display: grid; place-items: center; overflow: auto; padding: 40px 24px;
+  animation: welcome-in .3s cubic-bezier(.2,0,0,1);
+}
+@keyframes welcome-in { from { opacity: 0; } to { opacity: 1; } }
+.welcome-inner { width: 100%; max-width: 760px; }
+.welcome-head { text-align: center; margin-bottom: 36px; }
+.welcome-logo {
+  display: inline-grid; place-items: center; width: 44px; height: 44px;
+  border-radius: 12px; background: var(--accent); margin-bottom: 16px;
+  box-shadow: 0 8px 24px -8px color-mix(in srgb, var(--accent) 60%, transparent);
+}
+.welcome-head h1 {
+  font-family: var(--font-serif); font-weight: 450; font-size: 34px;
+  letter-spacing: -.02em; margin: 0 0 8px; color: var(--text);
+}
+.welcome-head p { color: var(--text-2); font-size: 15.5px; margin: 0 auto; max-width: 46ch; }
+
+.welcome-actions { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 34px; }
+@media (max-width: 680px) { .welcome-actions { grid-template-columns: 1fr; } }
+.welcome-card {
+  position: relative; text-align: left; border: 1px solid var(--border);
+  background: var(--raised); border-radius: 14px; padding: 20px 18px;
+  cursor: pointer; transition: all .16s cubic-bezier(.2,0,0,1); display: block;
+}
+.welcome-card:hover { border-color: var(--accent); transform: translateY(-3px);
+  box-shadow: 0 16px 36px -20px color-mix(in srgb, var(--text) 40%, transparent); }
+.welcome-card.primary { background: color-mix(in srgb, var(--accent) 8%, var(--raised)); border-color: color-mix(in srgb, var(--accent) 30%, var(--border)); }
+.welcome-card .wc-icon {
+  display: inline-grid; place-items: center; width: 40px; height: 40px;
+  border-radius: 10px; background: var(--acc-soft); color: var(--accent); margin-bottom: 14px;
+}
+.welcome-card .wc-title { display: block; font-size: 16px; font-weight: 650; letter-spacing: -.01em; color: var(--text); margin-bottom: 4px; }
+.welcome-card .wc-sub { display: block; font-size: 13px; color: var(--text-2); line-height: 1.45; }
+.welcome-card .wc-go { position: absolute; top: 20px; right: 18px; color: var(--text-3); transition: all .16s; }
+.welcome-card:hover .wc-go { color: var(--accent); transform: translateX(3px); }
+
+.welcome-templates { border-top: 1px solid var(--border); padding-top: 24px; }
+.wt-label { font-size: 11px; font-family: var(--font-mono); letter-spacing: .1em; text-transform: uppercase; color: var(--text-3); margin-bottom: 14px; text-align: center; }
+.wt-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+@media (max-width: 680px) { .wt-grid { grid-template-columns: repeat(2, 1fr); } }
+.wt-card {
+  text-align: center; border: 1px solid var(--border); background: var(--raised);
+  border-radius: 12px; padding: 18px 12px; cursor: pointer; transition: all .16s;
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+}
+.wt-card:hover:not(:disabled) { border-color: var(--accent); transform: translateY(-2px); }
+.wt-card:disabled { opacity: .4; cursor: default; }
+.wt-card .wt-ic { display: grid; place-items: center; width: 38px; height: 38px; border-radius: 9px; background: var(--acc-soft); color: var(--accent); margin-bottom: 6px; }
+.wt-card .wt-name { font-size: 13.5px; font-weight: 600; color: var(--text); }
+.wt-card .wt-sub { font-size: 11.5px; color: var(--text-3); }
