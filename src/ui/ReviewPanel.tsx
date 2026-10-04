@@ -1,6 +1,8 @@
 import { useState } from "react";
+import { MapPin, Plus, Trash2 } from "lucide-react";
 
 import { useChangelog } from "../state/changelog";
+import { useAnnotations } from "../state/annotations-store";
 
 /**
  * ReviewPanel — a real, working review flow.
@@ -53,6 +55,8 @@ export function ReviewPanel({ boardName }: { boardName: string }) {
 
   return (
     <div className="pane-body" style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+      <AnnotationsList />
+
       <div>
         <div style={{ fontSize: 13, fontWeight: 600 }}>{boardName}</div>
         <div style={{ marginTop: 6, display: "inline-flex", alignItems: "center", gap: 6, borderRadius: 999, padding: "2px 10px", fontSize: 11.5, fontWeight: 600,
@@ -109,6 +113,53 @@ export function ReviewPanel({ boardName }: { boardName: string }) {
         <button onClick={() => setV("pending")} style={{ border: 0, background: "transparent", color: "var(--text-3, #8e8d88)", cursor: "pointer", fontSize: 11.5, textDecoration: "underline" }}>
           Reset to in-review
         </button>
+      )}
+    </div>
+  );
+}
+
+/**
+ * AnnotationsList — the side list of the canvas annotation pins (the numbered
+ * notes dropped with the toolbar's "Add a note" tool). Shows each note, lets you
+ * arm the drop tool, edit text, or delete. The pins themselves live on the canvas
+ * (AnnotationLayer); this is the readable index of them.
+ */
+function AnnotationsList() {
+  const items = useAnnotations((s) => s.items);
+  const dropping = useAnnotations((s) => s.dropping);
+  const setDropping = useAnnotations((s) => s.setDropping);
+  const update = useAnnotations((s) => s.update);
+  const remove = useAnnotations((s) => s.remove);
+  const clear = useAnnotations((s) => s.clear);
+
+  return (
+    <div style={{ border: "1px solid var(--line, #e7e6e2)", borderRadius: 10, padding: 10, background: "var(--surf,#fff)" }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 7, marginBottom: 8 }}>
+        <MapPin size={14} style={{ color: "#e5a000" }} />
+        <span style={{ fontSize: 12.5, fontWeight: 600 }}>Annotations</span>
+        <span style={{ fontSize: 11, color: "var(--text-3,#8e8d88)" }}>{items.length}</span>
+        {items.length > 0 && <button onClick={clear} style={{ marginLeft: "auto", border: 0, background: "transparent", color: "var(--text-3,#8e8d88)", fontSize: 11, cursor: "pointer" }}>Clear</button>}
+      </div>
+
+      <button onClick={() => setDropping(!dropping)}
+        style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 6, width: "100%", border: `1px solid ${dropping ? "var(--accent,#3d6b5f)" : "var(--line,#e7e6e2)"}`, borderRadius: 8, padding: "7px", fontSize: 12.5, fontWeight: 600, cursor: "pointer", background: dropping ? "var(--accent-soft,#e2ebe7)" : "transparent", color: dropping ? "var(--accent,#3d6b5f)" : "var(--t1,#1d1d1b)" }}>
+        <Plus size={14} /> {dropping ? "Click the canvas to place… (Esc to cancel)" : "Add note on canvas"}
+      </button>
+
+      {items.length === 0 ? (
+        <p style={{ fontSize: 11.5, color: "var(--text-3,#8e8d88)", margin: "8px 0 0", lineHeight: 1.5 }}>Drop numbered pins on the canvas for specs or review feedback.</p>
+      ) : (
+        <div style={{ display: "flex", flexDirection: "column", gap: 6, marginTop: 8 }}>
+          {items.map((p) => (
+            <div key={p.id} style={{ display: "flex", gap: 8, alignItems: "flex-start" }}>
+              <span style={{ flex: "none", width: 20, height: 20, borderRadius: "50%", background: "#e5a000", color: "#1d1d1b", fontSize: 11, fontWeight: 700, display: "grid", placeItems: "center", marginTop: 2 }}>{p.n}</span>
+              <input value={p.text} onChange={(e) => update(p.id, { text: e.target.value })} placeholder="Add a note…"
+                style={{ flex: 1, minWidth: 0, border: "1px solid var(--line,#e7e6e2)", borderRadius: 6, padding: "5px 8px", fontSize: 12, background: "var(--surf,#fff)", color: "var(--t1,#1d1d1b)" }} />
+              <button onClick={() => remove(p.id)} title="Delete" aria-label="Delete annotation" className="row-icon-btn"
+                style={{ flex: "none", width: 28, height: 28, border: 0, background: "transparent", color: "var(--text-3,#8e8d88)", cursor: "pointer", display: "grid", placeItems: "center", borderRadius: 6 }}><Trash2 size={13} /></button>
+            </div>
+          ))}
+        </div>
       )}
     </div>
   );

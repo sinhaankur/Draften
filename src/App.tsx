@@ -6,7 +6,7 @@ import type { ExcalidrawImperativeAPI } from "@excalidraw/excalidraw/types";
 import { AnimatePresence, motion } from "motion/react";
 import {
   PanelLeft, PanelRight, GitBranch, LayoutTemplate, Puzzle,
-  Moon, Sun, Sparkles, History, Package, Server, Maximize2,
+  Moon, Sun, Sparkles, History, Package, Server, Maximize2, MessageSquarePlus,
 } from "lucide-react";
 
 import { ExcalidrawCanvas, toElements } from "./canvas/ExcalidrawCanvas";
@@ -37,6 +37,8 @@ import { RailAccount } from "./ui/RailAccount";
 import { SettingsPanel, type SettingsValues } from "./ui/SettingsPanel";
 import { MeasureOverlay } from "./ui/MeasureOverlay";
 import { ComponentsPanel } from "./ui/ComponentsPanel";
+import { AnnotationLayer } from "./ui/AnnotationLayer";
+import { useAnnotations } from "./state/annotations-store";
 import { StylesPanel } from "./ui/StylesPanel";
 import { AlignBar } from "./ui/AlignBar";
 import { BooleanBar } from "./ui/BooleanBar";
@@ -88,6 +90,8 @@ export function App() {
   const [leftOpen, setLeftOpen] = useState(false);
   const [leftMode, setLeftMode] = useState<"layers" | "git" | "components" | "history">("layers");
   const [rightOpen, setRightOpen] = useState(false);
+  const annDropping = useAnnotations((s) => s.dropping);
+  const setAnnDropping = useAnnotations((s) => s.setDropping);
   const setDesignSystem = useEditor((s) => s.setDesignSystem);
   const rename = useEditor((s) => s.rename);
   const excalidrawApi = useRef<ExcalidrawImperativeAPI | null>(null);
@@ -285,7 +289,16 @@ export function App() {
 
         <div className="tb-sep" />
 
-        {/* trailing cluster: appearance · reset view · export · panel toggle */}
+        {/* trailing cluster: annotate · appearance · reset view · export · panel toggle */}
+        <button
+          className={`tb-btn tb-icon${annDropping ? " on" : ""}`}
+          onClick={() => setAnnDropping(!annDropping)}
+          title="Add a note (annotation pin) — click the canvas to place"
+          aria-label="Add annotation"
+          style={annDropping ? { background: "var(--accent-soft)", color: "var(--accent)" } : undefined}
+        >
+          <MessageSquarePlus size={15} />
+        </button>
         <button
           className="tb-btn tb-icon"
           onClick={() => setTheme((t) => { const next = t === "light" ? "dark" : "light"; try { localStorage.setItem("draften-theme", next); } catch { /* ok */ } return next; })}
@@ -461,6 +474,8 @@ export function App() {
             <ExcalidrawCanvas theme={theme} onReady={(api) => { excalidrawApi.current = api; registerCanvasApplier(api); setCanvasReady(true); }} />
             {/* Spacing guides (Alt/Option-hover) over the canvas — Figma/Sketch-style. */}
             {canvasReady && <MeasureOverlay api={excalidrawApi.current} />}
+            {/* Numbered annotation pins anchored to the canvas (specs / review). */}
+            {canvasReady && <AnnotationLayer api={excalidrawApi.current} />}
           </div>
           {/* code panel — Code (full) or Split (half) */}
           {(view === "Code" || view === "Split") && (

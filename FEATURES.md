@@ -95,6 +95,10 @@ artboard frame so multi-page docs don't stack at the origin.
 - Spacing tools (`src/canvas/measure.ts`, `MeasureOverlay.tsx`): Alt/Option-hover
   measurement guides (px gaps + frame-edge/padding distances), and **Auto spacing**
   (Tidy up with an even gap) in the Align panel.
+- ✅ **Annotation helper** (`AnnotationLayer.tsx` + `annotations-store.ts`): the
+  toolbar "add a note" tool drops NUMBERED pins anchored to canvas scene coords
+  (stay put on pan/zoom via Excalidraw's transform); click a pin to edit/delete;
+  a side list (in Review) indexes every note. For specs + review + handoff.
 
 ## Design system
 - ✅ AI-generated design system (deterministic: tokens + atomic components)
