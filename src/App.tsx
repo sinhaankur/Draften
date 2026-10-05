@@ -49,6 +49,10 @@ import "./App.css";
 
 const LEVELS: AtomicLevel[] = ["atom", "molecule", "organism", "template", "page"];
 
+// The app version shown in the top bar — fixed to the real release, not whatever
+// appVersion a (possibly stale) saved document carries.
+const APP_VERSION = "1.0.0";
+
 export function App() {
   const doc = useEditor((s) => s.doc);
   const activeBoardId = useEditor((s) => s.activeBoardId);
@@ -269,7 +273,7 @@ export function App() {
             </svg>
           </span>
           <span>Draften</span>
-          <span className="chip">v{doc.appVersion}</span>
+          <span className="chip">v{APP_VERSION}</span>
         </div>
         <div className="tb-sep" />
         <div className="breadcrumb">

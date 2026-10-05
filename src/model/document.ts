@@ -83,7 +83,7 @@ export type ImportSource =
   | "native";
 
 /** Create an empty document with one design board and an empty design system. */
-export function createEmptyDocument(name = "app-designs", appVersion = "0.4.0"): DraftenDocument {
+export function createEmptyDocument(name = "app-designs", appVersion = "1.0.0"): DraftenDocument {
   const now = new Date().toISOString();
   // Seed the three pages from the approved v2 mockup (design/Draften v2.dc.html)
   // so the app opens populated like the screenshot — Onboarding active.
