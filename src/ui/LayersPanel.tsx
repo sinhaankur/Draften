@@ -50,6 +50,7 @@ export function LayersPanel({ api }: { api: ExcalidrawImperativeAPI | null }) {
   const [editing, setEditing] = useState<string | null>(null); // inline rename
   const [dragId, setDragId] = useState<string | null>(null);   // drag-to-reorder
   const draftName = useRef("");
+  const addArtboardRef = useRef<(w: number, h: number, name: string) => void>(() => {});
 
   useEffect(() => {
     if (!api) return;
@@ -79,6 +80,24 @@ export function LayersPanel({ api }: { api: ExcalidrawImperativeAPI | null }) {
     window.addEventListener("keydown", key);
     return () => { window.removeEventListener("click", close); window.removeEventListener("keydown", key); };
   }, [menu]);
+
+  // Press "A" to drop a new artboard (Sketch/Figma convention) — declared here,
+  // BEFORE any early return, so the hook count is stable. Calls the latest
+  // addArtboard via a ref. Ignored while typing in a field.
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.metaKey || e.ctrlKey || e.altKey) return;
+      const el = document.activeElement;
+      if (el && (el.tagName === "INPUT" || el.tagName === "TEXTAREA" || (el as HTMLElement).isContentEditable)) return;
+      if (e.key === "a" || e.key === "A") {
+        e.preventDefault();
+        const p = ARTBOARD_PRESETS[0];
+        addArtboardRef.current(p.w, p.h, p.name);
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
 
   if (!api) return <Hint>Canvas loading…</Hint>;
   if (els.length === 0) return <Hint>No layers yet — draw something, import a file, or pick a template.</Hint>;
@@ -138,8 +157,18 @@ export function LayersPanel({ api }: { api: ExcalidrawImperativeAPI | null }) {
     const existing = api.getSceneElements().filter((e) => !(e as unknown as El).isDeleted);
     const maxX = existing.reduce((m, e) => Math.max(m, (e.x ?? 0) + (e.width ?? 0)), 0);
     const x = existing.length ? maxX + 60 : 80;
-    void drawSkeletonOnCanvas([{ type: "frame", name, x, y: 80, width: w, height: h, children: [] }]);
+    const y = 80;
+    const sheetId = `ab-sheet-${Math.random().toString(36).slice(2, 8)}`;
+    // A REAL artboard: a soft shadow + a SOLID white sheet (fillStyle:solid, or it
+    // renders hatched/transparent) + the frame container — so it actually shows as
+    // a white card, not an empty outline. The sheet is the frame's child.
+    void drawSkeletonOnCanvas([
+      { type: "rectangle", name: "Shadow", x: x - 2, y: y + 6, width: w + 4, height: h + 2, roughness: 0, fillStyle: "solid", strokeColor: "transparent", backgroundColor: "#8a8a8a", opacity: 22, strokeWidth: 0, roundness: { type: 3 } },
+      { id: sheetId, type: "rectangle", name: "Artboard", x, y, width: w, height: h, roughness: 0, fillStyle: "solid", strokeColor: "#e9e9e9", backgroundColor: "#ffffff", strokeWidth: 1 },
+      { type: "frame", name, x, y, width: w, height: h, children: [sheetId] },
+    ]);
   };
+  addArtboardRef.current = addArtboard; // keep the "A" shortcut pointing at the live fn
 
   return (
    <>

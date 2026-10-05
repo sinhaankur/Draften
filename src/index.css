@@ -62,15 +62,15 @@
   --font-serif: "Source Serif 4 Variable", "Source Serif 4", Georgia, serif;
   --font-code: ui-monospace, "SF Mono", "Geist Mono", Menlo, Consolas, monospace;
   --font-design: "Inter Variable", "Inter", -apple-system, system-ui, sans-serif; /* canvas text */
-  /* FLUID type — font-size adapts to the viewport (screen resolution) via clamp:
-     a min (small screens), a vw-based middle, and a max (large screens). So text
-     is legible on a phone and comfortable on a 4K display without media queries. */
-  --fs-2xs: clamp(9px, 0.55vw + 7px, 11px);
-  --fs-xs:  clamp(10px, 0.6vw + 8px, 12px);
-  --fs-sm:  clamp(11px, 0.7vw + 9px, 13px);
-  --fs-md:  clamp(12px, 0.8vw + 10px, 15px);
-  --fs-lg:  clamp(14px, 1vw + 11px, 17px);
-  --fs-xl:  clamp(17px, 1.4vw + 13px, 22px);
+  /* FIXED type ramp — a native desktop tool (Sketch/Figma) uses precise, crisp
+     px sizes, NOT viewport-fluid text (which read imprecise / web-ish). These
+     match Sketch's UI typography: 10/11/12/13px chrome, 15/18 for emphasis. */
+  --fs-2xs: 10px;
+  --fs-xs:  11px;
+  --fs-sm:  12px;
+  --fs-md:  13px;
+  --fs-lg:  15px;
+  --fs-xl:  18px;
   --lh-ui: 1.35;
   --lh-code: 1.75;
 
@@ -155,6 +155,10 @@ body,
   font-size: var(--fs-md);
   line-height: var(--lh-ui);
   overflow: hidden;
+  /* native-grade text crispness (the SF Pro look Sketch has) */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
 }
 
 ::selection {

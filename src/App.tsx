@@ -100,9 +100,9 @@ export function App() {
     return () => unlisten?.();
   }, []);
   // Responsive drawers (below md the rails slide over the canvas — Hick's Law).
-  const [leftOpen, setLeftOpen] = useState(false);
+  const [leftOpen, setLeftOpen] = useState(true); // layers/artboards visible on launch (Sketch/Figma always show it)
   const [leftMode, setLeftMode] = useState<"layers" | "git" | "components" | "history">("layers");
-  const [rightOpen, setRightOpen] = useState(false);
+  const [rightOpen, setRightOpen] = useState(true); // inspector visible on launch (Sketch/Figma do)
   const annDropping = useAnnotations((s) => s.dropping);
   const setAnnDropping = useAnnotations((s) => s.setDropping);
   const setDesignSystem = useEditor((s) => s.setDesignSystem);
