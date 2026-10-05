@@ -37,6 +37,7 @@ export function ExcalidrawCanvas({
         elements: saved ? (saved.elements as ReturnType<typeof convertToExcalidrawElements>) : convertToExcalidrawElements(seedSkeleton()),
         appState: {
           currentItemRoughness: 0, // crisp, precise shapes (not hand-drawn)
+          currentItemFillStyle: "solid" as const, // solid fills (not hatched) — new shapes read like Figma/Sketch
           currentItemFontFamily: 2, // Nunito — the normal (non-handwritten) font
           currentItemStrokeColor: "#3d6b5f",
           // Sketch-accurate canvas: a neutral cool grey (not the old warm beige),
@@ -75,7 +76,6 @@ export function ExcalidrawCanvas({
           scheduleSave(() => ({ elements, appState: appState as unknown as Record<string, unknown>, files: files as unknown as Record<string, unknown> }));
         }}
         theme={theme === "dark" ? "dark" : "light"}
-        gridModeEnabled
         UIOptions={{
           canvasActions: {
             changeViewBackgroundColor: false,
@@ -126,11 +126,11 @@ function text(id: string, x: number, y: number, t: string, size = 15, color = IN
 }
 const CW = AW - 64; // content width inside an artboard (32px padding each side)
 function field(id: string, x: number, y: number, ph: string, name: string) {
-  return { id, type: "rectangle" as const, x, y, width: CW, height: 46, roughness: 0, strokeColor: LINE, backgroundColor: SURF, strokeWidth: 1, roundness: { type: 3 } as const, customData: { name },
+  return { id, type: "rectangle" as const, x, y, width: CW, height: 46, roughness: 0, fillStyle: "solid" as const, strokeColor: LINE, backgroundColor: SURF, strokeWidth: 1, roundness: { type: 3 } as const, customData: { name },
     label: { text: ph, fontSize: 13, fontFamily: 2, strokeColor: MUTED } };
 }
 function button(id: string, x: number, y: number, t: string, name = "Primary button") {
-  return { id, type: "rectangle" as const, x, y, width: CW, height: 50, roughness: 0, strokeColor: ACC, backgroundColor: ACC, strokeWidth: 1, roundness: { type: 3 } as const, customData: { name },
+  return { id, type: "rectangle" as const, x, y, width: CW, height: 50, roughness: 0, fillStyle: "solid" as const, strokeColor: ACC, backgroundColor: ACC, strokeWidth: 1, roundness: { type: 3 } as const, customData: { name },
     label: { text: t, fontSize: 14, fontFamily: 2, strokeColor: "#ffffff" } };
 }
 
@@ -142,7 +142,7 @@ function seedSkeleton() {
 
   // Artboard 1: Welcome — hero image up top, title/body low, button at bottom
   const w = {
-    mark: { id: sid("w"), type: "ellipse" as const, x: x1 + (AW - 130) / 2, y: top + 90, width: 130, height: 130, roughness: 0, strokeColor: LINE, backgroundColor: "#f3f3f1", strokeWidth: 1, name: "Mark" },
+    mark: { id: sid("w"), type: "ellipse" as const, x: x1 + (AW - 130) / 2, y: top + 90, width: 130, height: 130, roughness: 0, fillStyle: "solid" as const, strokeColor: LINE, backgroundColor: "#f3f3f1", strokeWidth: 1, name: "Mark" },
     title: text(sid("w"), x1 + PAD, top + 480, "Your designs, in\nyour repo", 26, INK, "Title"),
     body: text(sid("w"), x1 + PAD, top + 560, "Branch, commit and review boards\nthe same way your team ships code.", 13, MUTED, "Body"),
     btn: button(sid("w"), x1 + PAD, btnY, "Get started"),
@@ -165,17 +165,22 @@ function seedSkeleton() {
     note: text(sid("c"), x3 + PAD, top + 388, "You stay in the flow with your code.", 12, MUTED, "Footnote"),
   };
 
-  // A white "sheet" rectangle behind each artboard's content, so the artboard
-  // reads as a CARD on the grey canvas (Sketch-style), distinct from the
-  // background. Excalidraw frames are transparent containers, so the sheet is
-  // what gives the artboard its paper colour. Drawn first = behind the content.
-  // Sketch artboards: white fill (clr-canvas-background) + a faint 1px border
-  // (clr-canvas-pixel-line #dadbdb) on the grey canvas — exact Sketch values.
+  // Each artboard reads as a CARD lifted off the grey canvas (Sketch-style): a
+  // soft SHADOW rect behind, then the white SHEET on top with a hairline border.
+  // Excalidraw has no shape shadows, so the shadow is its own faint offset rect.
+  // Drawn first = behind the content.
+  // fillStyle:"solid" is ESSENTIAL — Excalidraw defaults to "hachure" (hatched,
+  // see-through) fill, which made the artboard look transparent/faint. Solid =
+  // a real opaque white card, like Figma/Sketch.
+  const shadow = (id: string, x: number) =>
+    ({ id, type: "rectangle" as const, x: x - 2, y: 86, width: AW + 4, height: AH + 2, roughness: 0, fillStyle: "solid" as const, strokeColor: "transparent", backgroundColor: "#8a8a8a", opacity: 22, strokeWidth: 0, roundness: { type: 3 } as const, customData: { name: "Shadow" } });
   const sheet = (id: string, x: number) =>
-    ({ id, type: "rectangle" as const, x, y: 80, width: AW, height: AH, roughness: 0, strokeColor: "#dadbdb", backgroundColor: SURF, strokeWidth: 1, customData: { name: "Artboard" } });
+    ({ id, type: "rectangle" as const, x, y: 80, width: AW, height: AH, roughness: 0, fillStyle: "solid" as const, strokeColor: "#e9e9e9", backgroundColor: SURF, strokeWidth: 1, customData: { name: "Artboard" } });
+  const shw = shadow(sid("shadow"), x1), sha = shadow(sid("shadow"), x2), shc = shadow(sid("shadow"), x3);
   const sw = sheet(sid("sheet"), x1), sa = sheet(sid("sheet"), x2), sc = sheet(sid("sheet"), x3);
 
   return [
+    shw, sha, shc, // shadows first (behind everything)
     sw, sa, sc,
     ...Object.values(w), ...Object.values(a), ...Object.values(c),
     { type: "frame" as const, name: "Welcome", x: x1, y: 80, width: AW, height: AH, children: [sw.id, ...Object.values(w).map((e) => e.id)] },

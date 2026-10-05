@@ -74,7 +74,7 @@ export function App() {
     try { return localStorage.getItem("draften-welcomed") !== "1"; } catch { return true; }
   });
   const dismissWelcome = () => { setWelcome(false); try { localStorage.setItem("draften-welcomed", "1"); } catch { /* ignore */ } };
-  const [dotGrid, setDotGrid] = useState(true);
+  const [dotGrid, setDotGrid] = useState(false); // off by default — Sketch has a clean canvas
   const [snap, setSnap] = useState(true);
   const [aiProvider, setAiProvider] = useState(() => { try { return localStorage.getItem("draften-ai-provider") || "deterministic"; } catch { return "deterministic"; } });
   const [settingsOpen, setSettingsOpen] = useState(false);
