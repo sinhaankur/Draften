@@ -394,7 +394,10 @@ export function App() {
           {/* header — serif title + mode toggle (Layers / Source control) */}
           <div style={{ height: 44, flex: "none", display: "flex", alignItems: "center", padding: "0 10px 0 16px", gap: 6 }}>
             <span style={{ flex: 1, fontFamily: "var(--font-serif)", fontSize: 16, fontWeight: 500 }}>
-              {leftMode === "layers" ? "Artboards & layers" : "Source control"}
+              {leftMode === "layers" ? "Artboards & layers"
+                : leftMode === "components" ? "Components"
+                : leftMode === "history" ? "Version history"
+                : "Source control"}
             </span>
             <button title="Artboards & layers" onClick={() => setLeftMode("layers")}
               style={{ width: 26, height: 26, border: 0, borderRadius: 7, background: leftMode === "layers" ? "var(--acc-soft)" : "transparent", color: leftMode === "layers" ? "var(--accent)" : "var(--text-3)", cursor: "pointer", display: "grid", placeItems: "center" }}>
