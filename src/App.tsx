@@ -59,7 +59,7 @@ export function App() {
   const [editingBoard, setEditingBoard] = useState<string | null>(null);
 
   const [view, setView] = useState<"Design" | "Split" | "Code" | "Console">("Design");
-  const [dsTab, setDsTab] = useState<"Design" | "Prototype" | "Inspect" | "Assistant" | "Review">("Design");
+  const [dsTab, setDsTab] = useState<"Design" | "Styles" | "Prototype" | "Assistant" | "Review">("Design");
   const [theme, setTheme] = useState<"light" | "dark">(() => {
     try { return (localStorage.getItem("draften-theme") as "light" | "dark") || "light"; } catch { return "light"; }
   });
@@ -503,7 +503,7 @@ export function App() {
         {/* right: system / inspect / stack */}
         <aside className={`right${rightOpen ? " open" : ""}`}>
           <div className="tabs">
-            {(["Design", "Prototype", "Assistant", "Review"] as const).map((t) => (
+            {(["Design", "Styles", "Prototype", "Assistant", "Review"] as const).map((t) => (
               <button key={t} className={dsTab === t ? "on" : ""} onClick={() => setDsTab(t)}>
                 {t}
               </button>
@@ -511,39 +511,43 @@ export function App() {
           </div>
 
           {dsTab === "Design" && (
+            /* Design tab = THE INSPECTOR (Sketch/Figma: the right panel is the
+               inspector, nothing else). A layer selected → its properties; nothing
+               selected → the Page/Document inspector + a quiet hint. Design-system
+               + styles live in their own "Styles" tab now. */
             <>
               <div className="pane-body">
-                {/* Sketch-style inspector: when a layer is selected, the panel IS
-                    the inspector (properties + align). When nothing's selected,
-                    show Page + design system below. */}
                 <InspectPanel api={canvasReady ? excalidrawApi.current : null} />
                 <AlignBar api={canvasReady ? excalidrawApi.current : null} />
                 <BooleanBar api={canvasReady ? excalidrawApi.current : null} />
 
                 {hasSelection ? null : (
-                <>
-                <div className="divider" />
+                  <>
+                    <div style={{ textAlign: "center", padding: "6px 0 14px", color: "var(--sk-text-3, #8e8d88)" }}>
+                      <div style={{ fontSize: 12.5, lineHeight: 1.6 }}>Nothing selected</div>
+                      <div style={{ fontSize: 11.5, marginTop: 2 }}>Pick a layer to inspect it, or press <span style={{ fontFamily: "var(--font-mono, monospace)" }}>?</span> for shortcuts.</div>
+                    </div>
 
-                {/* No-selection state: a quiet hint (Sketch shows the Document/Page
-                    inspector here, not a wall of reference). Shortcuts live in the
-                    ? Help button, not the inspector. */}
-                <div style={{ textAlign: "center", padding: "6px 0 14px", color: "var(--text-3, #8e8d88)" }}>
-                  <div style={{ fontSize: 12.5, lineHeight: 1.6 }}>Nothing selected</div>
-                  <div style={{ fontSize: 11.5, marginTop: 2 }}>Pick a layer to inspect it, or press <span style={{ fontFamily: "var(--font-mono, monospace)" }}>?</span> for shortcuts.</div>
-                </div>
+                    <div className="section-title">Page</div>
+                    <div style={{ width: "100%", borderRadius: 8, border: "1px solid var(--line, #e7e6e2)", padding: "7px 10px", fontSize: 13, background: "var(--surf, #fff)", color: "var(--t1, #1d1d1b)", marginBottom: 8 }}>
+                      {activeBoard?.name ?? doc.name}
+                    </div>
+                    <label style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 12.5, cursor: "pointer", marginBottom: 4 }}>
+                      <input type="checkbox" checked={dotGrid} onChange={(e) => { setDotGrid(e.target.checked); excalidrawApi.current?.updateScene({ appState: { ...excalidrawApi.current.getAppState(), gridModeEnabled: e.target.checked } }); }} />
+                      Show dot grid
+                    </label>
+                  </>
+                )}
+              </div>
+            </>
+          )}
 
-                {/* Page */}
-                <div className="section-title">Page</div>
-                <div style={{ width: "100%", borderRadius: 8, border: "1px solid var(--line, #e7e6e2)", padding: "7px 10px", fontSize: 13, background: "var(--surf, #fff)", color: "var(--t1, #1d1d1b)", marginBottom: 8 }}>
-                  {activeBoard?.name ?? doc.name}
-                </div>
-                <label style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 12.5, cursor: "pointer", marginBottom: 12 }}>
-                  <input type="checkbox" checked={dotGrid} onChange={(e) => { setDotGrid(e.target.checked); excalidrawApi.current?.updateScene({ appState: { ...excalidrawApi.current.getAppState(), gridModeEnabled: e.target.checked } }); }} />
-                  Show dot grid
-                </label>
-
-                <div className="divider" />
-
+          {dsTab === "Styles" && (
+            /* Styles tab = the design system (brand · colour + text styles ·
+               components). Pulled out of the inspector so the Design tab stays
+               inspector-first, like Sketch/Figma. */
+            <>
+              <div className="pane-body">
                 <div className="section-title">Design system</div>
                 <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 8 }}>
                   <input
@@ -565,7 +569,6 @@ export function App() {
 
                 <div className="divider" />
 
-                {/* Color styles + Text styles — apply to selection (v2 spine) */}
                 <StylesPanel api={canvasReady ? excalidrawApi.current : null} />
 
                 <div className="divider" />
@@ -601,14 +604,10 @@ export function App() {
                     </button>
                   </div>
                 )}
-                </>
-                )}
               </div>
-              {!hasSelection && (
-                <button className="new-component" onClick={() => { setDsTab("Assistant"); setRightOpen(true); }}>
-                  + New component
-                </button>
-              )}
+              <button className="new-component" onClick={() => { setDsTab("Assistant"); setRightOpen(true); }}>
+                + New component
+              </button>
             </>
           )}
 
@@ -619,11 +618,6 @@ export function App() {
               onPresent={() => canvasReady && excalidrawApi.current && setPresenting(true)}
               activeBoardName={activeBoard?.name ?? "Welcome"}
             />
-          )}
-          {dsTab === "Inspect" && (
-            <div className="pane-body" style={{ padding: 0 }}>
-              <InspectPanel api={canvasReady ? excalidrawApi.current : null} />
-            </div>
           )}
           {dsTab === "Assistant" && (
             /* The AI IS this panel — docked like Claude Design, not a popup. */

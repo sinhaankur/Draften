@@ -60,7 +60,9 @@ export function InspectPanel({ api }: Props) {
   }, [api]);
 
   if (!api) return <Empty text="Canvas is loading…" />;
-  if (sel.length === 0) return <Empty text="Select a layer on the canvas to inspect its size, position and style." />;
+  // Empty selection → render nothing; the Design tab owns the no-selection state
+  // (a single "Nothing selected" hint + the Page inspector), so we don't double up.
+  if (sel.length === 0) return null;
 
   if (sel.length > 1) {
     return (
